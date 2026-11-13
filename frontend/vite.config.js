@@ -1,0 +1,44 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "geolocation=(self), camera=(), microphone=(), payment=()",
+  "Cross-Origin-Opener-Policy": "same-origin",
+};
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    host: "127.0.0.1",
+    port: 5173,
+    headers: SECURITY_HEADERS,
+    proxy: {
+      "/api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
+    },
+  },
+  preview: {
+    host: "127.0.0.1",
+    port: 4173,
+    headers: {
+      ...SECURITY_HEADERS,
+      "Content-Security-Policy":
+        "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://prod.spline.design; frame-src 'none'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; base-uri 'self';",
+    },
+    proxy: {
+      "/api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
+    },
+  },
+  build: {
+    sourcemap: false,
+    chunkSizeWarningLimit: 1500,
+  },
+});

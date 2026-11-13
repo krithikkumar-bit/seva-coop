@@ -1,0 +1,35 @@
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+backend/__pycache__/
+backend/**/__pycache__/
+*.pyc
+*.pyo
+
+# Environment & secrets — NEVER commit these
+.env
+.env.local
+.env.production
+.env.staging
+
+# Virtual environments
+.venv
+venv/
+env/
+
+# SQLite database files (use Postgres in production)
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# OS artefacts
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

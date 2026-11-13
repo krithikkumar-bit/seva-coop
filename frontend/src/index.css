@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-stoneblack-border;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+  body {
+    background-color: #0d0e12;
+    color: #f1f5f9;
+    font-family: "Space Grotesk", sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  button:not(:disabled),
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+  }
+}
+
+/* Technical Blueprint Grid on Stoneblack */
+.bg-grid-stoneblack {
+  background-color: #0d0e12;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+.bg-grid-stoneblack-fine {
+  background-color: #0a0b0e;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* Subtle Vignette for CAD Viewport feel */
+.radial-vignette {
+  background: radial-gradient(circle at center, transparent 35%, rgba(10, 11, 14, 0.85) 100%);
+}
+
+/* Photographic subtle grain texture veil */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Stoneblack Brutalist Glassmorphism Panel */
+.glass-panel {
+  background: rgba(18, 20, 26, 0.85);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 20px 48px -12px rgba(0, 0, 0, 0.7),
+    0 1px 2px 0 rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.pill-nav {
+  background: rgba(15, 17, 22, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 12px 32px -8px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* Technical Brutalist Spec Card */
+.spec-card {
+  background: rgba(18, 20, 26, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.spec-card:hover {
+  background: rgba(24, 27, 34, 0.92);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 255, 255, 0.08);
+}
+
+/* Brutalist Mono Button */
+.btn-tech-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: rgba(15, 17, 22, 0.6);
+  color: #f8fafc;
+  font-family: "Geist Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 0.65rem 1.4rem;
+  transition: all 0.2s ease;
+}
+.btn-tech-outline:hover {
+  background: #ffffff;
+  color: #0c0d10;
+  border-color: #ffffff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+}
+
+/* Form Controls */
+input,
+textarea,
+select {
+  background: rgba(15, 17, 22, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #f8fafc;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: rgba(255, 255, 255, 0.5);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+
+/* Table and List Styling */
+table {
+  color: #f1f5f9;
+}
+
+thead tr {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+tbody tr {
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Custom Thin Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0d0e12;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2d37;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #474b59;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

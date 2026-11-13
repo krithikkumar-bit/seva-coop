@@ -12,7 +12,7 @@ import WorkerDashboard from "./pages/WorkerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import { ToastProvider } from "./components/ui";
 import { SceneDataProvider } from "./scene/SceneStore";
-import { SceneErrorBoundary } from "./scene/SceneErrorFallback";
+import { SceneErrorBoundary, AppErrorBoundary } from "./scene/SceneErrorFallback";
 
 function WorldRoutes() {
   const location = useLocation();
@@ -100,7 +100,9 @@ export default function App() {
 
           {/* Application Content */}
           <div id="main" className="relative min-h-screen">
-            <WorldRoutes />
+            <AppErrorBoundary>
+              <WorldRoutes />
+            </AppErrorBoundary>
           </div>
         </ToastProvider>
       </SceneDataProvider>

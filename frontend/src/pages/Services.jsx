@@ -97,15 +97,18 @@ export default function Services() {
 
   useEffect(() => {
     api.get("/services")
-      .then((r) => setServices(r.data))
+      .then((r) => setServices(Array.isArray(r.data) ? r.data : []))
       .catch(() => setServices([]));
     api.get("/workers")
-      .then((r) => setWorkers(r.data))
-      .catch(() => {});
+      .then((r) => setWorkers(Array.isArray(r.data) ? r.data : []))
+      .catch(() => setWorkers([]));
   }, []);
 
   useEffect(() => {
-    setSceneData({ services: services || [], workers });
+    setSceneData({
+      services: Array.isArray(services) ? services : [],
+      workers: Array.isArray(workers) ? workers : [],
+    });
   }, [services, workers, setSceneData]);
 
   // Zone filtering
@@ -117,7 +120,7 @@ export default function Services() {
   };
 
   const filtered = useMemo(() => {
-    return (services || [])
+    return (Array.isArray(services) ? services : [])
       .filter((s) => matchesZone(s, selectedZone))
       .filter((s) =>
         (s.name + s.name_hi + (s.description || "")).toLowerCase().includes(q.toLowerCase())
@@ -127,7 +130,7 @@ export default function Services() {
   // Use worker_count embedded in service data (from backend), fallback to client-side count
   const count = (s) => {
     if (s.worker_count != null) return s.worker_count;
-    return workers.filter((w) =>
+    return (Array.isArray(workers) ? workers : []).filter((w) =>
       (w.skills || []).map((x) => x.toLowerCase()).includes(s.name.toLowerCase())
     ).length;
   };

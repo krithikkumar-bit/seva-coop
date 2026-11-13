@@ -201,12 +201,21 @@ export default function Home() {
   const { setSceneData } = useSceneData();
 
   useEffect(() => {
-    api.get("/services").then((r) => setServices(r.data)).catch(() => setServices([]));
-    api.get("/workers").then((r) => setWorkers(r.data)).catch(() => setWorkers([]));
+    api
+      .get("/services")
+      .then((r) => setServices(Array.isArray(r.data) ? r.data : []))
+      .catch(() => setServices([]));
+    api
+      .get("/workers")
+      .then((r) => setWorkers(Array.isArray(r.data) ? r.data : []))
+      .catch(() => setWorkers([]));
   }, []);
 
   useEffect(() => {
-    setSceneData({ services: services || [], workers: workers || [] });
+    setSceneData({
+      services: Array.isArray(services) ? services : [],
+      workers: Array.isArray(workers) ? workers : [],
+    });
   }, [services, workers, setSceneData]);
 
   if (user) {
@@ -220,7 +229,9 @@ export default function Home() {
 
   const activeSpecs = activeCluster === "primary" ? PRIMARY_SERVICES : SECONDARY_SERVICES;
   const loading = services === null || workers === null;
-  const rated = (workers || []).filter((w) => w.avg_rating > 0);
+  const safeWorkers = Array.isArray(workers) ? workers : [];
+  const safeServices = Array.isArray(services) ? services : [];
+  const rated = safeWorkers.filter((w) => w && w.avg_rating > 0);
   const avgRating = rated.length ? rated.reduce((n, w) => n + w.avg_rating, 0) / rated.length : 4.9;
 
   // Fair-wage math
@@ -333,7 +344,7 @@ export default function Home() {
                       onChange={(e) => setSelectedServiceId(e.target.value)}
                       className="w-full border border-white/15 bg-stoneblack px-3 py-2 font-mono text-xs text-white uppercase focus:border-emerald-400 focus:outline-none"
                     >
-                      {(services && services.length > 0 ? services : PRIMARY_SERVICES).map((s) => (
+                      {(safeServices.length > 0 ? safeServices : PRIMARY_SERVICES).map((s) => (
                         <option key={s.id} value={s.id} className="bg-[#0d0e12] text-white">
                           {s.name ? tService(s.name) : tr(s.title)} ({tr("FROM")} ₹{s.base_price || s.basePrice})
                         </option>
@@ -609,7 +620,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {(services && services.length > 0 ? services : PRIMARY_SERVICES.concat(SECONDARY_SERVICES)).map((c, i) => (
+            {(safeServices.length > 0 ? safeServices : PRIMARY_SERVICES.concat(SECONDARY_SERVICES)).map((c, i) => (
               <Link
                 key={c.id || i}
                 to={`/book/${c.id}`}
@@ -711,8 +722,8 @@ export default function Home() {
       <section className="relative z-10 border-b border-white/10 bg-black/60 py-10 pointer-events-auto">
         <div className="mx-auto grid w-full max-w-7xl grid-cols-2 gap-4 px-4 sm:px-6 lg:grid-cols-4">
           {[
-            { icon: ShieldCheck, value: (workers || []).length || 32, label: tr("VERIFIED CO-OP ARTISANS") },
-            { icon: CalendarCheck, value: (services || []).length || 10, label: tr("LIVE SERVICE TRADES") },
+            { icon: ShieldCheck, value: safeWorkers.length || 32, label: tr("VERIFIED CO-OP ARTISANS") },
+            { icon: CalendarCheck, value: safeServices.length || 10, label: tr("LIVE SERVICE TRADES") },
             { icon: Landmark, value: 90, suffix: "%", label: tr("DIRECT REMITTANCE TO ARTISAN") },
             { icon: Star, value: avgRating, decimals: 1, suffix: "★", label: tr("CUSTOMER SATISFACTION INDEX") },
           ].map((s) => (

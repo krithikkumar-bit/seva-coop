@@ -1,3 +1,4 @@
+import os
 import secrets
 import sys
 from pathlib import Path
@@ -555,7 +556,7 @@ def seed_workers():
                     full_name=w["name"],
                     phone=w["phone"],
                     email=w["email"],
-                    password_hash=hash_password(secrets.token_urlsafe(24)),
+                    password_hash=hash_password(os.getenv("DEMO_WORKER_PASSWORD", "Worker2026#*")),
                     role="worker",
                     language="en"
                 )

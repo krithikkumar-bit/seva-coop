@@ -212,7 +212,7 @@ export default function AuthPage({ mode = "login" }) {
                     transition={{ duration: 0.2 }}
                   >
                     {mode === "login" || activeRole === "admin" ? (
-                      <RoleLoginForm role={activeRole} />
+                      <RoleLoginForm role={activeRole} onSwitchRole={setActiveRole} />
                     ) : (
                       <RoleRegisterForm role={activeRole} />
                     )}
@@ -230,7 +230,7 @@ export default function AuthPage({ mode = "login" }) {
 /* =========================================================================
    ROLE LOGIN FORM COMPONENT
    ========================================================================= */
-function RoleLoginForm({ role }) {
+function RoleLoginForm({ role, onSwitchRole }) {
   const { t, tr } = useLang();
   const { login } = useAuth();
   const nav = useNavigate();
@@ -245,7 +245,7 @@ function RoleLoginForm({ role }) {
     setErr("");
     setBusy(true);
     try {
-      const u = await login(email, password);
+      const u = await login(email, password, role);
       nav(safeRedirectPath(loc.state?.from, u.role), { replace: true });
     } catch (ex) {
       setErr(extractApiError(ex, "Authentication failed. Please verify credentials."));
@@ -257,8 +257,35 @@ function RoleLoginForm({ role }) {
   return (
     <form onSubmit={submit} className="space-y-4">
       {err && (
-        <div className="border border-rose-500/40 bg-rose-950/30 p-3 font-mono text-xs text-rose-300">
-          {err}
+        <div className="border border-rose-500/40 bg-rose-950/30 p-3 font-mono text-xs text-rose-300 flex flex-col gap-2">
+          <span>{err}</span>
+          {onSwitchRole && err.includes("ARTISAN") && role !== "worker" && (
+            <button
+              type="button"
+              onClick={() => onSwitchRole("worker")}
+              className="btn-tech-outline self-start text-[10px] py-1 px-2.5 mt-1"
+            >
+              [ SWITCH TO ARTISAN PORTAL ]
+            </button>
+          )}
+          {onSwitchRole && err.includes("CUSTOMER") && role !== "customer" && (
+            <button
+              type="button"
+              onClick={() => onSwitchRole("customer")}
+              className="btn-tech-outline self-start text-[10px] py-1 px-2.5 mt-1"
+            >
+              [ SWITCH TO CUSTOMER PORTAL ]
+            </button>
+          )}
+          {onSwitchRole && err.includes("FEDERATION") && role !== "admin" && (
+            <button
+              type="button"
+              onClick={() => onSwitchRole("admin")}
+              className="btn-tech-outline self-start text-[10px] py-1 px-2.5 mt-1"
+            >
+              [ SWITCH TO FEDERATION PORTAL ]
+            </button>
+          )}
         </div>
       )}
 

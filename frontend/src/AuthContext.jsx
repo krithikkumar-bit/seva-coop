@@ -48,11 +48,18 @@ export function AuthProvider({ children }) {
     return data.user;
   };
 
-  const login = async (email, password) => {
+  const login = async (email, password, expectedRole = null) => {
     const fd = new FormData();
     fd.append("username", email.trim().toLowerCase());
     fd.append("password", password);
-    const { data } = await api.post("/auth/login", fd);
+    const url = expectedRole ? `/auth/login?role=${encodeURIComponent(expectedRole)}` : "/auth/login";
+    const { data } = await api.post(url, fd);
+    if (expectedRole && data?.user?.role !== expectedRole) {
+      const roleLabels = { customer: "Customer", worker: "Artisan", admin: "Federation Admin" };
+      const actualLabel = roleLabels[data.user.role] || data.user.role;
+      const expectedLabel = roleLabels[expectedRole] || expectedRole;
+      throw new Error(`This account is registered as an ${actualLabel}. Please switch to the ${actualLabel.toUpperCase()} portal node to log in.`);
+    }
     return applySession(data);
   };
 

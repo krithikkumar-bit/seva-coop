@@ -5,7 +5,8 @@ Rate limits (per IP):
   POST /api/auth/login    — 5 / minute & 30 / hour (brute-force protection)
   POST /api/auth/register — 10 / hour              (account-creation spam protection)
 """
-from fastapi import APIRouter, Depends, HTTPException, Request
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
@@ -72,7 +73,12 @@ def register(request: Request, payload: schemas.WorkerCreate, db: Session = Depe
 @router.post("/login", response_model=schemas.Token)
 @limiter.limit("5/minute")
 @limiter.limit("30/hour")
-def login(request: Request, form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(
+    request: Request,
+    form: OAuth2PasswordRequestForm = Depends(),
+    role: Optional[str] = Query(default=None, max_length=20),
+    db: Session = Depends(get_db),
+):
     email = form.username.strip().lower()[:254]
     user = db.query(models.User).filter(func.lower(models.User.email) == email).first()
     # Timing-safe: always execute bcrypt verification even when user does not exist
@@ -83,6 +89,13 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends(), db: Ses
             status_code=401,
             detail="Invalid email or password",
             headers={"WWW-Authenticate": "Bearer"},
+        )
+    if role and user.role != role:
+        role_labels = {"customer": "Customer", "worker": "Artisan", "admin": "Federation Admin"}
+        actual_label = role_labels.get(user.role, user.role.title())
+        raise HTTPException(
+            status_code=403,
+            detail=f"This account is registered as an {actual_label}. Please switch to the {actual_label.upper()} portal node to log in.",
         )
     return {
         "access_token": security.create_token(user.id, user.role),

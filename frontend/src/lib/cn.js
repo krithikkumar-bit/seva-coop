@@ -17,6 +17,9 @@ export function extractApiError(ex, fallback = "Request failed") {
   }
   if (typeof d === "string" && d.trim()) return d;
   if (typeof data?.error === "string" && data.error.trim()) return data.error;
+  if (ex && !(ex.isAxiosError && !ex.response) && typeof ex.message === "string" && ex.message && ex.message !== "Network Error") {
+    return ex.message;
+  }
   if (!ex?.response) return "Cannot reach server. Please ensure the backend service is running.";
   if (ex.response.status >= 500) return "Server error while processing request. Please check backend logs.";
   return fallback;

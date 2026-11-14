@@ -458,85 +458,200 @@ export default function Home() {
       <TrustedTeams />
 
       {/* =========================================================================
-          SECTION 3: LIVE 90% FAIR-WAGE VS CORPORATE MIDDLEMEN SIMULATOR
+          SECTION 3: THE COOPERATIVE PROTOCOL & ECONOMIC ARCHITECTURE
           ========================================================================= */}
-      <section className="relative z-10 border-b border-white/10 bg-black/80 py-16 sm:py-20 pointer-events-auto">
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
-          <div className="mb-10 text-center max-w-3xl mx-auto">
-            <span className="font-mono text-[10px] tracking-[0.25em] text-emerald-400 uppercase border border-emerald-500/30 px-3 py-1 bg-emerald-950/30">
-              {tr("ECONOMIC ARCHITECTURE SIMULATION")}
-            </span>
-            <h2 className="mt-4 font-display text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">
-              {tr("Where Your Money Goes")}
-            </h2>
-            <p className="mt-2 font-mono text-xs text-slate-400 uppercase tracking-wide">
-              {tr("Compare SevaCoop's transparent 90/10 cooperative model against predatory corporate gig apps.")}
-            </p>
-          </div>
+      <section
+        id="about"
+        className="relative z-10 scroll-mt-20 border-b border-white/10 bg-black/85 py-16 sm:py-24 pointer-events-auto"
+      >
+        <div id="cooperative" className="scroll-mt-20">
+          <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+            {/* Header Badge & Title */}
+            <div className="mb-12 text-center max-w-3xl mx-auto">
+              <span className="font-mono text-[10px] tracking-[0.25em] text-emerald-400 uppercase border border-emerald-500/30 px-3 py-1 bg-emerald-950/40 backdrop-blur-md">
+                {tr("SEVA PROTOCOL · DEMOCRATIC COOPERATIVE ARCHITECTURE")}
+              </span>
+              <h2 className="mt-4 font-display text-3xl sm:text-5xl font-black uppercase tracking-tight text-white">
+                {tr("THE COOPERATIVE MODEL")}
+              </h2>
+              <p className="mt-3 font-mono text-xs sm:text-sm text-slate-300 uppercase tracking-wide leading-relaxed">
+                {tr("Sahakar Se Samriddhi — Engineered for dignified artisan livelihood, democratic governance, and transparent algorithms beyond corporate middlemen exploitation.")}
+              </p>
+            </div>
 
-          <div className="border border-white/15 bg-stoneblack/90 p-6 sm:p-8 backdrop-blur-2xl max-w-4xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10 font-mono">
-              <div>
-                <label className="text-xs font-bold text-slate-300 uppercase block">
-                  {tr("Simulate Service Amount (₹):")}
-                </label>
-                <span className="text-[10px] text-slate-500 uppercase">
-                  {tr("Select common booking value")}
-                </span>
+            {/* 4 Core Cooperative Governance Pillars */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+              <div className="border border-white/12 bg-stoneblack/90 p-5 backdrop-blur-md flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex h-10 w-10 items-center justify-center border border-emerald-500/40 bg-emerald-950/40 text-emerald-400">
+                      <ShieldCheck className="h-5 w-5" />
+                    </div>
+                    <span className="font-mono text-xs font-bold text-emerald-400">90%</span>
+                  </div>
+                  <h3 className="font-display text-sm font-bold uppercase text-white tracking-wide">
+                    {tr("DIRECT REMITTANCE")}
+                  </h3>
+                  <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-400 uppercase">
+                    {tr("Direct digital payment straight into verified worker bank account. Zero delays.")}
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-1.5 font-mono text-[10px] text-emerald-400">
+                  <CheckCircle2 className="h-3 w-3" />
+                  <span>{tr("ZERO COMMISSION DEDUCTIONS")}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                {[500, 1000, 2000, 5000].map((amt) => (
-                  <button
-                    key={amt}
-                    type="button"
-                    onClick={() => setCalcAmount(amt)}
-                    className={`border px-3 py-1.5 text-xs font-bold uppercase transition ${
-                      calcAmount === amt
-                        ? "border-emerald-400 bg-emerald-950/60 text-emerald-300"
-                        : "border-white/15 text-slate-400 hover:border-white/40"
-                    }`}
-                  >
-                    ₹{amt}
-                  </button>
-                ))}
+
+              <div className="border border-white/12 bg-stoneblack/90 p-5 backdrop-blur-md flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex h-10 w-10 items-center justify-center border border-cyan-500/40 bg-cyan-950/40 text-cyan-400">
+                      <HeartHandshake className="h-5 w-5" />
+                    </div>
+                    <span className="font-mono text-xs font-bold text-cyan-400">10%</span>
+                  </div>
+                  <h3 className="font-display text-sm font-bold uppercase text-white tracking-wide">
+                    {tr("MUTUAL WELFARE FUND")}
+                  </h3>
+                  <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-400 uppercase">
+                    {tr("Democratically pooled for accident insurance, medical claims, and child education.")}
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-1.5 font-mono text-[10px] text-cyan-400">
+                  <CheckCircle2 className="h-3 w-3" />
+                  <span>{tr("LABOUR WELFARE COMPLIANT")}</span>
+                </div>
+              </div>
+
+              <div className="border border-white/12 bg-stoneblack/90 p-5 backdrop-blur-md flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex h-10 w-10 items-center justify-center border border-white/20 bg-white/5 text-white">
+                      <Users className="h-5 w-5" />
+                    </div>
+                    <span className="font-mono text-xs font-bold text-slate-300">1M=1V</span>
+                  </div>
+                  <h3 className="font-display text-sm font-bold uppercase text-white tracking-wide">
+                    {tr("DEMOCRATIC GOVERNANCE")}
+                  </h3>
+                  <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-400 uppercase">
+                    {tr("Artisans hold equal voting shares in society councils, shaping algorithm parameters, shift rules, and welfare allocations.")}
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-1.5 font-mono text-[10px] text-slate-300">
+                  <CheckCircle2 className="h-3 w-3" />
+                  <span>{tr("ONE MEMBER, ONE VOTE")}</span>
+                </div>
+              </div>
+
+              <div className="border border-white/12 bg-stoneblack/90 p-5 backdrop-blur-md flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex h-10 w-10 items-center justify-center border border-amber-500/40 bg-amber-950/40 text-amber-400">
+                      <Landmark className="h-5 w-5" />
+                    </div>
+                    <span className="font-mono text-xs font-bold text-amber-400">FED-IN</span>
+                  </div>
+                  <h3 className="font-display text-sm font-bold uppercase text-white tracking-wide">
+                    {tr("FEDERATION AUDITED")}
+                  </h3>
+                  <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-400 uppercase">
+                    {tr("Registered under Multi-State Cooperative Societies Act with periodic financial transparency audits and verified credentials.")}
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-1.5 font-mono text-[10px] text-amber-400">
+                  <CheckCircle2 className="h-3 w-3" />
+                  <span>{tr("STATUTORY CO-OP COMPLIANCE")}</span>
+                </div>
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 font-mono">
-              <div className="border border-emerald-500/40 bg-emerald-950/20 p-5 text-left">
-                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
-                  {tr("ARTISAN TAKE-HOME (90%)")}
-                </span>
-                <p className="font-display text-3xl font-black text-white mt-2">
-                  ₹{artisanShare}
-                </p>
-                <p className="text-[10px] text-emerald-300 mt-2 uppercase leading-tight">
-                  {tr("Direct digital payment straight into verified worker bank account. Zero delays.")}
-                </p>
+            {/* Live 90% Fair-Wage vs Corporate Middlemen Simulator */}
+            <div className="border border-white/15 bg-stoneblack/90 p-6 sm:p-8 backdrop-blur-2xl max-w-4xl mx-auto shadow-2xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10 font-mono">
+                <div>
+                  <label className="text-xs font-bold text-slate-300 uppercase block">
+                    {tr("Simulate Service Amount (₹):")}
+                  </label>
+                  <span className="text-[10px] text-slate-500 uppercase">
+                    {tr("Select common booking value")}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {[500, 1000, 2000, 5000].map((amt) => (
+                    <button
+                      key={amt}
+                      type="button"
+                      onClick={() => setCalcAmount(amt)}
+                      className={`border px-3 py-1.5 text-xs font-bold uppercase transition ${
+                        calcAmount === amt
+                          ? "border-emerald-400 bg-emerald-950/60 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.3)]"
+                          : "border-white/15 text-slate-400 hover:border-white/40"
+                      }`}
+                    >
+                      ₹{amt}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <div className="border border-cyan-500/40 bg-cyan-950/20 p-5 text-left">
-                <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider block">
-                  {tr("WELFARE & HEALTH FUND (10%)")}
-                </span>
-                <p className="font-display text-3xl font-black text-white mt-2">
-                  ₹{welfareShare}
-                </p>
-                <p className="text-[10px] text-cyan-300 mt-2 uppercase leading-tight">
-                  {tr("Democratically pooled for accident insurance, medical claims, and child education.")}
-                </p>
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 font-mono">
+                <div className="border border-emerald-500/40 bg-emerald-950/20 p-5 text-left">
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                    {tr("ARTISAN TAKE-HOME (90%)")}
+                  </span>
+                  <p className="font-display text-3xl font-black text-white mt-2">
+                    ₹{artisanShare}
+                  </p>
+                  <p className="text-[10px] text-emerald-300 mt-2 uppercase leading-tight">
+                    {tr("Direct digital payment straight into verified worker bank account. Zero delays.")}
+                  </p>
+                </div>
+
+                <div className="border border-cyan-500/40 bg-cyan-950/20 p-5 text-left">
+                  <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider block">
+                    {tr("WELFARE & HEALTH FUND (10%)")}
+                  </span>
+                  <p className="font-display text-3xl font-black text-white mt-2">
+                    ₹{welfareShare}
+                  </p>
+                  <p className="text-[10px] text-cyan-300 mt-2 uppercase leading-tight">
+                    {tr("Democratically pooled for accident insurance, medical claims, and child education.")}
+                  </p>
+                </div>
+
+                <div className="border border-rose-500/30 bg-rose-950/10 p-5 text-left">
+                  <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block">
+                    {tr("COMMERCIAL MIDDLEMEN CUT")}
+                  </span>
+                  <p className="font-display text-3xl font-black text-rose-400 mt-2">
+                    ₹0
+                  </p>
+                  <p className="text-[10px] text-slate-400 mt-2 uppercase leading-tight">
+                    35% (~₹{corporateCut}) → ₹0
+                  </p>
+                </div>
               </div>
 
-              <div className="border border-rose-500/30 bg-rose-950/10 p-5 text-left">
-                <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block">
-                  {tr("COMMERCIAL MIDDLEMEN CUT")}
-                </span>
-                <p className="font-display text-3xl font-black text-rose-400 mt-2">
-                  ₹0
+              {/* Call-to-action CTAs */}
+              <div className="mt-6 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
+                <p className="text-slate-400 uppercase text-[11px]">
+                  {tr("JOIN 32 VERIFIED ARTISANS GOVERNED BY WORKER COOPERATIVES")}
                 </p>
-                <p className="text-[10px] text-slate-400 mt-2 uppercase leading-tight">
-                  35% (~₹{corporateCut}) → ₹0
-                </p>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <Link
+                    to="/register"
+                    className="btn-tech-outline py-2 px-4 text-xs font-bold uppercase w-full sm:w-auto text-center"
+                  >
+                    {tr("JOIN AS ARTISAN →")}
+                  </Link>
+                  <Link
+                    to="/services"
+                    className="border border-white/20 bg-stoneblack py-2 px-4 text-xs font-bold uppercase text-slate-300 hover:text-white hover:border-white transition w-full sm:w-auto text-center"
+                  >
+                    {tr("EXPLORE SERVICES")}
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

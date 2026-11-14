@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -13,6 +14,29 @@ import AdminDashboard from "./pages/AdminDashboard";
 import { ToastProvider } from "./components/ui";
 import { SceneDataProvider } from "./scene/SceneStore";
 import { SceneErrorBoundary, AppErrorBoundary } from "./scene/SceneErrorFallback";
+
+function ScrollToHashElement() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace("#", "");
+      let count = 0;
+      const timer = setInterval(() => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+          clearInterval(timer);
+        } else if (++count >= 20) {
+          clearInterval(timer);
+        }
+      }, 50);
+      return () => clearInterval(timer);
+    }
+  }, [location.pathname, location.hash]);
+
+  return null;
+}
 
 function WorldRoutes() {
   const location = useLocation();
@@ -81,6 +105,7 @@ function WorldRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToHashElement />
       <SceneDataProvider>
         <ToastProvider>
           <a

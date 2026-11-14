@@ -28,16 +28,16 @@ export function PublicHeader() {
           <Link to="/services" className="text-white hover:text-emerald-400 transition-colors">
             {tr("SERVICES")}
           </Link>
-          <a href="#catalogue" className="inline-flex items-center gap-1 hover:text-white transition-colors">
+          <a href="/#catalogue" className="inline-flex items-center gap-1 hover:text-white transition-colors">
             {tr("CATEGORIES")} <ChevronDown className="h-3 w-3" />
           </a>
-          <a href="#impact" className="hover:text-white transition-colors">
+          <a href="/#impact" className="hover:text-white transition-colors">
             {tr("ALGORITHM")}
           </a>
-          <a href="#about" className="hover:text-white transition-colors">
+          <a href="/#about" className="hover:text-white transition-colors">
             {tr("COOPERATIVE")}
           </a>
-          <a href="#teams" className="hover:text-white transition-colors">
+          <a href="/#teams" className="hover:text-white transition-colors">
             {tr("PARTNERS")}
           </a>
         </nav>

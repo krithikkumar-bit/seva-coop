@@ -57,8 +57,8 @@ export function AuthProvider({ children }) {
     if (expectedRole && data?.user?.role !== expectedRole) {
       const roleLabels = { customer: "Customer", worker: "Artisan", admin: "Federation Admin" };
       const actualLabel = roleLabels[data.user.role] || data.user.role;
-      const expectedLabel = roleLabels[expectedRole] || expectedRole;
-      throw new Error(`This account is registered as an ${actualLabel}. Please switch to the ${actualLabel.toUpperCase()} portal node to log in.`);
+      const article = /^[aeiou]/i.test(actualLabel) ? "an" : "a";
+      throw new Error(`This account is registered as ${article} ${actualLabel}. Please switch to the ${actualLabel.toUpperCase()} portal node to log in.`);
     }
     return applySession(data);
   };

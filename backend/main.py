@@ -129,7 +129,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "font-src 'self' https://fonts.gstatic.com; "
             "img-src 'self' data: blob:; "
-            "connect-src 'self' https://prod.spline.design; "
+            "connect-src 'self' https://prod.spline.design https://*.vercel.app; "
             "frame-src 'none'; "
             "frame-ancestors 'none'; "
             "form-action 'self'; "
@@ -147,6 +147,7 @@ if ALLOWED_HOSTS:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
+    allow_origin_regex=r"^https://.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "Accept"],

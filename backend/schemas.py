@@ -234,7 +234,21 @@ class CompleteBody(BaseModel):
 class PayCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     booking_id: int = Field(..., ge=1)
-    method: Literal["upi", "card", "cash"] = "upi"
+    method: Literal["upi", "card", "cash", "razorpay"] = "upi"
+
+
+class RazorpayOrderCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    booking_id: int = Field(..., ge=1)
+
+
+class RazorpayVerify(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    booking_id: int = Field(..., ge=1)
+    razorpay_order_id: str = Field(..., min_length=5, max_length=100)
+    razorpay_payment_id: str = Field(..., min_length=5, max_length=100)
+    razorpay_signature: str = Field(..., min_length=10, max_length=200)
+    method: str = Field(default="razorpay", max_length=50)
 
 
 class RatingCreate(BaseModel):

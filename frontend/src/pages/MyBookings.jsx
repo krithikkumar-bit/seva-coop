@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   ClipboardList,
   Compass,
+  Loader2,
   MapPin,
   RotateCcw,
   ShieldCheck,
@@ -28,7 +29,7 @@ import {
   Skeleton,
   useToast,
 } from "../components/ui";
-import { extractApiError, fmtINR } from "../lib/cn";
+import { cn, extractApiError, fmtINR } from "../lib/cn";
 import { useSceneData } from "../scene/SceneStore";
 
 const FILTERS = [
@@ -116,7 +117,9 @@ export default function MyBookings() {
   const [bookings, setBookings] = useState(null);
   const [filter, setFilter] = useState("all");
   const [modal, setModal] = useState(null);
-  const [payMethod, setPayMethod] = useState("upi");
+  const [payMethod, setPayMethod] = useState("razorpay");
+  const [payBusy, setPayBusy] = useState(false);
+  const [mockSimulator, setMockSimulator] = useState(null);
   const [stars, setStars] = useState(5);
   const [comment, setComment] = useState("");
 
@@ -167,16 +170,120 @@ export default function MyBookings() {
     }
   };
 
-  const pay = async () => {
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePay = async () => {
+    setPayBusy(true);
     try {
-      const { data } = await api.post("/payments/pay", {
+      if (payMethod === "cash") {
+        const { data } = await api.post("/payments/pay", {
+          booking_id: modal.booking.id,
+          method: "cash",
+        });
+        setModal({ type: "invoice", booking: modal.booking, data });
+        load();
+        toast("Cash settlement logged into cooperative ledger!");
+        return;
+      }
+
+      const { data: order } = await api.post("/payments/create-order", {
         booking_id: modal.booking.id,
-        method: payMethod,
       });
+
+      if (order.is_mock) {
+        setMockSimulator(order);
+        return;
+      }
+
+      const loaded = await loadRazorpayScript();
+      if (!loaded) {
+        fail(null, "Could not load Razorpay SDK. Please check your internet connection.");
+        return;
+      }
+
+      const options = {
+        key: order.key_id,
+        amount: order.amount_paise,
+        currency: order.currency,
+        name: "SevaCoop Protocol",
+        description: `Settlement for ${order.service_name} (#${order.booking_code})`,
+        image: "/favicon.svg",
+        order_id: order.order_id,
+        prefill: {
+          name: order.customer_name,
+          email: order.customer_email,
+          contact: order.customer_phone,
+        },
+        theme: {
+          color: "#10b981",
+        },
+        handler: async function (response) {
+          try {
+            const { data } = await api.post("/payments/verify", {
+              booking_id: modal.booking.id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              method: "razorpay",
+            });
+            setModal({ type: "invoice", booking: modal.booking, data });
+            load();
+            toast("Payment verified via Razorpay!");
+          } catch (ex) {
+            fail(ex, "Payment verification failed");
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            toast("Payment cancelled");
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function (response) {
+        fail(null, response.error?.description || "Payment failed at Razorpay gateway");
+      });
+      rzp.open();
+    } catch (ex) {
+      fail(ex, "Payment initialization failed");
+    } finally {
+      setPayBusy(false);
+    }
+  };
+
+  const completeMockPayment = async (channel = "upi") => {
+    if (!mockSimulator) return;
+    setPayBusy(true);
+    try {
+      const mockPayId = "pay_mock_" + Math.random().toString(36).substring(2, 9) + Date.now();
+      const { data } = await api.post("/payments/verify", {
+        booking_id: modal.booking.id,
+        razorpay_order_id: mockSimulator.order_id,
+        razorpay_payment_id: mockPayId,
+        razorpay_signature: "mock_signature_verified_" + mockPayId,
+        method: `razorpay_${channel}`,
+      });
+      setMockSimulator(null);
       setModal({ type: "invoice", booking: modal.booking, data });
       load();
+      toast("Test payment verified successfully!");
     } catch (ex) {
-      fail(ex, "Payment failed");
+      fail(ex, "Mock verification failed");
+    } finally {
+      setPayBusy(false);
     }
   };
 
@@ -411,34 +518,137 @@ export default function MyBookings() {
         </Modal>
       )}
 
-      {/* Modal 2: Pay Securely */}
-      {modal?.type === "pay" && (
+      {/* Modal 2: Pay Securely with Razorpay */}
+      {modal?.type === "pay" && !mockSimulator && (
         <Modal
           title={`SETTLE FARE: ${fmtINR(modal.booking.final_cost || modal.booking.estimated_cost)}`}
-          description="Direct cooperative distribution: 90% straight to the worker, 10% cooperative society fund."
+          description="Direct cooperative distribution: 90% straight to verified artisan, 10% cooperative society fund."
           onClose={() => setModal(null)}
         >
           <div className="space-y-4 font-mono text-xs">
-            <div>
-              <label className="mb-1.5 block font-bold uppercase text-slate-300">
-                SELECT PAYMENT PROTOCOL
-              </label>
-              <select
-                value={payMethod}
-                onChange={(e) => setPayMethod(e.target.value)}
-                className="w-full border border-white/15 bg-black/60 px-3 py-2 text-white outline-none focus:border-emerald-400"
-              >
-                <option value="upi" className="bg-stoneblack text-white">UPI (GPay / PhonePe / Paytm)</option>
-                <option value="card" className="bg-stoneblack text-white">Debit / Credit Card</option>
-                <option value="cash" className="bg-stoneblack text-white">Cash Settlement on Site</option>
-              </select>
+            {/* Razorpay Protocol Header */}
+            <div className="flex items-center justify-between border border-emerald-500/40 bg-emerald-950/30 p-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                <span className="font-bold text-emerald-300">RAZORPAY PAYMENT PROTOCOL</span>
+              </div>
+              <span className="text-[10px] text-slate-400 uppercase tracking-widest">
+                UPI · CARDS · NETBANKING
+              </span>
             </div>
+
+            <div>
+              <label className="mb-2 block font-bold uppercase text-slate-300">
+                SELECT SETTLEMENT METHOD
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPayMethod("razorpay")}
+                  className={cn(
+                    "border p-3 text-left transition",
+                    payMethod === "razorpay"
+                      ? "border-emerald-400 bg-emerald-950/50 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.25)]"
+                      : "border-white/15 bg-black/40 text-slate-400 hover:border-white/30 hover:text-white"
+                  )}
+                >
+                  <p className="font-bold uppercase text-white">⚡ Razorpay Online</p>
+                  <p className="mt-1 text-[10px] text-slate-400">Instant UPI QR, GPay, Cards, Netbanking</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPayMethod("cash")}
+                  className={cn(
+                    "border p-3 text-left transition",
+                    payMethod === "cash"
+                      ? "border-emerald-400 bg-emerald-950/50 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.25)]"
+                      : "border-white/15 bg-black/40 text-slate-400 hover:border-white/30 hover:text-white"
+                  )}
+                >
+                  <p className="font-bold uppercase text-white">💵 Cash Settlement</p>
+                  <p className="mt-1 text-[10px] text-slate-400">Direct physical remittance upon completion</p>
+                </button>
+              </div>
+            </div>
+
+            {/* Fare Breakdown Card */}
+            <div className="border border-white/10 bg-black/50 p-3 space-y-1.5 text-[11px] text-slate-300">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Agreed Service Fare:</span>
+                <span className="text-white font-bold">{fmtINR(modal.booking.final_cost || modal.booking.estimated_cost)}</span>
+              </div>
+              <div className="flex justify-between text-emerald-400">
+                <span>90% Direct Artisan Livelihood:</span>
+                <span>{fmtINR((modal.booking.final_cost || modal.booking.estimated_cost) * 0.9)}</span>
+              </div>
+              <div className="flex justify-between text-slate-400 border-t border-white/10 pt-1">
+                <span>10% Cooperative Society Reserve:</span>
+                <span>{fmtINR((modal.booking.final_cost || modal.booking.estimated_cost) * 0.1)}</span>
+              </div>
+            </div>
+
             <button
-              onClick={pay}
-              className="w-full border border-emerald-400 bg-emerald-500 py-2.5 text-xs font-black uppercase text-black hover:bg-emerald-400 transition-colors"
+              onClick={handlePay}
+              disabled={payBusy}
+              className="w-full flex items-center justify-center gap-2 border border-emerald-400 bg-emerald-500 py-3 text-xs font-black uppercase text-black hover:bg-emerald-400 disabled:opacity-50 transition"
             >
-              PAY SECURELY NOW →
+              {payBusy ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>INITIALIZING GATEWAY...</span>
+                </>
+              ) : (
+                <>
+                  <span>{payMethod === "cash" ? "CONFIRM CASH SETTLEMENT →" : "PAY VIA RAZORPAY →"}</span>
+                </>
+              )}
             </button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Modal 2b: Razorpay Sandbox Test Simulator (when live keys are not configured yet) */}
+      {mockSimulator && (
+        <Modal
+          title="RAZORPAY GATEWAY SIMULATOR"
+          description="Interactive test environment. When live API keys are added to .env, the real Razorpay popup opens automatically."
+          onClose={() => setMockSimulator(null)}
+        >
+          <div className="space-y-4 font-mono text-xs">
+            <div className="border border-sky-500/40 bg-sky-950/30 p-3 text-sky-200">
+              <p className="font-bold uppercase flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-sky-400" />
+                ORDER GENERATED: #{mockSimulator.order_id}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-300">
+                Amount: <strong className="text-white">{fmtINR(mockSimulator.amount)}</strong> · Service: <strong className="text-white">{mockSimulator.service_name}</strong>
+              </p>
+            </div>
+
+            <p className="text-slate-300 uppercase font-bold">Select Simulated Payment Channel:</p>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => completeMockPayment("upi")}
+                disabled={payBusy}
+                className="border border-emerald-500/40 bg-emerald-950/40 p-3 text-center text-emerald-300 hover:bg-emerald-950/70 transition font-bold"
+              >
+                📱 SIMULATE UPI (GPAY / PHONEPE)
+              </button>
+              <button
+                type="button"
+                onClick={() => completeMockPayment("card")}
+                disabled={payBusy}
+                className="border border-emerald-500/40 bg-emerald-950/40 p-3 text-center text-emerald-300 hover:bg-emerald-950/70 transition font-bold"
+              >
+                💳 SIMULATE CARD / NETBANKING
+              </button>
+            </div>
+
+            <p className="text-[10px] text-slate-400 text-center">
+              Clicking either channel authorizes payment, verifies cryptographic signature, and commits to the co-op ledger.
+            </p>
           </div>
         </Modal>
       )}
@@ -451,6 +661,12 @@ export default function MyBookings() {
               <span>AMOUNT SETTLED ({modal.data.method.toUpperCase()})</span>
               <strong className="text-white text-sm">{fmtINR(modal.data.amount)}</strong>
             </div>
+            {modal.data.transaction_id && (
+              <div className="flex justify-between border-t border-white/10 pt-2 text-[11px] text-slate-400">
+                <span>GATEWAY TRANSACTION ID</span>
+                <span className="text-emerald-300 font-mono">{modal.data.transaction_id}</span>
+              </div>
+            )}
             <div className="flex justify-between border-t border-white/10 pt-2 text-emerald-300">
               <span>DIRECT ARTISAN REMITTANCE (90%)</span>
               <strong>{fmtINR(modal.data.worker_payout)}</strong>

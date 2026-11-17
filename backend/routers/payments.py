@@ -1,3 +1,8 @@
+import hashlib
+import hmac
+import os
+import time
+
 from fastapi import APIRouter, Depends, HTTPException, Path, Request
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -6,8 +11,160 @@ from database import get_db
 from ratelimit import limiter
 import models, schemas, security
 
+try:
+    import razorpay
+except ImportError:
+    razorpay = None
+
 router = APIRouter(prefix="/payments", tags=["payments"])
 COOP_FEE_PCT = 0.10  # 90% to worker (fair wage), 10% cooperative federation fund
+
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "").strip()
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "").strip()
+
+
+def is_razorpay_configured() -> bool:
+    return bool(
+        RAZORPAY_KEY_ID
+        and RAZORPAY_KEY_SECRET
+        and not RAZORPAY_KEY_ID.startswith("rzp_test_placeholder")
+        and razorpay is not None
+    )
+
+
+def get_razorpay_client():
+    if not is_razorpay_configured():
+        return None
+    return razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+
+
+@router.get("/config")
+@limiter.limit("60/minute")
+def get_payment_config(request: Request):
+    configured = is_razorpay_configured()
+    return {
+        "key_id": RAZORPAY_KEY_ID if configured else "rzp_test_mock_mode",
+        "currency": "INR",
+        "is_configured": configured,
+    }
+
+
+@router.post("/create-order")
+@limiter.limit("20/minute")
+def create_order(
+    request: Request,
+    payload: schemas.RazorpayOrderCreate,
+    user: models.User = Depends(security.get_current_user),
+    db: Session = Depends(get_db),
+):
+    b = db.query(models.Booking).filter(models.Booking.id == payload.booking_id).first()
+    if not b:
+        raise HTTPException(404, "Booking not found")
+    if b.customer_id != user.id and user.role != "admin":
+        raise HTTPException(403, "Not allowed")
+    if b.status != "COMPLETED":
+        raise HTTPException(400, "Booking must be completed before payment")
+    if db.query(models.Payment).filter_by(booking_id=b.id).first():
+        raise HTTPException(400, "Booking has already been paid")
+
+    amount = b.final_cost if b.final_cost is not None else b.estimated_cost
+    amount_paise = int(round(amount * 100))
+
+    if is_razorpay_configured():
+        try:
+            client = get_razorpay_client()
+            order_data = {
+                "amount": amount_paise,
+                "currency": "INR",
+                "receipt": f"rcpt_{b.code}",
+                "notes": {
+                    "booking_id": str(b.id),
+                    "booking_code": b.code,
+                    "service": b.service.name if b.service else "Service",
+                },
+            }
+            order = client.order.create(data=order_data)
+            order_id = order["id"]
+        except Exception as e:
+            raise HTTPException(500, f"Error generating Razorpay order: {str(e)}")
+    else:
+        # Test / Simulation Mode order reference
+        order_id = f"order_mock_{b.id}_{int(time.time())}"
+
+    return {
+        "order_id": order_id,
+        "amount": amount,
+        "amount_paise": amount_paise,
+        "currency": "INR",
+        "key_id": RAZORPAY_KEY_ID if is_razorpay_configured() else "rzp_test_mock_mode",
+        "booking_code": b.code,
+        "service_name": b.service.name if b.service else "Service",
+        "customer_name": user.full_name,
+        "customer_email": user.email,
+        "customer_phone": user.phone or "",
+        "is_mock": not is_razorpay_configured(),
+    }
+
+
+@router.post("/verify")
+@limiter.limit("20/minute")
+def verify_payment(
+    request: Request,
+    payload: schemas.RazorpayVerify,
+    user: models.User = Depends(security.get_current_user),
+    db: Session = Depends(get_db),
+):
+    b = db.query(models.Booking).filter(models.Booking.id == payload.booking_id).with_for_update().first()
+    if not b:
+        raise HTTPException(404, "Booking not found")
+    if b.customer_id != user.id and user.role != "admin":
+        raise HTTPException(403, "Not allowed")
+    if b.status != "COMPLETED":
+        raise HTTPException(400, "Booking not completed yet")
+    if db.query(models.Payment).filter_by(booking_id=b.id).first():
+        raise HTTPException(400, "Already paid")
+
+    # Verify signature
+    if is_razorpay_configured():
+        msg = f"{payload.razorpay_order_id}|{payload.razorpay_payment_id}"
+        expected_sig = hmac.new(
+            RAZORPAY_KEY_SECRET.encode("utf-8"),
+            msg.encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+        if not hmac.compare_digest(expected_sig, payload.razorpay_signature):
+            raise HTTPException(400, "Payment verification failed: invalid signature")
+    else:
+        # In mock mode, verify order prefix
+        if not payload.razorpay_order_id.startswith("order_mock_"):
+            raise HTTPException(400, "Invalid mock order reference")
+
+    amount = b.final_cost if b.final_cost is not None else b.estimated_cost
+    p = models.Payment(
+        booking_id=b.id,
+        invoice_no=f"INV-{b.code}",
+        amount=amount,
+        method=payload.method or "razorpay",
+        transaction_id=payload.razorpay_payment_id,
+        status="PAID",
+    )
+    db.add(p)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(400, "Already paid")
+    db.refresh(p)
+
+    return {
+        "status": "PAID",
+        "invoice_no": p.invoice_no,
+        "amount": amount,
+        "method": p.method,
+        "transaction_id": p.transaction_id,
+        "worker_payout": round(amount * (1 - COOP_FEE_PCT), 2),
+        "coop_fee": round(amount * COOP_FEE_PCT, 2),
+    }
 
 
 @router.post("/pay")
@@ -21,7 +178,7 @@ def pay(
     b = db.query(models.Booking).filter(models.Booking.id == payload.booking_id).with_for_update().first()
     if not b:
         raise HTTPException(404, "Booking not found")
-    if b.customer_id != user.id:
+    if b.customer_id != user.id and user.role != "admin":
         raise HTTPException(403, "Not allowed")
     if b.status != "COMPLETED":
         raise HTTPException(400, "Booking not completed yet")
@@ -67,6 +224,7 @@ def invoice(
         "invoice_no": p.invoice_no,
         "paid_at": p.paid_at.isoformat(),
         "method": p.method,
+        "transaction_id": p.transaction_id,
         "amount": p.amount,
         "worker_payout": round(p.amount * 0.9, 2),
         "coop_fee": round(p.amount * 0.1, 2),

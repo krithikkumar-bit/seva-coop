@@ -81,9 +81,10 @@ class Payment(Base):
     booking_id = Column(Integer, ForeignKey("bookings.id"), unique=True)
     invoice_no = Column(String, unique=True)
     amount = Column(Float)
-    method = Column(String, default="upi")  # upi | card | cash
+    method = Column(String, default="upi")  # upi | card | cash | razorpay
     status = Column(String, default="PAID")
     paid_at = Column(DateTime, default=dt.datetime.utcnow)
+    transaction_id = Column(String, nullable=True)
 
 
 class Rating(Base):

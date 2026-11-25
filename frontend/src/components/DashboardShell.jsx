@@ -26,22 +26,22 @@ export default function DashboardShell({
       ? tr("Co-op Coordinator")
       : user?.role === "worker"
       ? tr("Service Partner")
-      : tr("Customer Account");
+      : tr("Customer");
 
   const roleColor =
     user?.role === "admin"
       ? "border-amber-200 bg-amber-50 text-amber-800"
       : user?.role === "worker"
-      ? "border-sky-200 bg-sky-50 text-sky-800"
+      ? "border-violet-200 bg-violet-50 text-violet-800"
       : "border-emerald-200 bg-emerald-50 text-emerald-800";
 
   const sidebar = (
-    <div className="flex h-full flex-col text-slate-700">
-      <div className="px-5 pb-4 pt-5 border-b border-slate-100">
+    <div className="flex h-full flex-col text-neutral-700">
+      <div className="px-5 pb-4 pt-5 border-b border-neutral-100">
         <Link to="/" className="block">
           <Brand />
         </Link>
-        <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
+        <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] font-semibold text-neutral-700">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
           <span>{roleTag}</span>
         </div>
@@ -53,12 +53,12 @@ export default function DashboardShell({
           const cls = cn(
             "flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-150",
             isCurrent
-              ? "bg-emerald-50 text-emerald-800 font-semibold shadow-xs border border-emerald-200/80"
-              : "text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 border border-transparent"
+              ? "bg-neutral-900 text-white font-semibold shadow-xs"
+              : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
           );
           const inner = (
             <>
-              <span className={isCurrent ? "text-emerald-600" : "text-slate-400"}>
+              <span className={isCurrent ? "text-white" : "text-neutral-400"}>
                 {item.icon}
               </span>
               <span className="truncate">{item.label}</span>
@@ -88,36 +88,32 @@ export default function DashboardShell({
           );
         })}
 
-        <div className="pt-4 mt-4 border-t border-slate-100">
+        <div className="pt-4 mt-4 border-t border-neutral-100">
           <Link
             to="/"
             onClick={() => setOpen(false)}
-            className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition"
+            className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 transition"
           >
-            <Home className="h-4 w-4 text-slate-400" />
+            <Home className="h-4 w-4 text-neutral-400" />
             <span>{tr("Public Home")}</span>
           </Link>
         </div>
       </nav>
 
-      {/* User Status Card */}
-      <div className="border-t border-slate-100 p-4 bg-slate-50/80 rounded-b-2xl">
+      <div className="border-t border-neutral-100 p-4 bg-neutral-50 rounded-b-2xl">
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <Avatar name={user?.full_name} className="h-9 w-9" />
-            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
-          </div>
+          <Avatar name={user?.full_name} className="h-9 w-9" />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-slate-900">
+            <p className="truncate text-sm font-semibold text-neutral-900">
               {user?.full_name}
             </p>
-            <p className="truncate text-xs text-slate-500">
+            <p className="truncate text-xs text-neutral-500">
               {user?.phone || user?.email}
             </p>
           </div>
           <button
             type="button"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 transition"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-500 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 transition"
             title={t("logout")}
             aria-label={t("logout")}
             onClick={() => {
@@ -133,10 +129,10 @@ export default function DashboardShell({
   );
 
   return (
-    <div className="relative flex min-h-screen text-slate-900">
+    <div className="relative flex min-h-screen bg-[#FAFAFA] text-neutral-900">
       {/* Desktop Sidebar */}
       <aside className="relative z-30 hidden w-64 shrink-0 lg:block">
-        <div className="sticky top-4 m-4 h-[calc(100vh-2rem)] rounded-2xl border border-slate-200 bg-white shadow-card">
+        <div className="sticky top-4 m-4 h-[calc(100vh-2rem)] rounded-2xl border border-neutral-200 bg-white shadow-card">
           {sidebar}
         </div>
       </aside>
@@ -145,13 +141,13 @@ export default function DashboardShell({
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs"
+            className="absolute inset-0 bg-neutral-900/40 backdrop-blur-xs"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 w-72 border-r border-slate-200 bg-white shadow-2xl">
+          <div className="absolute inset-y-0 left-0 w-72 border-r border-neutral-200 bg-white shadow-2xl">
             <button
               type="button"
-              className="absolute right-3 top-4 rounded-lg border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+              className="absolute right-3 top-4 rounded-lg border border-neutral-200 p-1.5 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
               onClick={() => setOpen(false)}
               aria-label="Close"
             >
@@ -164,22 +160,19 @@ export default function DashboardShell({
 
       {/* Main Content */}
       <div className="relative z-20 flex min-w-0 flex-1 flex-col">
-        {/* Top Navigation Header */}
-        <header className="sticky top-4 z-30 mx-4 mt-4 flex h-14 items-center gap-3 rounded-2xl border border-slate-200 bg-white/95 px-4 sm:px-6 backdrop-blur-md shadow-xs">
+        <header className="sticky top-4 z-30 mx-4 mt-4 flex h-14 items-center gap-3 rounded-2xl border border-neutral-200 bg-white/95 px-4 sm:px-6 backdrop-blur-md shadow-xs">
           <button
             type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 lg:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 lg:hidden"
             onClick={() => setOpen(true)}
             aria-label="Open navigation"
           >
             <Menu className="h-4 w-4" />
           </button>
 
-          <div className="flex items-center gap-2.5 min-w-0">
-            <h1 className="truncate font-display text-base sm:text-lg font-bold text-slate-900">
-              {title}
-            </h1>
-          </div>
+          <h1 className="truncate font-display text-base sm:text-lg font-bold text-neutral-900">
+            {title}
+          </h1>
 
           <div className="ml-auto flex items-center gap-2.5">
             {headerExtra}
@@ -196,14 +189,12 @@ export default function DashboardShell({
           </div>
         </header>
 
-        {/* Page Container */}
         <main className="flex-1 p-4 pb-16 sm:p-6 lg:pb-10">
           <div className="mx-auto max-w-6xl">{children}</div>
         </main>
 
-        {/* Clean Footer */}
-        <footer className="mt-auto border-t border-slate-200/80 bg-white/60 py-4 px-4 text-center text-xs text-slate-500 sm:px-6">
-          SevaCoop Cooperative Platform · Verified Artisans · 90% Direct Worker Payout
+        <footer className="mt-auto border-t border-neutral-200 bg-white py-4 px-4 text-center text-xs text-neutral-500 sm:px-6">
+          SevaCoop Cooperative Platform · Verified Doorstep Services · 90% Direct Worker Payout
         </footer>
       </div>
     </div>

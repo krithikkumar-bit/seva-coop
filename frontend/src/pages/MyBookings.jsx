@@ -57,11 +57,11 @@ function BookingTimeline({ status }) {
   }
 
   return (
-    <div className="mt-5 pt-4 border-t border-slate-100">
+    <div className="mt-5 pt-4 border-t border-neutral-100">
       <div className="relative flex items-center justify-between">
-        <div className="absolute left-5 right-5 top-3.5 h-1 rounded-full bg-slate-100 z-0">
+        <div className="absolute left-5 right-5 top-3.5 h-1 rounded-full bg-neutral-100 z-0">
           <div
-            className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+            className="h-full rounded-full bg-neutral-900 transition-all duration-500"
             style={{ width: `${(Math.max(0, stepIdx) / 3) * 100}%` }}
           />
         </div>
@@ -74,22 +74,22 @@ function BookingTimeline({ status }) {
               <div
                 className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${
                   isDone
-                    ? "bg-emerald-600 text-white shadow-xs"
+                    ? "bg-neutral-900 text-white"
                     : isCurrent
-                    ? "border-2 border-emerald-600 bg-white text-emerald-700 shadow-xs"
-                    : "border border-slate-200 bg-slate-50 text-slate-400"
+                    ? "border-2 border-neutral-900 bg-white text-neutral-900"
+                    : "border border-neutral-200 bg-neutral-50 text-neutral-400"
                 }`}
               >
                 {isDone ? "✓" : idx + 1}
               </div>
               <span
                 className={`mt-1.5 text-[11px] font-semibold ${
-                  isCurrent ? "text-emerald-700" : isDone ? "text-slate-900" : "text-slate-400"
+                  isCurrent ? "text-neutral-900" : isDone ? "text-neutral-900" : "text-neutral-400"
                 }`}
               >
                 {step.label}
               </span>
-              <span className="hidden sm:inline text-[10px] text-slate-400">
+              <span className="hidden sm:inline text-[10px] text-neutral-400">
                 {step.sub}
               </span>
             </div>
@@ -111,7 +111,6 @@ export default function MyBookings() {
   const [mockSimulator, setMockSimulator] = useState(null);
   const [stars, setStars] = useState(5);
   const [comment, setComment] = useState("");
-
   const { setSceneData } = useSceneData();
 
   const load = () =>
@@ -215,9 +214,7 @@ export default function MyBookings() {
           email: order.customer_email,
           contact: order.customer_phone,
         },
-        theme: {
-          color: "#059669",
-        },
+        theme: { color: "#0f0f0f" },
         handler: async function (response) {
           try {
             const { data } = await api.post("/payments/verify", {
@@ -299,7 +296,6 @@ export default function MyBookings() {
 
   return (
     <CustomerShell title={t("myBookings")}>
-      {/* Filter Bar & CTA */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           {FILTERS.map(([k, label]) => (
@@ -309,8 +305,8 @@ export default function MyBookings() {
               className={
                 "rounded-full px-4 py-1.5 text-xs font-semibold transition " +
                 (filter === k
-                  ? "bg-emerald-600 text-white shadow-xs"
-                  : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900")
+                  ? "bg-neutral-900 text-white"
+                  : "border border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 hover:text-neutral-900")
               }
             >
               {tr(label)}
@@ -327,14 +323,14 @@ export default function MyBookings() {
       {bookings === null ? (
         <div className="space-y-4">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-40 rounded-2xl border border-slate-200 bg-slate-100 animate-pulse" />
+            <div key={i} className="h-40 rounded-2xl border border-neutral-200 bg-neutral-100 animate-pulse" />
           ))}
         </div>
       ) : list.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center">
-          <ClipboardList className="h-9 w-9 text-slate-400 mx-auto mb-3" />
-          <p className="text-base font-bold text-slate-900">No bookings in this view</p>
-          <p className="text-xs text-slate-500 mt-1">Need help around your home? Book a verified cooperative worker anytime.</p>
+        <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-12 text-center">
+          <ClipboardList className="h-9 w-9 text-neutral-400 mx-auto mb-3" />
+          <p className="text-base font-bold text-neutral-900">No bookings in this view</p>
+          <p className="text-xs text-neutral-500 mt-1">Book a verified cooperative professional whenever you need help.</p>
           <Link to="/services" className="btn-primary-coop mt-4 text-xs">
             <CalendarPlus className="h-4 w-4" /> Browse Services
           </Link>
@@ -344,30 +340,30 @@ export default function MyBookings() {
           {list.map((b) => (
             <div
               key={b.id}
-              className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs transition hover:border-emerald-300 hover:shadow-card"
+              className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-xs transition hover:border-neutral-300"
             >
               <div className="flex flex-col gap-4 md:flex-row md:items-center">
                 <div className="flex min-w-0 flex-1 items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-neutral-900">
                     <CategoryIcon name={b.service_name} className="h-6 w-6" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-display text-base font-bold text-slate-900">
+                      <h3 className="font-display text-base font-bold text-neutral-900">
                         {tService(b.service_name)}
                       </h3>
-                      <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-600">
+                      <span className="rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 font-mono text-[11px] font-semibold text-neutral-600">
                         #{b.code}
                       </span>
                       {b.is_emergency && (
                         <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-[11px] font-semibold text-amber-700">
-                          <Siren className="h-3 w-3" /> Emergency
+                          <Siren className="h-3 w-3" /> Urgent
                         </span>
                       )}
                     </div>
 
-                    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-500">
-                      <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-neutral-500">
+                      <MapPin className="h-3.5 w-3.5 shrink-0 text-neutral-600" />
                       <span className="truncate">
                         {new Date(b.scheduled_at).toLocaleString([], {
                           dateStyle: "medium",
@@ -377,14 +373,14 @@ export default function MyBookings() {
                       </span>
                     </p>
 
-                    <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-600">
-                      <User className="h-3.5 w-3.5 text-slate-400" />
+                    <p className="mt-1 flex items-center gap-1.5 text-xs text-neutral-600">
+                      <User className="h-3.5 w-3.5 text-neutral-400" />
                       {b.worker_name ? (
                         <span>
-                          Artisan: <strong className="text-slate-900">{b.worker_name}</strong> ({b.worker_phone})
+                          Professional: <strong className="text-neutral-900">{b.worker_name}</strong> ({b.worker_phone})
                         </span>
                       ) : (
-                        <span className="text-amber-700 font-medium">Finding the best nearby artisan…</span>
+                        <span className="text-amber-700 font-medium">Matching with nearby verified artisan…</span>
                       )}
                     </p>
                   </div>
@@ -392,11 +388,11 @@ export default function MyBookings() {
 
                 <div className="flex items-center justify-between gap-4 md:flex-col md:items-end md:gap-1.5">
                   <StatusBadge status={b.status} />
-                  <p className="font-display text-lg font-extrabold text-slate-900">
+                  <p className="font-display text-lg font-extrabold text-neutral-900">
                     {fmtINR(b.final_cost || b.estimated_cost)}
                   </p>
                   {b.paid && (
-                    <span className="flex items-center gap-1 text-xs font-semibold text-emerald-600">
+                    <span className="flex items-center gap-1 text-xs font-semibold text-emerald-700">
                       <CheckCircle2 className="h-3.5 w-3.5" /> Paid
                     </span>
                   )}
@@ -414,7 +410,7 @@ export default function MyBookings() {
                   {["PENDING", "ACCEPTED"].includes(b.status) && (
                     <button
                       onClick={() => cancel(b)}
-                      className="w-full rounded-xl border border-slate-200 bg-white py-2 px-3 text-xs font-semibold text-slate-600 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 transition"
+                      className="w-full rounded-lg border border-neutral-200 bg-white py-2 px-3 text-xs font-semibold text-neutral-600 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 transition"
                     >
                       {t("cancel")}
                     </button>
@@ -435,9 +431,9 @@ export default function MyBookings() {
                         setComment("");
                         setModal({ type: "rate", booking: b });
                       }}
-                      className="w-full rounded-xl border border-amber-300 bg-amber-50 py-2 px-3 text-xs font-semibold text-amber-800 hover:bg-amber-100 transition flex items-center justify-center gap-1"
+                      className="w-full rounded-lg border border-amber-300 bg-amber-50 py-2 px-3 text-xs font-semibold text-amber-800 hover:bg-amber-100 transition flex items-center justify-center gap-1"
                     >
-                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" /> Rate Artisan
+                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" /> Rate Service
                     </button>
                   )}
                 </div>
@@ -465,16 +461,16 @@ export default function MyBookings() {
             {modal.data.map((w) => (
               <div
                 key={w.profile_id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-xs"
+                className="flex items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-neutral-50 p-3.5 text-xs"
               >
                 <div className="min-w-0">
-                  <p className="font-bold text-slate-900 flex items-center gap-2">
+                  <p className="font-bold text-neutral-900 flex items-center gap-2">
                     {w.name}
                     <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
                       {Math.round(w.score * 100)}% Match
                     </span>
                   </p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-neutral-500">
                     ★ {w.avg_rating} · {w.distance_km ?? "?"} km away · {fmtINR(w.hourly_rate)} · {w.jobs_done} jobs
                   </p>
                 </div>
@@ -490,24 +486,24 @@ export default function MyBookings() {
         </Modal>
       )}
 
-      {/* Modal 2: Pay Securely with Razorpay */}
+      {/* Modal 2: Razorpay Payment */}
       {modal?.type === "pay" && !mockSimulator && (
         <Modal
-          title={`Complete Payment · ${fmtINR(modal.booking.final_cost || modal.booking.estimated_cost)}`}
+          title={`Pay ${fmtINR(modal.booking.final_cost || modal.booking.estimated_cost)}`}
           description="90% goes straight to your artisan and 10% funds cooperative worker welfare."
           onClose={() => setModal(null)}
         >
           <div className="space-y-4 text-sm">
-            <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/70 p-3 text-xs">
-              <div className="flex items-center gap-2 font-semibold text-emerald-800">
+            <div className="flex items-center justify-between rounded-xl border border-neutral-200 bg-neutral-50 p-3 text-xs">
+              <div className="flex items-center gap-2 font-semibold text-neutral-900">
                 <ShieldCheck className="h-4 w-4 text-emerald-600" />
                 <span>Secured by Razorpay</span>
               </div>
-              <span className="text-emerald-700 font-medium">UPI · Cards · Netbanking</span>
+              <span className="text-neutral-600 font-medium">UPI · Cards · Netbanking</span>
             </div>
 
             <div>
-              <label className="mb-2 block text-xs font-semibold text-slate-700">
+              <label className="mb-2 block text-xs font-semibold text-neutral-700">
                 Choose Payment Method
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -517,12 +513,14 @@ export default function MyBookings() {
                   className={cn(
                     "rounded-xl border p-3.5 text-left transition",
                     payMethod === "razorpay"
-                      ? "border-emerald-500 bg-emerald-50/70 ring-2 ring-emerald-500/20"
-                      : "border-slate-200 bg-white hover:border-slate-300"
+                      ? "border-neutral-900 bg-neutral-900 text-white"
+                      : "border-neutral-200 bg-white text-neutral-900 hover:border-neutral-300"
                   )}
                 >
-                  <p className="text-xs font-bold text-slate-900">⚡ Pay Online (Razorpay)</p>
-                  <p className="mt-1 text-[11px] text-slate-500">GPay, PhonePe, UPI QR, Cards</p>
+                  <p className="text-xs font-bold">⚡ Pay Online (Razorpay)</p>
+                  <p className={cn("mt-1 text-[11px]", payMethod === "razorpay" ? "text-neutral-300" : "text-neutral-500")}>
+                    GPay, PhonePe, UPI QR, Cards
+                  </p>
                 </button>
                 <button
                   type="button"
@@ -530,26 +528,28 @@ export default function MyBookings() {
                   className={cn(
                     "rounded-xl border p-3.5 text-left transition",
                     payMethod === "cash"
-                      ? "border-emerald-500 bg-emerald-50/70 ring-2 ring-emerald-500/20"
-                      : "border-slate-200 bg-white hover:border-slate-300"
+                      ? "border-neutral-900 bg-neutral-900 text-white"
+                      : "border-neutral-200 bg-white text-neutral-900 hover:border-neutral-300"
                   )}
                 >
-                  <p className="text-xs font-bold text-slate-900">💵 Cash on Site</p>
-                  <p className="mt-1 text-[11px] text-slate-500">Pay directly to the worker</p>
+                  <p className="text-xs font-bold">💵 Cash on Site</p>
+                  <p className={cn("mt-1 text-[11px]", payMethod === "cash" ? "text-neutral-300" : "text-neutral-500")}>
+                    Pay directly to the worker
+                  </p>
                 </button>
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5 space-y-1.5 text-xs">
-              <div className="flex justify-between text-slate-600">
+            <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-3.5 space-y-1.5 text-xs">
+              <div className="flex justify-between text-neutral-600">
                 <span>Total Service Bill</span>
-                <span className="font-bold text-slate-900">{fmtINR(modal.booking.final_cost || modal.booking.estimated_cost)}</span>
+                <span className="font-bold text-neutral-900">{fmtINR(modal.booking.final_cost || modal.booking.estimated_cost)}</span>
               </div>
               <div className="flex justify-between text-emerald-700">
                 <span>Direct Artisan Payout (90%)</span>
                 <span className="font-semibold">{fmtINR((modal.booking.final_cost || modal.booking.estimated_cost) * 0.9)}</span>
               </div>
-              <div className="flex justify-between text-slate-500 border-t border-slate-200 pt-1.5">
+              <div className="flex justify-between text-neutral-500 border-t border-neutral-200 pt-1.5">
                 <span>Worker Welfare & Insurance (10%)</span>
                 <span>{fmtINR((modal.booking.final_cost || modal.booking.estimated_cost) * 0.1)}</span>
               </div>
@@ -581,67 +581,64 @@ export default function MyBookings() {
           onClose={() => setMockSimulator(null)}
         >
           <div className="space-y-4 text-sm">
-            <div className="rounded-xl border border-sky-200 bg-sky-50 p-4">
-              <p className="font-bold text-sky-900 flex items-center gap-2 text-xs">
-                <Sparkles className="h-4 w-4 text-sky-600" />
+            <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+              <p className="font-bold text-neutral-900 flex items-center gap-2 text-xs">
+                <Sparkles className="h-4 w-4 text-neutral-700" />
                 Order #{mockSimulator.order_id}
               </p>
-              <p className="mt-1 text-xs text-sky-800">
-                Amount: <strong>{fmtINR(mockSimulator.amount)}</strong> · {mockSimulator.service_name}
+              <p className="mt-1 text-xs text-neutral-600">
+                Amount: <strong className="text-neutral-900">{fmtINR(mockSimulator.amount)}</strong> · {mockSimulator.service_name}
               </p>
             </div>
 
-            <p className="text-xs font-semibold text-slate-700">Choose a payment option to complete:</p>
+            <p className="text-xs font-semibold text-neutral-700">Choose a payment option to complete:</p>
 
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => completeMockPayment("upi")}
                 disabled={payBusy}
-                className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-center text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition"
+                className="btn-primary-coop py-3 text-xs justify-center"
               >
-                📱 Pay via UPI (GPay / PhonePe)
+                📱 Pay via UPI (GPay)
               </button>
               <button
                 type="button"
                 onClick={() => completeMockPayment("card")}
                 disabled={payBusy}
-                className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-center text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition"
+                className="btn-secondary-coop py-3 text-xs justify-center"
               >
-                💳 Pay via Card / Netbanking
+                💳 Pay via Card
               </button>
             </div>
           </div>
         </Modal>
       )}
 
-      {/* Modal 3: Receipt / Invoice */}
+      {/* Modal 3: Receipt */}
       {modal?.type === "invoice" && (
         <Modal title={`Payment Receipt #${modal.data.invoice_no}`} onClose={() => setModal(null)}>
-          <div className="space-y-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 text-xs text-slate-700">
+          <div className="space-y-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-xs text-neutral-700">
             <div className="flex justify-between items-center">
               <span>Amount Paid ({modal.data.method.toUpperCase()})</span>
-              <strong className="text-slate-900 text-base">{fmtINR(modal.data.amount)}</strong>
+              <strong className="text-neutral-900 text-base">{fmtINR(modal.data.amount)}</strong>
             </div>
             {modal.data.transaction_id && (
-              <div className="flex justify-between border-t border-emerald-200/70 pt-2">
-                <span className="text-slate-500">Transaction ID</span>
-                <span className="font-mono font-semibold text-emerald-800">{modal.data.transaction_id}</span>
+              <div className="flex justify-between border-t border-neutral-200 pt-2">
+                <span className="text-neutral-500">Transaction ID</span>
+                <span className="font-mono font-semibold text-neutral-900">{modal.data.transaction_id}</span>
               </div>
             )}
-            <div className="flex justify-between border-t border-emerald-200/70 pt-2 text-emerald-800">
+            <div className="flex justify-between border-t border-neutral-200 pt-2 text-emerald-700">
               <span>Artisan Direct Payout (90%)</span>
               <strong>{fmtINR(modal.data.worker_payout)}</strong>
             </div>
-            <div className="flex justify-between text-amber-800">
+            <div className="flex justify-between text-neutral-600">
               <span>Co-op Welfare Fund (10%)</span>
               <strong>{fmtINR(modal.data.coop_fee)}</strong>
             </div>
           </div>
-          <button
-            onClick={() => setModal(null)}
-            className="btn-primary-coop mt-4 w-full justify-center py-2.5 text-xs"
-          >
+          <button onClick={() => setModal(null)} className="btn-primary-coop mt-4 w-full justify-center py-2.5 text-xs">
             Done
           </button>
         </Modal>
@@ -649,22 +646,19 @@ export default function MyBookings() {
 
       {/* Modal 4: Rate Worker */}
       {modal?.type === "rate" && (
-        <Modal title="Rate Your Experience" description="Your feedback helps reward great artisans." onClose={() => setModal(null)}>
+        <Modal title="Rate Your Experience" description="Your feedback helps reward great professionals." onClose={() => setModal(null)}>
           <div className="flex justify-center py-2">
             <Stars value={stars} onChange={setStars} className="h-8 w-8 text-amber-400" />
           </div>
           <textarea
-            className="mt-4 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400"
+            className="mt-4 w-full rounded-lg border border-neutral-300 bg-white p-3 text-sm text-neutral-900 placeholder:text-neutral-400"
             rows={3}
             maxLength={2000}
             placeholder="Share a quick review about punctuality, quality, and professionalism..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
           />
-          <button
-            onClick={rate}
-            className="btn-primary-coop mt-4 w-full justify-center py-2.5 text-sm"
-          >
+          <button onClick={rate} className="btn-primary-coop mt-4 w-full justify-center py-2.5 text-sm">
             Submit Review
           </button>
         </Modal>

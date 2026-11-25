@@ -4,7 +4,7 @@
 
 @layer base {
   * {
-    @apply border-slate-200;
+    @apply border-neutral-200;
   }
   html {
     -webkit-font-smoothing: antialiased;
@@ -13,8 +13,8 @@
     color-scheme: light;
   }
   body {
-    background-color: #f8fafc;
-    color: #0f172a;
+    background-color: #ffffff;
+    color: #0f0f0f;
     font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
@@ -26,90 +26,79 @@
   }
 
   ::selection {
-    background: rgba(16, 185, 129, 0.2);
-    color: #064e3b;
+    background: rgba(110, 66, 229, 0.14);
+    color: #0f0f0f;
   }
 }
 
-/* Soft Modern Surface Grid */
 .bg-soft-grid {
-  background-color: #f8fafc;
-  background-image:
-    radial-gradient(at 15% 10%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-    radial-gradient(at 85% 20%, rgba(14, 165, 233, 0.06) 0px, transparent 45%),
-    linear-gradient(to right, rgba(15, 23, 42, 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.025) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+  background-color: #ffffff;
 }
 
-/* Clean Elevated Card */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid #e2e8f0;
-  box-shadow:
-    0 1px 3px rgba(15, 23, 42, 0.04),
-    0 12px 32px -12px rgba(15, 23, 42, 0.08);
+/* Urban Company Style Soft Neutral Tile */
+.uc-tile {
+  background-color: #f5f5f5;
+  border-radius: 0.75rem;
+  transition: all 0.18s ease;
+}
+.uc-tile:hover {
+  background-color: #ececec;
+  transform: translateY(-1px);
 }
 
-/* Friendly Service / Feature Card */
+/* Urban Company Style Service Card */
 .spec-card {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #ebebeb;
   border-radius: 1rem;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .spec-card:hover {
-  border-color: #10b981;
+  border-color: #d4d4d4;
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px -8px rgba(5, 150, 105, 0.14);
+  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.1);
 }
 
-/* Primary Friendly Button */
+/* Urban Company Primary Charcoal Button */
 .btn-primary-coop {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 0.75rem;
-  background: #059669;
+  border-radius: 0.625rem;
+  background: #0f0f0f;
   color: #ffffff;
   font-size: 0.875rem;
   font-weight: 600;
   padding: 0.625rem 1.25rem;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px -2px rgba(5, 150, 105, 0.28);
+  transition: all 0.18s ease;
 }
 .btn-primary-coop:hover {
-  background: #047857;
-  box-shadow: 0 6px 16px -2px rgba(5, 150, 105, 0.36);
+  background: #262626;
 }
 .btn-primary-coop:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   pointer-events: none;
 }
 
-/* Secondary Outline Button */
+/* Secondary Clean Outline Button */
 .btn-secondary-coop {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 0.75rem;
-  border: 1px solid #cbd5e1;
+  border-radius: 0.625rem;
+  border: 1px solid #d4d4d4;
   background: #ffffff;
-  color: #1e293b;
+  color: #0f0f0f;
   font-size: 0.875rem;
   font-weight: 600;
   padding: 0.625rem 1.25rem;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 .btn-secondary-coop:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
-  color: #0f172a;
+  background: #f5f5f5;
+  border-color: #a3a3a3;
 }
 
 /* Form Controls */
@@ -117,22 +106,21 @@ input,
 textarea,
 select {
   background: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: #0f172a;
-  border-radius: 0.75rem;
+  border: 1px solid #d4d4d4;
+  color: #0f0f0f;
+  border-radius: 0.625rem;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: #059669;
+  border-color: #0f0f0f;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 0 0 2px rgba(15, 15, 15, 0.08);
 }
 
-/* Table Styling */
 table {
-  color: #1e293b;
+  color: #0f0f0f;
 }
 
 /* Thin Scrollbar */
@@ -143,16 +131,16 @@ table {
 }
 ::-webkit-scrollbar-track,
 .thin-scrollbar::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #f5f5f5;
 }
 ::-webkit-scrollbar-thumb,
 .thin-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #d4d4d4;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover,
 .thin-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #a3a3a3;
 }
 
 .sr-only {

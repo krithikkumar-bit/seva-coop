@@ -27,7 +27,7 @@ import StatusBadge from "../components/StatusBadge";
 import Modal from "../components/Modal";
 import { Avatar, useToast } from "../components/ui";
 import { StatCard } from "./CustomerOverview";
-import { cn, extractApiError, fmtINR } from "../lib/cn";
+import { cn, extractApiError, FALLBACK_SERVICES, fmtINR } from "../lib/cn";
 import { useSceneData } from "../scene/SceneStore";
 
 const JOB_TIMELINE_STEPS = [
@@ -39,12 +39,7 @@ const JOB_TIMELINE_STEPS = [
 
 function JobTimeline({ status }) {
   const isCancelled = status === "CANCELLED" || status === "REJECTED";
-  const stepIdx = {
-    PENDING: 0,
-    ACCEPTED: 1,
-    IN_PROGRESS: 2,
-    COMPLETED: 3,
-  }[status] ?? -1;
+  const stepIdx = { PENDING: 0, ACCEPTED: 1, IN_PROGRESS: 2, COMPLETED: 3 }[status] ?? -1;
 
   if (isCancelled) {
     return (
@@ -55,11 +50,11 @@ function JobTimeline({ status }) {
   }
 
   return (
-    <div className="mt-4 pt-3 border-t border-slate-100">
+    <div className="mt-4 pt-3 border-t border-neutral-100">
       <div className="relative flex items-center justify-between">
-        <div className="absolute left-4 right-4 top-2.5 h-1 rounded-full bg-slate-100 z-0">
+        <div className="absolute left-4 right-4 top-2.5 h-1 rounded-full bg-neutral-100 z-0">
           <div
-            className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+            className="h-full rounded-full bg-neutral-900 transition-all duration-500"
             style={{ width: `${(Math.max(0, stepIdx) / 3) * 100}%` }}
           />
         </div>
@@ -72,17 +67,17 @@ function JobTimeline({ status }) {
               <div
                 className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold transition-all ${
                   isDone
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-neutral-900 text-white"
                     : isCurrent
-                    ? "border-2 border-emerald-600 bg-white text-emerald-700"
-                    : "border border-slate-200 bg-slate-50 text-slate-400"
+                    ? "border-2 border-neutral-900 bg-white text-neutral-900"
+                    : "border border-neutral-200 bg-neutral-50 text-neutral-400"
                 }`}
               >
                 {isDone ? "✓" : idx + 1}
               </div>
               <span
                 className={`mt-1 text-[10px] font-semibold ${
-                  isCurrent ? "text-emerald-700" : isDone ? "text-slate-900" : "text-slate-400"
+                  isCurrent ? "text-neutral-900" : isDone ? "text-neutral-900" : "text-neutral-400"
                 }`}
               >
                 {step.label}
@@ -97,43 +92,42 @@ function JobTimeline({ status }) {
 
 function JobRow({ b, onAct, onComplete }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition hover:border-emerald-300 hover:shadow-card">
+    <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs transition hover:border-neutral-300">
       <div className="flex flex-col gap-4 md:flex-row md:items-center">
         <div className="flex min-w-0 flex-1 items-start gap-3.5">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-600 shrink-0">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neutral-100 text-neutral-900 shrink-0">
             <CategoryIcon name={b.service_name} className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-display text-sm font-bold text-slate-900">
+              <span className="font-display text-sm font-bold text-neutral-900">
                 {b.service_name}
               </span>
-              <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-600">
+              <span className="rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 font-mono text-[11px] font-semibold text-neutral-600">
                 #{b.code}
               </span>
               {b.is_emergency && (
                 <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700">
-                  Emergency (+25%)
+                  Urgent (+25%)
                 </span>
               )}
             </div>
 
-            <p className="mt-1 text-xs text-slate-600">
-              <strong className="text-slate-700">Address:</strong> {b.address}
+            <p className="mt-1 text-xs text-neutral-600">
+              <strong className="text-neutral-800">Address:</strong> {b.address}
             </p>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Customer: <span className="font-medium text-slate-800">{b.customer_name || `Customer #${b.customer_id}`}</span>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Customer: <span className="font-medium text-neutral-800">{b.customer_name || `Customer #${b.customer_id}`}</span>
               {b.customer_phone && (
-                <> · Phone: <span className="font-medium text-slate-800">{b.customer_phone}</span></>
+                <> · Phone: <span className="font-medium text-neutral-800">{b.customer_phone}</span></>
               )}
             </p>
           </div>
         </div>
 
-        {/* Right Action Column */}
         <div className="flex flex-col md:items-end gap-2 shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500">Your Payout (90%):</span>
+            <span className="text-xs text-neutral-500">Your Payout (90%):</span>
             <span className="text-sm font-extrabold text-emerald-700">
               {fmtINR((b.estimated_cost || 0) * 0.9)}
             </span>
@@ -143,39 +137,21 @@ function JobRow({ b, onAct, onComplete }) {
           <div className="flex flex-wrap gap-2 pt-1">
             {b.status === "PENDING" && (
               <>
-                <button
-                  type="button"
-                  onClick={() => onAct(b, "accept")}
-                  className="btn-primary-coop py-1.5 px-3.5 text-xs"
-                >
+                <button type="button" onClick={() => onAct(b, "accept")} className="btn-primary-coop py-1.5 px-3.5 text-xs">
                   Accept Job
                 </button>
-                <button
-                  type="button"
-                  onClick={() => onAct(b, "reject")}
-                  className="btn-secondary-coop py-1.5 px-3 text-xs"
-                >
+                <button type="button" onClick={() => onAct(b, "reject")} className="btn-secondary-coop py-1.5 px-3 text-xs">
                   Decline
                 </button>
               </>
             )}
-
             {b.status === "ACCEPTED" && (
-              <button
-                type="button"
-                onClick={() => onAct(b, "start")}
-                className="btn-primary-coop py-1.5 px-3.5 text-xs"
-              >
+              <button type="button" onClick={() => onAct(b, "start")} className="btn-primary-coop py-1.5 px-3.5 text-xs">
                 Start Work →
               </button>
             )}
-
             {b.status === "IN_PROGRESS" && (
-              <button
-                type="button"
-                onClick={() => onComplete(b)}
-                className="btn-primary-coop py-1.5 px-3.5 text-xs"
-              >
+              <button type="button" onClick={() => onComplete(b)} className="btn-primary-coop py-1.5 px-3.5 text-xs">
                 Complete & Enter Bill →
               </button>
             )}
@@ -194,7 +170,7 @@ export default function WorkerDashboard() {
   const [tab, setTab] = useState("overview");
   const [profile, setProfile] = useState(null);
   const [jobs, setJobs] = useState(null);
-  const [services, setServices] = useState([]);
+  const [services, setServices] = useState(FALLBACK_SERVICES);
   const [earnings, setEarnings] = useState(null);
   const [saving, setSaving] = useState(false);
   const [complete, setComplete] = useState(null);
@@ -204,7 +180,7 @@ export default function WorkerDashboard() {
   const load = () => {
     api.get("/workers/me").then((r) => setProfile(r.data)).catch(() => {});
     api.get("/bookings/mine").then((r) => setJobs(r.data)).catch(() => setJobs([]));
-    api.get("/services").then((r) => setServices(r.data)).catch(() => {});
+    api.get("/services").then((r) => setServices(Array.isArray(r.data) && r.data.length > 0 ? r.data : FALLBACK_SERVICES)).catch(() => {});
     api.get("/payments/worker/earnings").then((r) => setEarnings(r.data)).catch(() => {});
   };
 
@@ -284,7 +260,7 @@ export default function WorkerDashboard() {
   ];
 
   const titleOf = {
-    overview: "Worker Dashboard",
+    overview: "Partner Dashboard",
     jobs: "My Jobs",
     profile: "My Profile & Skills",
     earnings: "Earnings & Payouts",
@@ -300,37 +276,35 @@ export default function WorkerDashboard() {
     >
       {profile?.verification_status === "pending" && (
         <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs font-medium text-amber-800">
-          Your account is currently awaiting cooperative verification. Once verified by the Coordinator, you will appear in customer search and receive auto-matched jobs.
+          Your partner account is currently awaiting verification by the Coordinator.
         </div>
       )}
 
-      {/* TAB 1: OVERVIEW */}
       {tab === "overview" && (
         <div className="space-y-6">
           {profile && (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+            <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4">
                   <Avatar name={profile.name} className="h-14 w-14 text-lg" />
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="font-display text-2xl font-extrabold text-slate-900">
+                      <h2 className="font-display text-2xl font-extrabold text-neutral-900">
                         {profile.name}
                       </h2>
                       <StatusBadge status={profile.verification_status} />
                     </div>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-neutral-500">
                       ₹{profile.hourly_rate}/visit · {profile.experience_years} yrs exp · {profile.skills?.join(", ")}
                     </p>
                   </div>
                 </div>
 
-                {/* Duty Switcher */}
                 <div className="flex flex-col sm:items-end gap-1.5">
-                  <span className="text-xs font-semibold text-slate-500">
-                    Your Availability Status
+                  <span className="text-xs font-semibold text-neutral-500">
+                    Availability Status
                   </span>
-                  <div className="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200">
+                  <div className="inline-flex rounded-lg bg-neutral-100 p-1 border border-neutral-200">
                     {["available", "busy", "offline"].map((a) => (
                       <button
                         key={a}
@@ -346,10 +320,10 @@ export default function WorkerDashboard() {
                             });
                         }}
                         className={cn(
-                          "rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition",
+                          "rounded-md px-3 py-1.5 text-xs font-semibold capitalize transition",
                           profile.availability === a
-                            ? "bg-white text-emerald-700 shadow-xs"
-                            : "text-slate-600 hover:text-slate-900"
+                            ? "bg-neutral-900 text-white"
+                            : "text-neutral-600 hover:text-neutral-900"
                         )}
                       >
                         {a}
@@ -361,59 +335,31 @@ export default function WorkerDashboard() {
             </div>
           )}
 
-          {/* KPIs */}
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard
-              icon={Star}
-              label="Average Rating"
-              value={profile ? Number(profile.avg_rating).toFixed(1) : "—"}
-              tone="amber"
-              subtitle="Customer reviews"
-            />
-            <StatCard
-              icon={CheckCircle2}
-              label="Jobs Completed"
-              value={profile?.jobs_done ?? "—"}
-              tone="emerald"
-              subtitle="Total finished"
-            />
-            <StatCard
-              icon={IndianRupee}
-              label="Net Earnings (90%)"
-              value={earnings ? fmtINR(earnings.total_earned) : "—"}
-              tone="teal"
-              subtitle="Direct worker share"
-            />
-            <StatCard
-              icon={Briefcase}
-              label="Pending Requests"
-              value={requests.length}
-              tone="gold"
-              subtitle="Needs your action"
-            />
+            <StatCard icon={Star} label="Average Rating" value={profile ? Number(profile.avg_rating).toFixed(1) : "—"} tone="amber" subtitle="Customer reviews" />
+            <StatCard icon={CheckCircle2} label="Jobs Completed" value={profile?.jobs_done ?? "—"} tone="emerald" subtitle="Total finished" />
+            <StatCard icon={IndianRupee} label="Net Earnings (90%)" value={earnings ? fmtINR(earnings.total_earned) : "—"} tone="teal" subtitle="Direct worker share" />
+            <StatCard icon={Briefcase} label="Pending Requests" value={requests.length} tone="gold" subtitle="Needs action" />
           </div>
 
-          {/* Incoming Queue */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <div className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <ClipboardList className="h-4 w-4 text-emerald-600" />
+              <div className="text-sm font-bold text-neutral-900 flex items-center gap-2">
+                <ClipboardList className="h-4 w-4 text-neutral-700" />
                 <span>Incoming & Active Jobs</span>
               </div>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-neutral-500">
                 {requests.length} pending · {activeJobs.length} in progress
               </span>
             </div>
 
             {jobs === null ? (
-              <div className="h-28 rounded-2xl border border-slate-200 bg-slate-100 animate-pulse" />
+              <div className="h-28 rounded-2xl border border-neutral-200 bg-neutral-100 animate-pulse" />
             ) : requests.length === 0 && activeJobs.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
-                <Briefcase className="h-8 w-8 text-slate-400 mx-auto mb-2" />
-                <p className="text-sm font-bold text-slate-800">No active job requests</p>
-                <p className="text-xs text-slate-500 mt-1">
-                  Keep your status set to "Available" to receive new nearby bookings.
-                </p>
+              <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-10 text-center">
+                <Briefcase className="h-8 w-8 text-neutral-400 mx-auto mb-2" />
+                <p className="text-sm font-bold text-neutral-800">No active job requests</p>
+                <p className="text-xs text-neutral-500 mt-1">Keep your status set to "Available" to receive new bookings.</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -434,13 +380,12 @@ export default function WorkerDashboard() {
         </div>
       )}
 
-      {/* TAB 2: ALL JOBS */}
       {tab === "jobs" && (
         <div className="space-y-4">
           {list.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
-              <ClipboardList className="h-8 w-8 text-slate-400 mx-auto mb-2" />
-              <p className="text-sm font-bold text-slate-800">No jobs yet</p>
+            <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-10 text-center">
+              <ClipboardList className="h-8 w-8 text-neutral-400 mx-auto mb-2" />
+              <p className="text-sm font-bold text-neutral-800">No jobs yet</p>
             </div>
           ) : (
             list.map((b) => (
@@ -458,25 +403,24 @@ export default function WorkerDashboard() {
         </div>
       )}
 
-      {/* TAB 3: PROFILE */}
       {tab === "profile" && profile && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs max-w-2xl">
-          <h3 className="font-display text-lg font-bold text-slate-900 mb-1 flex items-center gap-2">
-            <UserCog className="h-5 w-5 text-emerald-600" />
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs max-w-2xl">
+          <h3 className="font-display text-lg font-bold text-neutral-900 mb-1 flex items-center gap-2">
+            <UserCog className="h-5 w-5 text-neutral-700" />
             Profile & Service Skills
           </h3>
-          <p className="text-xs text-slate-500 mb-6">
+          <p className="text-xs text-neutral-500 mb-6">
             Update your base visit fee, service locality, bio, and active skills.
           </p>
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700">Availability</label>
+                <label className="text-xs font-semibold text-neutral-700">Availability</label>
                 <select
                   value={profile.availability}
                   onChange={(e) => upd("availability", e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900"
+                  className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900"
                 >
                   <option value="available">Available</option>
                   <option value="busy">Busy</option>
@@ -484,39 +428,39 @@ export default function WorkerDashboard() {
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700">Base Rate (₹/Visit)</label>
+                <label className="text-xs font-semibold text-neutral-700">Base Rate (₹/Visit)</label>
                 <input
                   type="number"
                   value={profile.hourly_rate}
                   onChange={(e) => upd("hourly_rate", Number(e.target.value))}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900"
+                  className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700">Service Area / Base Address</label>
+              <label className="text-xs font-semibold text-neutral-700">Service Area / Base Address</label>
               <input
                 value={profile.address || ""}
                 maxLength={500}
                 onChange={(e) => upd("address", e.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900"
+                className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700">Short Bio</label>
+              <label className="text-xs font-semibold text-neutral-700">Short Bio</label>
               <textarea
                 rows={3}
                 value={profile.bio || ""}
                 maxLength={1000}
                 onChange={(e) => upd("bio", e.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900"
+                className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900"
               />
             </div>
 
-            <div className="space-y-2 border-t border-slate-100 pt-4">
-              <label className="text-xs font-semibold text-slate-700">Your Trade Skills</label>
+            <div className="space-y-2 border-t border-neutral-100 pt-4">
+              <label className="text-xs font-semibold text-neutral-700">Your Trade Skills</label>
               <div className="flex flex-wrap gap-1.5">
                 {services.map((s) => {
                   const on = profile.skills?.includes(s.name);
@@ -528,8 +472,8 @@ export default function WorkerDashboard() {
                       className={cn(
                         "rounded-full border px-3 py-1 text-xs font-semibold transition",
                         on
-                          ? "border-emerald-600 bg-emerald-600 text-white"
-                          : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"
+                          ? "border-neutral-900 bg-neutral-900 text-white"
+                          : "border-neutral-200 bg-neutral-50 text-neutral-700 hover:border-neutral-300"
                       )}
                     >
                       {s.name}
@@ -539,70 +483,45 @@ export default function WorkerDashboard() {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={saveProfile}
-              disabled={saving}
-              className="btn-primary-coop w-full justify-center py-2.5 mt-2"
-            >
+            <button type="button" onClick={saveProfile} disabled={saving} className="btn-primary-coop w-full justify-center py-2.5 mt-2">
               {saving ? "Saving..." : "Save Profile Changes"}
             </button>
           </div>
         </div>
       )}
 
-      {/* TAB 4: EARNINGS */}
       {tab === "earnings" && earnings && (
         <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-3">
-            <StatCard
-              icon={Wallet}
-              label="Net Earned (90%)"
-              value={fmtINR(earnings.total_earned)}
-              tone="emerald"
-              subtitle="Your direct payout"
-            />
-            <StatCard
-              icon={IndianRupee}
-              label="Gross Job Value"
-              value={fmtINR(earnings.gross)}
-              tone="gold"
-              subtitle="Total customer billings"
-            />
-            <StatCard
-              icon={CheckCircle2}
-              label="Paid Jobs"
-              value={earnings.paid_jobs}
-              tone="teal"
-              subtitle="Settled invoices"
-            />
+            <StatCard icon={Wallet} label="Net Earned (90%)" value={fmtINR(earnings.total_earned)} tone="emerald" subtitle="Your direct payout" />
+            <StatCard icon={IndianRupee} label="Gross Job Value" value={fmtINR(earnings.gross)} tone="teal" subtitle="Total customer billings" />
+            <StatCard icon={CheckCircle2} label="Paid Jobs" value={earnings.paid_jobs} tone="gold" subtitle="Settled invoices" />
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
-            <div className="pb-3 border-b border-slate-100 mb-4">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-emerald-600" />
+          <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs">
+            <div className="pb-3 border-b border-neutral-100 mb-4">
+              <h3 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-neutral-700" />
                 <span>Recent Payouts (90% Share)</span>
               </h3>
             </div>
             <div className="h-56 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={earningsChartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
-                  <YAxis stroke="#64748b" fontSize={11} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                  <XAxis dataKey="name" stroke="#737373" fontSize={11} />
+                  <YAxis stroke="#737373" fontSize={11} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "#ffffff",
-                      borderColor: "#e2e8f0",
-                      borderRadius: "12px",
-                      color: "#0f172a",
+                      borderColor: "#e5e5e5",
+                      borderRadius: "10px",
+                      color: "#0f0f0f",
                       fontSize: "12px",
-                      boxShadow: "0 10px 25px -5px rgba(15, 23, 42, 0.1)",
                     }}
                     formatter={(val) => [fmtINR(val), "Your Payout (90%)"]}
                   />
-                  <Bar dataKey="payout" fill="#059669" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="payout" fill="#0f0f0f" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -610,7 +529,6 @@ export default function WorkerDashboard() {
         </div>
       )}
 
-      {/* Completion Modal */}
       {complete && (
         <Modal
           title="Complete Job & Generate Bill"
@@ -619,16 +537,14 @@ export default function WorkerDashboard() {
         >
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700">
-                Final Service Amount (₹)
-              </label>
+              <label className="text-xs font-semibold text-neutral-700">Final Service Amount (₹)</label>
               <input
                 type="number"
                 min={1}
                 max={200000}
                 value={finalCost}
                 onChange={(e) => setFinalCost(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900"
+                className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900"
               />
             </div>
             <button

@@ -49,30 +49,29 @@ export default function AuthPage({ mode = "login" }) {
     {
       icon: ShieldCheck,
       title: tr("Verified Local Professionals"),
-      desc: tr("Every worker is vetted with government ID proof and cooperative society verification."),
+      desc: tr("Background-checked artisans registered under verified Labour Cooperatives."),
     },
     {
       icon: IndianRupee,
-      title: tr("90% Goes Directly to Workers"),
-      desc: tr("Fair, dignified wages paid without corporate middleman deductions."),
+      title: tr("90% Direct Worker Payout"),
+      desc: tr("Every rupee supports fair worker wages without middleman commissions."),
     },
     {
       icon: HeartHandshake,
-      title: tr("Insurance & Welfare Built-In"),
-      desc: tr("10% cooperative reserve provides accident cover, medical aid, and family support."),
+      title: tr("Welfare & Insurance Included"),
+      desc: tr("10% cooperative reserve covers accident insurance and family healthcare."),
     },
   ];
 
   const roles = [
-    { key: "customer", label: tr("Customer"), hint: tr("Book home services"), icon: User },
-    { key: "worker", label: tr("Worker / Artisan"), hint: tr("Accept jobs & earn"), icon: HardHat },
-    { key: "admin", label: tr("Coordinator"), hint: tr("Manage cooperative"), icon: Shield },
+    { key: "customer", label: tr("Customer"), hint: tr("Book services"), icon: User },
+    { key: "worker", label: tr("Service Partner"), hint: tr("Accept jobs & earn"), icon: HardHat },
+    { key: "admin", label: tr("Coordinator"), hint: tr("Manage society"), icon: Shield },
   ];
 
   return (
-    <div className="relative min-h-screen flex flex-col text-slate-900">
-      {/* Clean Top Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/90 backdrop-blur-md">
+    <div className="relative min-h-screen flex flex-col bg-[#FAFAFA] text-neutral-900">
+      <header className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-white">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6">
           <Link to="/" className="flex items-center gap-3">
             <Brand />
@@ -88,48 +87,42 @@ export default function AuthPage({ mode = "login" }) {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-10">
         <div className="w-full max-w-5xl grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
-          {/* Left Welcome Card */}
-          <div className="hidden lg:col-span-5 lg:flex flex-col gap-5 rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-teal-50/70 p-7 shadow-card">
+          {/* Left Panel */}
+          <div className="hidden lg:col-span-5 lg:flex flex-col gap-5 rounded-2xl border border-neutral-200 bg-white p-7 shadow-card">
             <div>
-              <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+              <span className="inline-flex items-center rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-800">
                 {tr("SevaCoop Member Portal")}
               </span>
-              <h2 className="mt-4 font-display text-3xl font-extrabold text-slate-900 leading-tight">
-                {tr("Welcome to")} <span className="text-emerald-600">SevaCoop</span>
+              <h2 className="mt-4 font-display text-3xl font-extrabold text-neutral-900 leading-tight">
+                {tr("Welcome to SevaCoop")}
               </h2>
-              <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-                {tr("Sign in or create an account to book reliable home services or manage your cooperative work.")}
+              <p className="mt-2 text-sm text-neutral-500 leading-relaxed">
+                {tr("Sign in or register to book trusted home services or manage your work.")}
               </p>
             </div>
 
-            <div className="space-y-4 border-t border-emerald-200/60 pt-5">
+            <div className="space-y-4 border-t border-neutral-100 pt-5">
               {benefits.map((b) => (
                 <div key={b.title} className="flex items-start gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white border border-emerald-200 text-emerald-600 shrink-0 shadow-xs">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-neutral-100 text-neutral-900 shrink-0">
                     <b.icon className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-slate-900">{b.title}</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed mt-0.5">{b.desc}</p>
+                    <h4 className="text-sm font-bold text-neutral-900">{b.title}</h4>
+                    <p className="text-xs text-neutral-500 leading-relaxed mt-0.5">{b.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
-
-            <div className="rounded-xl border border-emerald-200/80 bg-white/80 p-3.5 text-xs text-slate-600">
-              <strong className="text-emerald-800">Tip:</strong> Make sure you select the right portal tab (Customer, Worker, or Coordinator) matching your account.
-            </div>
           </div>
 
           {/* Right Form Card */}
-          <div className="lg:col-span-7 w-full rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-glass">
-            {/* Role Selection Tabs */}
+          <div className="lg:col-span-7 w-full rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8 shadow-glass">
             <div className="mb-6">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2.5">
-                {tr("I am signing in as:")}
+              <p className="text-xs font-bold text-neutral-500 mb-2.5">
+                {tr("Select account type")}
               </p>
               <div className="grid grid-cols-3 gap-2.5">
                 {roles.map((tab) => {
@@ -141,32 +134,31 @@ export default function AuthPage({ mode = "login" }) {
                       type="button"
                       onClick={() => setActiveRole(tab.key)}
                       className={cn(
-                        "relative flex flex-col items-center justify-center rounded-2xl border p-3 text-center transition-all",
+                        "flex flex-col items-center justify-center rounded-xl border p-3 text-center transition-all",
                         active
-                          ? "border-emerald-500 bg-emerald-50/80 text-emerald-900 shadow-xs ring-2 ring-emerald-500/20"
-                          : "border-slate-200 bg-slate-50/50 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                          ? "border-neutral-900 bg-neutral-900 text-white"
+                          : "border-neutral-200 bg-neutral-50 text-neutral-700 hover:border-neutral-300"
                       )}
                     >
-                      <Icon className={cn("h-5 w-5 mb-1.5", active ? "text-emerald-600" : "text-slate-400")} />
+                      <Icon className={cn("h-5 w-5 mb-1.5", active ? "text-white" : "text-neutral-500")} />
                       <span className="text-xs sm:text-sm font-bold">{tab.label}</span>
-                      <span className="hidden sm:block text-[11px] text-slate-500 mt-0.5">{tab.hint}</span>
+                      <span className={cn("hidden sm:block text-[11px] mt-0.5", active ? "text-neutral-300" : "text-neutral-500")}>{tab.hint}</span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Login vs Register Toggle */}
             {activeRole !== "admin" && (
-              <div className="mb-6 flex rounded-xl border border-slate-200 bg-slate-100 p-1">
+              <div className="mb-6 flex rounded-lg border border-neutral-200 bg-neutral-100 p-1">
                 <button
                   type="button"
                   onClick={() => nav("/login")}
                   className={cn(
-                    "flex-1 rounded-lg py-2 text-xs sm:text-sm font-semibold transition",
+                    "flex-1 rounded-md py-2 text-xs sm:text-sm font-semibold transition",
                     mode === "login"
-                      ? "bg-white text-slate-900 shadow-xs"
-                      : "text-slate-600 hover:text-slate-900"
+                      ? "bg-white text-neutral-900 shadow-xs"
+                      : "text-neutral-600 hover:text-neutral-900"
                   )}
                 >
                   {tr("Sign In")}
@@ -175,10 +167,10 @@ export default function AuthPage({ mode = "login" }) {
                   type="button"
                   onClick={() => nav("/register")}
                   className={cn(
-                    "flex-1 rounded-lg py-2 text-xs sm:text-sm font-semibold transition",
+                    "flex-1 rounded-md py-2 text-xs sm:text-sm font-semibold transition",
                     mode === "register"
-                      ? "bg-white text-slate-900 shadow-xs"
-                      : "text-slate-600 hover:text-slate-900"
+                      ? "bg-white text-neutral-900 shadow-xs"
+                      : "text-neutral-600 hover:text-neutral-900"
                   )}
                 >
                   {tr("Create Account")}
@@ -186,7 +178,6 @@ export default function AuthPage({ mode = "login" }) {
               </div>
             )}
 
-            {/* Form */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${mode}-${activeRole}`}
@@ -235,7 +226,7 @@ function RoleLoginForm({ role, onSwitchRole }) {
   };
 
   const roleLabel =
-    role === "admin" ? tr("Coordinator") : role === "worker" ? tr("Worker") : tr("Customer");
+    role === "admin" ? tr("Coordinator") : role === "worker" ? tr("Service Partner") : tr("Customer");
 
   return (
     <form onSubmit={submit} className="space-y-4">
@@ -248,7 +239,7 @@ function RoleLoginForm({ role, onSwitchRole }) {
               onClick={() => onSwitchRole("worker")}
               className="self-start rounded-lg bg-white border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition"
             >
-              Switch to Worker / Artisan Login →
+              Switch to Service Partner Login →
             </button>
           )}
           {onSwitchRole && err.includes("CUSTOMER") && role !== "customer" && (
@@ -273,7 +264,7 @@ function RoleLoginForm({ role, onSwitchRole }) {
       )}
 
       <div className="space-y-1.5">
-        <label className="block text-xs font-semibold text-slate-700">
+        <label className="block text-xs font-semibold text-neutral-700">
           {tr("Email Address")}
         </label>
         <input
@@ -283,12 +274,12 @@ function RoleLoginForm({ role, onSwitchRole }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none"
+          className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400"
         />
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-xs font-semibold text-slate-700">
+        <label className="block text-xs font-semibold text-neutral-700">
           {tr("Password")}
         </label>
         <div className="relative">
@@ -299,13 +290,13 @@ function RoleLoginForm({ role, onSwitchRole }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full rounded-xl border border-slate-300 bg-white pl-3.5 pr-10 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none"
+            className="w-full rounded-lg border border-neutral-300 bg-white pl-3.5 pr-10 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400"
           />
           <button
             type="button"
             onClick={() => setShowPw(!showPw)}
             aria-label={showPw ? "Hide password" : "Show password"}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
           >
             {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
@@ -417,18 +408,18 @@ function RoleRegisterForm({ role }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div className="space-y-1">
-          <label className="block text-xs font-semibold text-slate-700">{tr("Full Name")}</label>
+          <label className="block text-xs font-semibold text-neutral-700">{tr("Full Name")}</label>
           <input
             value={form.full_name}
             onChange={set("full_name")}
             placeholder="e.g. Ramesh Kumar"
             maxLength={100}
             required
-            className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400"
+            className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
           />
         </div>
         <div className="space-y-1">
-          <label className="block text-xs font-semibold text-slate-700">{tr("Phone Number")}</label>
+          <label className="block text-xs font-semibold text-neutral-700">{tr("Phone Number")}</label>
           <input
             inputMode="tel"
             placeholder="e.g. 9876543210"
@@ -436,14 +427,14 @@ function RoleRegisterForm({ role }) {
             onChange={set("phone")}
             maxLength={20}
             required
-            className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400"
+            className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div className="space-y-1">
-          <label className="block text-xs font-semibold text-slate-700">{tr("Email Address")}</label>
+          <label className="block text-xs font-semibold text-neutral-700">{tr("Email Address")}</label>
           <input
             type="email"
             placeholder="you@example.com"
@@ -451,11 +442,11 @@ function RoleRegisterForm({ role }) {
             onChange={set("email")}
             maxLength={254}
             required
-            className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400"
+            className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
           />
         </div>
         <div className="space-y-1">
-          <label className="block text-xs font-semibold text-slate-700">
+          <label className="block text-xs font-semibold text-neutral-700">
             {tr("Password (min 8 chars)")}
           </label>
           <div className="relative">
@@ -467,13 +458,13 @@ function RoleRegisterForm({ role }) {
               required
               minLength={8}
               maxLength={72}
-              className="w-full rounded-xl border border-slate-300 bg-white pl-3.5 pr-10 py-2 text-sm text-slate-900 placeholder:text-slate-400"
+              className="w-full rounded-lg border border-neutral-300 bg-white pl-3.5 pr-10 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
             />
             <button
               type="button"
               onClick={() => setShowPw(!showPw)}
               aria-label={showPw ? "Hide password" : "Show password"}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
             >
               {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
@@ -482,8 +473,8 @@ function RoleRegisterForm({ role }) {
       </div>
 
       <div className="space-y-1">
-        <label className="block text-xs font-semibold text-slate-700">
-          {tr("Neighborhood / Full Address")}
+        <label className="block text-xs font-semibold text-neutral-700">
+          {tr("Full Address")}
         </label>
         <input
           value={form.address}
@@ -491,14 +482,14 @@ function RoleRegisterForm({ role }) {
           placeholder="House no, Street, Locality, City"
           maxLength={500}
           required
-          className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400"
+          className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
         />
       </div>
 
       {role === "worker" && (
-        <div className="space-y-3.5 border-t border-slate-200 pt-4">
+        <div className="space-y-3.5 border-t border-neutral-200 pt-4">
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-slate-700">
+            <label className="block text-xs font-semibold text-neutral-700">
               {tr("Select Your Skills:")}
             </label>
             <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto thin-scrollbar">
@@ -512,8 +503,8 @@ function RoleRegisterForm({ role }) {
                     className={cn(
                       "rounded-full px-3 py-1 text-xs font-semibold border transition",
                       on
-                        ? "border-emerald-600 bg-emerald-600 text-white"
-                        : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"
+                        ? "border-neutral-900 bg-neutral-900 text-white"
+                        : "border-neutral-200 bg-neutral-50 text-neutral-700 hover:border-neutral-300"
                     )}
                   >
                     {on && <CheckCircle2 className="h-3 w-3 inline mr-1" />}
@@ -526,7 +517,7 @@ function RoleRegisterForm({ role }) {
 
           <div className="grid grid-cols-2 gap-3.5">
             <div className="space-y-1">
-              <label className="block text-xs font-semibold text-slate-700">
+              <label className="block text-xs font-semibold text-neutral-700">
                 {tr("Experience (Years)")}
               </label>
               <input
@@ -535,11 +526,11 @@ function RoleRegisterForm({ role }) {
                 step="0.5"
                 value={form.experience_years}
                 onChange={set("experience_years")}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900"
+                className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900"
               />
             </div>
             <div className="space-y-1">
-              <label className="block text-xs font-semibold text-slate-700">
+              <label className="block text-xs font-semibold text-neutral-700">
                 {tr("Base Visit Rate (₹)")}
               </label>
               <input
@@ -548,13 +539,13 @@ function RoleRegisterForm({ role }) {
                 step="50"
                 value={form.hourly_rate}
                 onChange={set("hourly_rate")}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900"
+                className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="block text-xs font-semibold text-slate-700">
+            <label className="block text-xs font-semibold text-neutral-700">
               {tr("Government ID Proof No (Aadhaar / Voter ID)")}
             </label>
             <input
@@ -563,7 +554,7 @@ function RoleRegisterForm({ role }) {
               placeholder="e.g. COOP-ID-9921"
               maxLength={50}
               required
-              className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400"
+              className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
             />
           </div>
         </div>
@@ -581,7 +572,7 @@ function RoleRegisterForm({ role }) {
           </span>
         ) : (
           <span className="flex items-center gap-2">
-            <span>{t("register")} as {role === "worker" ? tr("Worker") : tr("Customer")}</span>
+            <span>{t("register")} as {role === "worker" ? tr("Service Partner") : tr("Customer")}</span>
             <ArrowRight className="h-4 w-4" />
           </span>
         )}

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronDown, MapPin, Menu, Search, UserCircle2, X } from "lucide-react";
+import { MapPin, Menu, Search, UserCircle2, X } from "lucide-react";
 import Brand from "./Brand";
 import LangSelect from "./LangSelect";
 import { useLang } from "../i18n";
-import { FALLBACK_SERVICES, fmtINR } from "../lib/cn";
+import { FALLBACK_SERVICES, fmtINR, getServiceImage } from "../lib/cn";
 
 const CITIES = ["Delhi NCR", "Bengaluru", "Mumbai", "Pune", "Hyderabad", "Chennai", "Kolkata"];
 
@@ -25,7 +25,6 @@ export function PublicHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-white">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        {/* Left: Brand + UC-style Location Selector */}
         <div className="flex items-center gap-4 min-w-0">
           <Link to="/" className="shrink-0">
             <Brand compact />
@@ -46,7 +45,6 @@ export function PublicHeader() {
           </div>
         </div>
 
-        {/* Center: Urban Company Style Header Search Bar */}
         <div className="relative hidden sm:block flex-1 max-w-md">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
           <input
@@ -62,7 +60,6 @@ export function PublicHeader() {
             className="w-full rounded-lg border border-neutral-200 bg-neutral-50 pl-9 pr-4 py-2 text-xs text-neutral-900 placeholder:text-neutral-400 focus:bg-white focus:border-neutral-900 focus:outline-none"
           />
 
-          {/* Quick Search Dropdown */}
           {searchOpen && searchQ.trim().length > 0 && (
             <div className="absolute left-0 right-0 top-full mt-1.5 rounded-xl border border-neutral-200 bg-white p-2 shadow-glass z-50">
               {searchMatches.length === 0 ? (
@@ -73,8 +70,13 @@ export function PublicHeader() {
                     key={s.id}
                     type="button"
                     onMouseDown={() => nav(`/book/${s.id}`)}
-                    className="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-xs hover:bg-neutral-100 transition"
+                    className="flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-left text-xs hover:bg-neutral-100 transition"
                   >
+                    <img
+                      src={getServiceImage(s.name)}
+                      alt={s.name}
+                      className="h-9 w-9 shrink-0 rounded-lg object-cover border border-neutral-200"
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-neutral-900 truncate">{tService(s.name)}</p>
                       <p className="text-[11px] text-neutral-500 truncate">{s.description}</p>
@@ -87,7 +89,6 @@ export function PublicHeader() {
           )}
         </div>
 
-        {/* Right: Clean Navigation + Account */}
         <div className="flex shrink-0 items-center gap-3">
           <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-neutral-600 mr-2">
             <Link to="/services" className="text-neutral-900 hover:text-black transition">
@@ -122,7 +123,6 @@ export function PublicHeader() {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
       {mobileOpen && (
         <div className="border-t border-neutral-100 bg-white px-4 py-4 space-y-2 lg:hidden">
           <Link to="/services" onClick={() => setMobileOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-neutral-900 hover:bg-neutral-50">
@@ -190,7 +190,7 @@ export function LandingFooter() {
 
 export default function PublicLayout({ children }) {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-white text-neutral-900">
+    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-white text-neutral-900">
       <div className="relative z-10 flex min-h-screen flex-col">
         <PublicHeader />
         <main className="flex-1">{children}</main>

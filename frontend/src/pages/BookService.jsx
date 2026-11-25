@@ -17,7 +17,7 @@ import { useLang } from "../i18n";
 import CustomerShell from "../components/CustomerShell";
 import CategoryIcon from "../components/CategoryIcon";
 import { Skeleton } from "../components/ui";
-import { cn, extractApiError, FALLBACK_SERVICES, fmtINR } from "../lib/cn";
+import { cn, extractApiError, FALLBACK_SERVICES, fmtINR, getServiceImage } from "../lib/cn";
 import { useSceneData } from "../scene/SceneStore";
 
 const TIME_SLOTS = [
@@ -144,9 +144,11 @@ export default function BookService() {
         {/* Left: UC Checkout Details */}
         <div className="lg:col-span-3 rounded-2xl border border-neutral-200 bg-white p-6 sm:p-7 shadow-card">
           <div className="mb-6 flex items-start gap-4 border-b border-neutral-100 pb-5">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-neutral-900">
-              <CategoryIcon name={service.name} className="h-7 w-7" />
-            </div>
+            <img
+              src={getServiceImage(service.name)}
+              alt={service.name}
+              className="h-16 w-20 shrink-0 rounded-xl object-cover border border-neutral-200"
+            />
             <div className="min-w-0 flex-1">
               <h2 className="font-display text-2xl font-extrabold text-neutral-900">
                 {tService(service.name)}

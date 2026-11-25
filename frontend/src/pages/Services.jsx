@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  ArrowRight,
   BadgeCheck,
   CheckCircle2,
   Search,
@@ -11,46 +10,49 @@ import {
 import api from "../api";
 import { useLang } from "../i18n";
 import { useSceneData } from "../scene/SceneStore";
-import CategoryIcon from "../components/CategoryIcon";
 import { Frame } from "../components/CustomerShell";
-import { FALLBACK_SERVICES, fmtINR } from "../lib/cn";
+import { FALLBACK_SERVICES, fmtINR, getServiceImage } from "../lib/cn";
 
 export function ServiceCard({ s, workerCount }) {
   const { tr, tService, tServiceDesc } = useLang();
   return (
-    <div className="spec-card group flex flex-col justify-between p-4 sm:p-5">
-      <div>
-        <div className="mb-3 flex items-start justify-between gap-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-100 text-neutral-900 group-hover:bg-neutral-900 group-hover:text-white transition-colors">
-            <CategoryIcon name={s.name} className="h-6 w-6" />
-          </div>
-          <div className="flex flex-col items-end gap-1">
-            <span className="inline-flex items-center gap-1 text-xs font-bold text-neutral-800">
-              <Star className="h-3.5 w-3.5 fill-neutral-900 text-neutral-900" /> 4.9
-            </span>
-            {workerCount != null && (
-              <span className="text-[11px] font-medium text-neutral-500">
-                {workerCount} {workerCount === 1 ? tr("Artisan") : tr("Artisans")}
-              </span>
-            )}
-          </div>
+    <div className="flex items-start justify-between gap-4 rounded-2xl border border-neutral-200 bg-white p-4 sm:p-5 transition hover:border-neutral-300 hover:shadow-card">
+      {/* Left Info Column (Urban Company exact layout) */}
+      <div className="min-w-0 flex-1">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">
+          Verified Co-op
+        </span>
+        <h3 className="mt-0.5 text-base font-bold text-neutral-900">
+          {tService(s.name)}
+        </h3>
+        <div className="mt-1 flex items-center gap-1.5 text-xs text-neutral-600">
+          <Star className="h-3.5 w-3.5 fill-neutral-900 text-neutral-900" />
+          <span className="font-bold text-neutral-900">4.85</span>
+          {workerCount > 0 && (
+            <span>· {workerCount} {workerCount === 1 ? tr("Artisan") : tr("Artisans")}</span>
+          )}
         </div>
-
-        <h3 className="text-base font-bold text-neutral-900">{tService(s.name)}</h3>
-        {s.name_hi && <p className="text-xs text-neutral-400">{s.name_hi}</p>}
-        <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-neutral-500">
+        <p className="mt-2 text-sm font-bold text-neutral-900">
+          {fmtINR(s.base_price)}
+          <span className="text-xs font-normal text-neutral-500"> · Visit charge</span>
+        </p>
+        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-neutral-500">
           {tServiceDesc(s.name, s.description)}
         </p>
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-3.5">
-        <div>
-          <span className="text-[11px] text-neutral-400 block">Starts at</span>
-          <span className="text-sm font-extrabold text-neutral-900">{fmtINR(s.base_price)}</span>
+      {/* Right Photo Thumbnail + Overlapping Add/Book Button (UC Signature Pattern) */}
+      <div className="relative shrink-0 w-28 sm:w-32 pb-3">
+        <div className="h-24 sm:h-28 w-full overflow-hidden rounded-xl bg-neutral-100 border border-neutral-200/60">
+          <img
+            src={getServiceImage(s.name)}
+            alt={s.name}
+            className="h-full w-full object-cover"
+          />
         </div>
         <Link
           to={`/book/${s.id}`}
-          className="rounded-lg border border-neutral-300 bg-white px-4 py-1.5 text-xs font-bold text-neutral-900 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition"
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-lg border border-violet-200 bg-white px-5 py-1.5 text-xs font-bold text-[#6E42E5] shadow-md hover:bg-[#6E42E5] hover:text-white hover:border-[#6E42E5] transition whitespace-nowrap"
         >
           {tr("Book")}
         </Link>
@@ -60,17 +62,17 @@ export function ServiceCard({ s, workerCount }) {
 }
 
 const CATEGORY_ZONES = [
-  { key: "all", label: "All Services", iconName: "" },
-  { key: "electrician", label: "Electrician", iconName: "Electrician" },
-  { key: "plumber", label: "Plumber", iconName: "Plumber" },
-  { key: "carpenter", label: "Carpenter", iconName: "Carpenter" },
-  { key: "cleaning", label: "Cleaning", iconName: "Cleaning" },
-  { key: "ac_technician", label: "AC Technician", iconName: "AC Technician" },
-  { key: "painter", label: "Painter", iconName: "Painter" },
-  { key: "driver", label: "Driver", iconName: "Driver" },
-  { key: "caregiver", label: "Caregiver", iconName: "Caregiver" },
-  { key: "domestic_helper", label: "Domestic Helper", iconName: "Domestic Helper" },
-  { key: "gardener", label: "Gardener", iconName: "Gardener" },
+  { key: "all", label: "All Services", img: "/images/electrician.jpg" },
+  { key: "electrician", label: "Electrician", img: "/images/electrician.jpg" },
+  { key: "plumber", label: "Plumber", img: "/images/plumber.jpg" },
+  { key: "carpenter", label: "Carpenter", img: "/images/carpenter.jpg" },
+  { key: "cleaning", label: "Cleaning", img: "/images/cleaning.jpg" },
+  { key: "ac_technician", label: "AC Technician", img: "/images/ac_technician.jpg" },
+  { key: "painter", label: "Painter", img: "/images/painter.jpg" },
+  { key: "driver", label: "Driver", img: "/images/driver.jpg" },
+  { key: "caregiver", label: "Caregiver", img: "/images/caregiver.jpg" },
+  { key: "domestic_helper", label: "Domestic Helper", img: "/images/domestic_helper.jpg" },
+  { key: "gardener", label: "Gardener", img: "/images/gardener.jpg" },
 ];
 
 export default function Services() {
@@ -120,14 +122,13 @@ export default function Services() {
 
   return (
     <Frame title={t("browseServices")}>
-      {/* Urban Company 3-Column Service Layout */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-neutral-900">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-neutral-900">
             {tr("Home Services Directory")}
           </h2>
           <p className="text-sm text-neutral-500 mt-0.5">
-            {tr("Select a service category to book a verified cooperative artisan.")}
+            {tr("Select a service category to book a verified cooperative professional.")}
           </p>
         </div>
 
@@ -143,12 +144,12 @@ export default function Services() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
-        {/* Left Sticky Category Selector Box (UC Style) */}
+        {/* Left Sticky Category Photo Tiles (UC exact pattern) */}
         <aside className="lg:col-span-3 lg:sticky lg:top-24 rounded-2xl border border-neutral-200 bg-white p-4">
           <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3">
             {tr("Select a service")}
           </p>
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-2 gap-2.5">
             {CATEGORY_ZONES.map((zone) => {
               const active = selectedZone === zone.key;
               return (
@@ -157,14 +158,18 @@ export default function Services() {
                   type="button"
                   onClick={() => setSelectedZone(zone.key)}
                   className={
-                    "flex flex-col items-center justify-center rounded-xl p-2.5 text-center transition border " +
+                    "flex flex-col items-center justify-center rounded-xl p-2 text-center transition border " +
                     (active
-                      ? "border-neutral-900 bg-neutral-900 text-white"
-                      : "border-transparent bg-neutral-100 text-neutral-700 hover:bg-neutral-200/70")
+                      ? "border-neutral-900 bg-neutral-50 ring-1 ring-neutral-900"
+                      : "border-transparent bg-[#F5F5F5] hover:bg-neutral-200/70")
                   }
                 >
-                  <CategoryIcon name={zone.iconName} className="h-4 w-4 mb-1.5" />
-                  <span className="text-[11px] font-semibold leading-tight">
+                  <img
+                    src={zone.img}
+                    alt={zone.label}
+                    className="h-10 w-12 rounded-md object-cover mb-1.5"
+                  />
+                  <span className="text-[11px] font-semibold text-neutral-800 leading-tight">
                     {zone.key === "all" ? tr("All") : tService(zone.label)}
                   </span>
                 </button>
@@ -173,12 +178,12 @@ export default function Services() {
           </div>
         </aside>
 
-        {/* Center Service Cards */}
-        <div className="lg:col-span-6 space-y-6">
+        {/* Center Service Rows */}
+        <div className="lg:col-span-6 space-y-4">
           {services === null ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-48 rounded-2xl border border-neutral-200 bg-neutral-100 animate-pulse" />
+            <div className="space-y-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-36 rounded-2xl border border-neutral-200 bg-neutral-100 animate-pulse" />
               ))}
             </div>
           ) : filtered.length === 0 ? (
@@ -197,7 +202,7 @@ export default function Services() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-4">
               {filtered.map((s) => (
                 <ServiceCard key={s.id} s={s} workerCount={count(s)} />
               ))}
@@ -205,7 +210,7 @@ export default function Services() {
           )}
         </div>
 
-        {/* Right Sticky UC-style Trust Promise Box */}
+        {/* Right Sticky UC Promise Box */}
         <aside className="lg:col-span-3 lg:sticky lg:top-24 space-y-4">
           <div className="rounded-2xl border border-neutral-200 bg-white p-5">
             <div className="flex items-center justify-between mb-3">

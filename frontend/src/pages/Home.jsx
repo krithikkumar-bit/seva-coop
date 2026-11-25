@@ -20,8 +20,8 @@ import { FALLBACK_SERVICES, fmtINR, getServiceImage, SERVICE_GROUPS } from "../l
 
 const HERO_TILES = [
   { label: "Salon for Women", to: "/book/11", img: "/images/salon_women.jpg" },
-  { label: "Salon for Men & Kids", to: "/book/12", img: "/images/salon_men.svg" },
-  { label: "Spa & Massage", to: "/services?group=salon_spa", img: "/images/spa_women.svg" },
+  { label: "Salon for Men & Kids", to: "/book/12", img: "/images/salon_men.jpg" },
+  { label: "Spa & Massage", to: "/services?group=salon_spa", img: "/images/spa_women.jpg" },
   { label: "AC & Appliances", to: "/services?group=appliances", img: "/images/ac_technician.jpg" },
   { label: "Cleaning & Pest", to: "/services?group=cleaning_pest", img: "/images/cleaning.jpg" },
   { label: "Electrician", to: "/book/1", img: "/images/electrician.jpg" },
@@ -94,7 +94,7 @@ export default function Home() {
 
   return (
     <PublicLayout>
-      {/* 1. EXACT URBAN COMPANY STYLE SPLIT HERO */}
+      {/* 1. SPLIT SERVICE SHOWCASE HERO */}
       <section className="w-full bg-white py-10 sm:py-14">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start">
@@ -157,7 +157,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column: Urban Company 4-Photo Stitched Collage (Salon, Appliances, Cleaning, Pest/Repairs) */}
+            {/* Right Column: 4-Photo Stitched Service Collage (Salon, Appliances, Cleaning, Pest/Repairs) */}
             <div className="lg:col-span-7">
               <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
                 <Link
@@ -269,7 +269,7 @@ export default function Home() {
                 <ShieldCheck className="h-3.5 w-3.5" /> SevaCoop Fair-Pay Standard
               </span>
               <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-neutral-900 leading-tight">
-                All Urban Company services — with 90% direct worker payout
+                All SevaCoop services — with 90% direct worker payout
               </h2>
               <p className="text-sm text-neutral-600 leading-relaxed">
                 From Salon, Spa & Pest Control to AC, Fridge, RO, Plumber & Electrician — every service is fulfilled by verified Labour Cooperative Society artisans.
@@ -294,7 +294,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. ALL URBAN COMPANY CATEGORY ROWS */}
+      {/* 4. ALL SEVACOOP SERVICE CATEGORY ROWS */}
       <section className="w-full bg-white py-10 sm:py-12">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 space-y-12">
           {SERVICE_GROUPS.map((group) => {

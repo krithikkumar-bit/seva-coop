@@ -6,7 +6,7 @@ export default function Brand({ compact = false }) {
 
   return (
     <div className="flex min-w-0 items-center gap-2.5 select-none group">
-      {/* Urban Company inspired clean monogram square */}
+      {/* Clean SevaCoop monogram square */}
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-900 text-white shadow-xs transition-transform group-hover:scale-105">
         <span className="font-display text-sm font-extrabold tracking-tight">SC</span>
       </div>

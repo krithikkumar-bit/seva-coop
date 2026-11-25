@@ -127,7 +127,7 @@ export default function Services() {
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="font-display text-2xl sm:text-3xl font-bold text-neutral-900">
-            {tr("All Urban Company Services")}
+            {tr("All SevaCoop Services")}
           </h2>
           <p className="text-sm text-neutral-500 mt-0.5">
             {tr("22 doorstep service categories · 90% direct payout to verified co-op artisans.")}
@@ -221,7 +221,7 @@ export default function Services() {
           )}
         </div>
 
-        {/* Right Sticky UC Promise Box */}
+        {/* Right Sticky SevaCoop Promise Box */}
         <aside className="lg:col-span-3 lg:sticky lg:top-24 space-y-4">
           <div className="rounded-2xl border border-neutral-200 bg-white p-5">
             <div className="flex items-center justify-between mb-3">

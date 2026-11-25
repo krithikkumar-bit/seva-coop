@@ -270,7 +270,7 @@ export default function CustomerOverview() {
             {tr("Quick Book Services")}
           </h3>
           <Link to="/services" className="text-xs font-semibold text-neutral-900 hover:underline">
-            View All 10 →
+            View All 22 →
           </Link>
         </div>
 

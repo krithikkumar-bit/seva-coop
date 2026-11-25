@@ -11,11 +11,14 @@ from sanitize import sanitize_text
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
-# Whitelist of allowed service names (keeps skills validated)
+# Whitelist of allowed service names (keeps skills validated across all Urban Company verticals)
 VALID_SKILLS = {
-    "AC Technician", "Caregiver", "Carpenter", "Cleaning",
-    "Domestic Helper", "Driver", "Electrician", "Gardener",
-    "Painter", "Plumber",
+    "AC Technician", "Bathroom & Kitchen Cleaning", "Caregiver", "Carpenter",
+    "Cleaning", "Domestic Helper", "Driver", "Electrician", "Gardener",
+    "Microwave & Chimney Repair", "Painter", "Pest Control", "Plumber",
+    "Refrigerator Repair", "Salon for Men & Kids", "Salon for Women",
+    "Sofa & Carpet Cleaning", "Spa for Men", "Spa for Women",
+    "TV & Laptop Repair", "Washing Machine Repair", "Water Purifier (RO) Service",
 }
 
 ALLOWED_LANGUAGES = {"en", "hi", "mr", "ta", "te", "bn"}
@@ -220,6 +223,19 @@ class BookingCreate(BaseModel):
     def _clean_notes(cls, v: str) -> str:
         return sanitize_text(v)
 
+    @field_validator("scheduled_at")
+    @classmethod
+    def _valid_schedule(cls, v: Optional[dt.datetime]) -> Optional[dt.datetime]:
+        if v is None:
+            return v
+        now = dt.datetime.utcnow()
+        cmp_v = v.replace(tzinfo=None) if v.tzinfo else v
+        if cmp_v < now - dt.timedelta(days=1):
+            raise ValueError("Scheduled time cannot be in the past")
+        if cmp_v > now + dt.timedelta(days=365):
+            raise ValueError("Scheduled time cannot be more than 1 year ahead")
+        return v
+
 
 class AssignBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -242,13 +258,31 @@ class RazorpayOrderCreate(BaseModel):
     booking_id: int = Field(..., ge=1)
 
 
+_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9_\-]{5,100}$")
+
+
 class RazorpayVerify(BaseModel):
     model_config = ConfigDict(extra="forbid")
     booking_id: int = Field(..., ge=1)
     razorpay_order_id: str = Field(..., min_length=5, max_length=100)
     razorpay_payment_id: str = Field(..., min_length=5, max_length=100)
     razorpay_signature: str = Field(..., min_length=10, max_length=200)
-    method: str = Field(default="razorpay", max_length=50)
+    method: Literal["razorpay", "razorpay_upi", "razorpay_card", "upi", "card"] = "razorpay"
+
+    @field_validator("razorpay_order_id", "razorpay_payment_id")
+    @classmethod
+    def _safe_id(cls, v: str) -> str:
+        if not _SAFE_ID_RE.match(v):
+            raise ValueError("Invalid gateway reference identifier")
+        return v
+
+    @field_validator("razorpay_signature")
+    @classmethod
+    def _clean_sig(cls, v: str) -> str:
+        cleaned = v.strip()
+        if not re.match(r"^[A-Za-z0-9_\-=+/]{10,200}$", cleaned):
+            raise ValueError("Invalid signature format")
+        return cleaned
 
 
 class RatingCreate(BaseModel):

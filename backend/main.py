@@ -47,8 +47,15 @@ def _parse_origins(raw: str) -> list[str]:
     return origins
 
 
-_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173")
+_raw_origins = os.getenv(
+    "ALLOWED_ORIGINS",
+    "https://seva-coop-ecru.vercel.app,http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173",
+)
 ALLOWED_ORIGINS = _parse_origins(_raw_origins)
+ALLOWED_ORIGIN_REGEX = os.getenv(
+    "ALLOWED_ORIGIN_REGEX",
+    r"^https://seva-coop(-[a-z0-9-]+)?\.vercel\.app$",
+).strip() or None
 
 _raw_hosts = os.getenv("ALLOWED_HOSTS", "")
 ALLOWED_HOSTS = [h.strip() for h in _raw_hosts.split(",") if h.strip() and h.strip() != "*"]
@@ -125,11 +132,11 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             del response.headers["server"]
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
-            "script-src 'self' 'wasm-unsafe-eval' https://checkout.razorpay.com; "
+            "script-src 'self' https://checkout.razorpay.com; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "font-src 'self' https://fonts.gstatic.com; "
             "img-src 'self' data: blob: https://*.razorpay.com; "
-            "connect-src 'self' https://prod.spline.design https://*.vercel.app https://api.razorpay.com https://lumberjack.razorpay.com; "
+            "connect-src 'self' https://seva-coop-ecru.vercel.app https://api.razorpay.com https://lumberjack.razorpay.com; "
             "frame-src 'self' https://api.razorpay.com; "
             "frame-ancestors 'none'; "
             "form-action 'self'; "
@@ -147,7 +154,7 @@ if ALLOWED_HOSTS:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"^https://.*\.vercel\.app$",
+    allow_origin_regex=ALLOWED_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "Accept"],

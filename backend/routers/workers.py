@@ -64,7 +64,9 @@ def list_workers(
 
 
 @router.get("/me")
+@limiter.limit("60/minute")
 def my_profile(
+    request: Request,
     user: models.User = Depends(security.require_roles("worker")),
     db: Session = Depends(get_db),
 ):

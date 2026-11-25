@@ -259,7 +259,7 @@ export default function MyBookings() {
         booking_id: modal.booking.id,
         razorpay_order_id: mockSimulator.order_id,
         razorpay_payment_id: mockPayId,
-        razorpay_signature: "mock_signature_verified_" + mockPayId,
+        razorpay_signature: mockSimulator.mock_signature,
         method: `razorpay_${channel}`,
       });
       setMockSimulator(null);

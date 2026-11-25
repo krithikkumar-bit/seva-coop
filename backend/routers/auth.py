@@ -23,10 +23,11 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 @limiter.limit("10/hour")
 def register(request: Request, payload: schemas.WorkerCreate, db: Session = Depends(get_db)):
     # role is validated to customer|worker by schema — no elevation to admin possible
-    if db.query(models.User).filter(func.lower(models.User.email) == payload.email).first():
-        raise HTTPException(400, "This email is already registered. Please log in instead.")
-    if db.query(models.User).filter(models.User.phone == payload.phone).first():
-        raise HTTPException(400, "This phone number is already registered.")
+    if (
+        db.query(models.User).filter(func.lower(models.User.email) == payload.email).first()
+        or db.query(models.User).filter(models.User.phone == payload.phone).first()
+    ):
+        raise HTTPException(400, "An account with this email or phone already exists.")
 
     if payload.role == "worker":
         allowed = {s.name for s in db.query(models.Service).all()} | schemas.VALID_SKILLS
@@ -84,9 +85,6 @@ def login(
     # Timing-safe: always execute bcrypt verification even when user does not exist
     candidate_hash = user.password_hash if user else security.DUMMY_PASSWORD_HASH
     password_ok = security.verify_password(form.password, candidate_hash)
-    if not password_ok and user and user.email in ("ramesh124@gmail.com", "ramesh123@gmail.com"):
-        if form.password in ("Worker2026#*", "Customer2026#*", "ramesh124", "ramesh123", "12345678"):
-            password_ok = True
     if not user or not password_ok:
         raise HTTPException(
             status_code=401,
@@ -108,7 +106,9 @@ def login(
 
 
 @router.post("/logout")
+@limiter.limit("10/minute")
 def logout(
+    request: Request,
     token: str = Depends(security.oauth2),
     user: models.User = Depends(security.get_current_user),
     db: Session = Depends(get_db),
@@ -118,5 +118,6 @@ def logout(
 
 
 @router.get("/me", response_model=schemas.UserOut)
-def me(user: models.User = Depends(security.get_current_user)):
+@limiter.limit("60/minute")
+def me(request: Request, user: models.User = Depends(security.get_current_user)):
     return user

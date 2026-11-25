@@ -552,11 +552,12 @@ def seed_workers():
             ).first()
 
             if not existing_user:
+                seed_pw = os.getenv("DEMO_WORKER_PASSWORD", "").strip() or secrets.token_urlsafe(24)
                 user = models.User(
                     full_name=w["name"],
                     phone=w["phone"],
                     email=w["email"],
-                    password_hash=hash_password(os.getenv("DEMO_WORKER_PASSWORD", "Worker2026#*")),
+                    password_hash=hash_password(seed_pw),
                     role="worker",
                     language="en"
                 )

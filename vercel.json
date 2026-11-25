@@ -19,12 +19,32 @@
       "dest": "api/index.py"
     },
     {
-      "src": "/(.*\\.[a-zA-Z0-9]+)",
-      "dest": "frontend/$1"
+      "src": "/\\.(.*)",
+      "status": 404,
+      "dest": "/404"
+    },
+    {
+      "src": "/(.*\\.(?:js|css|svg|jpg|jpeg|png|webp|woff2|ico))",
+      "dest": "frontend/$1",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Referrer-Policy": "strict-origin-when-cross-origin"
+      }
     },
     {
       "src": "/(.*)",
-      "dest": "frontend/index.html"
+      "dest": "frontend/index.html",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "X-XSS-Protection": "1; mode=block",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "geolocation=(self), camera=(), microphone=(), payment=()",
+        "Cross-Origin-Opener-Policy": "same-origin",
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.razorpay.com; connect-src 'self' https://seva-coop-ecru.vercel.app https://api.razorpay.com https://lumberjack.razorpay.com; frame-src 'self' https://api.razorpay.com; frame-ancestors 'none'; form-action 'self'; object-src 'none'; base-uri 'self';"
+      }
     }
   ]
 }

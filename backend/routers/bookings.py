@@ -25,8 +25,8 @@ def booking_dict(db, b: models.Booking):
         "id": b.id,
         "code": b.code,
         "service_id": b.service_id,
-        "service_name": b.service.name,
-        "icon": b.service.icon,
+        "service_name": b.service.name if b.service else "Service",
+        "icon": b.service.icon if b.service else "🛠️",
         "customer_id": b.customer_id,
         "customer_name": cust.full_name if cust else None,
         "customer_phone": cust.phone if show_customer_phone else None,
@@ -119,7 +119,9 @@ def my_bookings(
 
 
 @router.get("/{booking_id}")
+@limiter.limit("60/minute")
 def get_one(
+    request: Request,
     booking_id: int = Path(..., ge=1),
     user: models.User = Depends(security.get_current_user),
     db: Session = Depends(get_db),
@@ -131,7 +133,9 @@ def get_one(
 
 
 @router.get("/{booking_id}/matches")
+@limiter.limit("60/minute")
 def matches(
+    request: Request,
     booking_id: int = Path(..., ge=1),
     user: models.User = Depends(security.get_current_user),
     db: Session = Depends(get_db),
@@ -139,12 +143,14 @@ def matches(
     b = get_booking(db, booking_id)
     if user.id != b.customer_id and user.role != "admin":
         raise HTTPException(403, "Not allowed")
-    ranked = rank_workers(db, b.service.name, b.lat, b.lng, limit=10)
+    ranked = rank_workers(db, b.service.name if b.service else "", b.lat, b.lng, limit=10)
     return [{"score": s, "distance_km": d, **worker_serialize(p, include_phone=False)} for p, s, d in ranked]
 
 
 @router.post("/{booking_id}/assign")
+@limiter.limit("30/minute")
 def assign(
+    request: Request,
     body: schemas.AssignBody,
     booking_id: int = Path(..., ge=1),
     user: models.User = Depends(security.get_current_user),
@@ -180,7 +186,9 @@ def _worker_action(db, user, booking_id, allowed_from, to_status=None):
 
 
 @router.post("/{booking_id}/accept")
+@limiter.limit("30/minute")
 def accept(
+    request: Request,
     booking_id: int = Path(..., ge=1),
     user: models.User = Depends(security.require_roles("worker")),
     db: Session = Depends(get_db),
@@ -191,7 +199,9 @@ def accept(
 
 
 @router.post("/{booking_id}/reject")
+@limiter.limit("30/minute")
 def reject(
+    request: Request,
     booking_id: int = Path(..., ge=1),
     user: models.User = Depends(security.require_roles("worker")),
     db: Session = Depends(get_db),
@@ -204,7 +214,9 @@ def reject(
 
 
 @router.post("/{booking_id}/start")
+@limiter.limit("30/minute")
 def start(
+    request: Request,
     booking_id: int = Path(..., ge=1),
     user: models.User = Depends(security.require_roles("worker")),
     db: Session = Depends(get_db),
@@ -215,7 +227,9 @@ def start(
 
 
 @router.post("/{booking_id}/complete")
+@limiter.limit("30/minute")
 def complete(
+    request: Request,
     booking_id: int = Path(..., ge=1),
     body: schemas.CompleteBody = None,
     user: models.User = Depends(security.require_roles("worker")),
@@ -237,7 +251,9 @@ def complete(
 
 
 @router.post("/{booking_id}/cancel")
+@limiter.limit("30/minute")
 def cancel(
+    request: Request,
     booking_id: int = Path(..., ge=1),
     user: models.User = Depends(security.get_current_user),
     db: Session = Depends(get_db),

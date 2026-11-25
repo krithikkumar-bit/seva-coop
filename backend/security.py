@@ -2,14 +2,17 @@ import os
 import uuid
 import datetime as dt
 import bcrypt
+from dotenv import load_dotenv
 import jwt
 from jwt.exceptions import InvalidTokenError
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from database import get_db
-import models
+load_dotenv()
+
+from database import get_db  # noqa: E402
+import models  # noqa: E402
 
 _PLACEHOLDER_MARKERS = ("change-this", "replace_me", "replace-me", "your-secret", "dev-secret")
 

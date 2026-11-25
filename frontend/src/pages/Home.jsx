@@ -1,36 +1,25 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
-  Award,
   BadgeCheck,
   CalendarCheck,
   CheckCircle2,
-  ChevronRight,
   ClipboardCheck,
   Compass,
   CreditCard,
-  Crosshair,
   Droplets,
-  Globe,
   Hammer,
   HardHat,
   HeartHandshake,
   IndianRupee,
   Info,
   Landmark,
-  Maximize2,
   Pocket,
-  RotateCcw,
   ShieldCheck,
-  Sliders,
   Snowflake,
   Sparkles,
   Star,
-  Thermometer,
-  TrendingUp,
-  UserCheck,
   Users,
   Wrench,
   Zap,
@@ -42,120 +31,107 @@ import { useSceneData } from "../scene/SceneStore";
 import PublicLayout from "../components/PublicLayout";
 import TrustedTeams from "../components/TrustedTeams";
 import CategoryIcon from "../components/CategoryIcon";
-import { BRAND, fmtINR } from "../lib/cn";
+import { fmtINR } from "../lib/cn";
 
-// Mathematical workforce allocation weights
 const WEIGHTS = [
-  ["Skill Match", "0.30", "Verified competence and society trade skills"],
-  ["Proximity", "0.25", "Real-time GPS proximity to destination household"],
-  ["Rating", "0.20", "Historical decentralized customer rating index"],
-  ["Availability", "0.15", "Active shift status & on-duty availability"],
-  ["Fairness", "0.10", "Equitable job rotation across society members"],
+  ["Skill Match", "30%", "Verified trade certification and experience"],
+  ["Proximity", "25%", "Closest available worker to reduce travel time"],
+  ["Rating", "20%", "Consistent feedback from local households"],
+  ["Availability", "15%", "Workers actively ready for immediate dispatch"],
+  ["Fair Rotation", "10%", "Balanced job distribution across members"],
 ];
 
-// Primary 5 Technical Spec Services (Cluster 1)
 const PRIMARY_SERVICES = [
   {
     num: "01",
     id: 1,
-    title: "ELECTRICAL & POWER SYSTEMS",
-    desc: "CERTIFIED TECHNICIANS FOR CIRCUIT OVERHAUL, WIRING SAFETY, AND POWER BACKUP INSTALLATION.",
+    title: "Electrician",
+    desc: "Wiring safety, circuit repairs, fan/light installation, and power backup setup.",
     icon: Zap,
-    tag: "ELC-01",
     basePrice: 350,
     workerCount: 4,
   },
   {
     num: "02",
     id: 2,
-    title: "PLUMBING & HYDRAULIC REPAIRS",
-    desc: "HIGH-PRESSURE LEAK DETECTION, PIPELINE REPLACEMENTS, AND WATER PURIFIER MAINTENANCE.",
+    title: "Plumber",
+    desc: "Leak detection, pipe fitting, tap repairs, and water purifier maintenance.",
     icon: Droplets,
-    tag: "PLB-02",
     basePrice: 350,
     workerCount: 4,
   },
   {
     num: "03",
     id: 3,
-    title: "CARPENTRY & TIMBER STRUCTURES",
-    desc: "STRUCTURAL JOINERY, CUSTOM FURNITURE ASSEMBLY, AND HARDWARE RETROFITTING.",
+    title: "Carpenter",
+    desc: "Door/lock repair, custom furniture assembly, and wooden fixtures.",
     icon: Hammer,
-    tag: "CPT-03",
     basePrice: 400,
     workerCount: 4,
   },
   {
     num: "04",
     id: 5,
-    title: "DEEP FACILITY SANITATION",
-    desc: "HOSPITAL-GRADE CHEMICAL PURIFICATION, APPLIANCE DEEP CLEANING, AND GERM PROTECTION.",
+    title: "Home Cleaning",
+    desc: "Deep kitchen & bathroom sanitization, appliance cleaning, and full-home care.",
     icon: Sparkles,
-    tag: "CLN-04",
     basePrice: 450,
     workerCount: 4,
   },
   {
     num: "05",
     id: 10,
-    title: "HVAC & THERMAL REGULATION",
-    desc: "COMPLETE AIR CONDITIONING SERVICE, FILTER EXTRACTION, AND HIGH-EFFICIENCY REFRIGERANT TUNING.",
+    title: "AC Technician",
+    desc: "AC servicing, filter cleaning, cooling checkups, and gas top-up.",
     icon: Snowflake,
-    tag: "HVC-05",
     basePrice: 600,
     workerCount: 4,
   },
 ];
 
-// Secondary 5 Technical Spec Services (Cluster 2)
 const SECONDARY_SERVICES = [
   {
     num: "06",
     id: 4,
-    title: "ARCHITECTURAL WALL COATINGS",
-    desc: "PRECISION INTERIOR / EXTERIOR PAINTING, WATERPROOFING PUTTY, AND TEXTURED FINISHES.",
+    title: "Painter",
+    desc: "Interior & exterior painting, waterproofing putty, and clean wall finishes.",
     icon: Wrench,
-    tag: "PNT-06",
     basePrice: 500,
     workerCount: 3,
   },
   {
     num: "07",
     id: 6,
-    title: "VERIFIED CHAUFFEUR DISPATCH",
-    desc: "HOURLY CITY AND HIGHWAY TRANSIT DRIVERS WITH AUDITED LICENSES AND DEFENSIVE VEHICLE TRAINING.",
+    title: "Driver",
+    desc: "Verified hourly city and outstation drivers with audited licenses.",
     icon: HardHat,
-    tag: "DRV-07",
     basePrice: 300,
     workerCount: 3,
   },
   {
     num: "08",
     id: 8,
-    title: "HEALTHCARE & GERIATRIC CARE",
-    desc: "COMPASSIONATE ELDERLY ASSISTANCE, VITAL HEALTH MONITORING, AND CERTIFIED BEDSIDE SUPPORT.",
+    title: "Caregiver",
+    desc: "Compassionate elderly care, health monitoring, and patient assistance.",
     icon: HeartHandshake,
-    tag: "CRG-08",
     basePrice: 550,
     workerCount: 3,
   },
   {
     num: "09",
     id: 9,
-    title: "DOMESTIC FACILITY ASSISTANCE",
-    desc: "TRUSTED DAILY HOUSEHOLD COOKING, PANTRY SANITIZATION, AND ESSENTIAL APARTMENT CARE.",
+    title: "Domestic Helper",
+    desc: "Trusted daily household help, kitchen assistance, and home upkeep.",
     icon: Pocket,
-    tag: "DOM-09",
     basePrice: 280,
     workerCount: 4,
   },
   {
     num: "10",
     id: 7,
-    title: "LANDSCAPE & HORTICULTURE",
-    desc: "TERRACE PLANTING, DRIP IRRIGATION BALANCING, LAWN RESTORATION, AND BIO-FERTILIZATION.",
+    title: "Gardener",
+    desc: "Terrace gardens, lawn care, seasonal pruning, and organic potting.",
     icon: Compass,
-    tag: "GRD-10",
     basePrice: 300,
     workerCount: 3,
   },
@@ -167,7 +143,7 @@ function CountUp({ value, decimals = 0, suffix = "" }) {
     let raf;
     const start = performance.now();
     const tick = (now) => {
-      const p = Math.min(1, (now - start) / 1100);
+      const p = Math.min(1, (now - start) / 1000);
       setV(value * (1 - Math.pow(1 - p, 3)));
       if (p < 1) raf = requestAnimationFrame(tick);
     };
@@ -189,24 +165,16 @@ export default function Home() {
   const [services, setServices] = useState(null);
   const [workers, setWorkers] = useState(null);
   const [activeCluster, setActiveCluster] = useState("primary");
-  const [activeHoverCard, setActiveHoverCard] = useState(null);
-
-  // Quick Dispatch Console State in Hero
   const [selectedServiceId, setSelectedServiceId] = useState("1");
-  const [pincode, setPincode] = useState("");
-
-  // Live 90% Fair-Wage Simulator State
   const [calcAmount, setCalcAmount] = useState(1000);
 
   const { setSceneData } = useSceneData();
 
   useEffect(() => {
-    api
-      .get("/services")
+    api.get("/services")
       .then((r) => setServices(Array.isArray(r.data) ? r.data : []))
       .catch(() => setServices([]));
-    api
-      .get("/workers")
+    api.get("/workers")
       .then((r) => setWorkers(Array.isArray(r.data) ? r.data : []))
       .catch(() => setWorkers([]));
   }, []);
@@ -228,429 +196,159 @@ export default function Home() {
   }
 
   const activeSpecs = activeCluster === "primary" ? PRIMARY_SERVICES : SECONDARY_SERVICES;
-  const loading = services === null || workers === null;
   const safeWorkers = Array.isArray(workers) ? workers : [];
   const safeServices = Array.isArray(services) ? services : [];
   const rated = safeWorkers.filter((w) => w && w.avg_rating > 0);
   const avgRating = rated.length ? rated.reduce((n, w) => n + w.avg_rating, 0) / rated.length : 4.9;
 
-  // Fair-wage math
   const artisanShare = Math.round(calcAmount * 0.9);
   const welfareShare = Math.round(calcAmount * 0.1);
-  const corporateCut = Math.round(calcAmount * 0.35); // typical 35% commission on commercial apps
+  const corporateCut = Math.round(calcAmount * 0.35);
 
   return (
     <PublicLayout>
-      {/* =========================================================================
-          SECTION 1: HERO VIEWPORT (FEATURING AMBIENT 3D NEXBOT ROBOT BACKGROUND)
-          ========================================================================= */}
-      <section
-        data-spline-passthrough=""
-        className="relative w-full overflow-hidden border-b border-white/10 min-h-[calc(100vh-4rem)] flex items-center pointer-events-none"
-      >
-        {/* Subtle Radial Vignette for CAD Viewport feel */}
-        <div
-          data-spline-passthrough=""
-          className="pointer-events-none absolute inset-0 radial-vignette opacity-70"
-        />
-
-        <div
-          data-spline-passthrough=""
-          className="relative mx-auto w-full max-w-7xl px-4 pt-6 pb-12 sm:px-6 lg:pt-8 lg:pb-16 pointer-events-none"
-        >
-          {/* Top HUD Row: Corner Badges & Top Kicker Button */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:items-center pb-8 border-b border-white/10 pointer-events-auto">
-            {/* Top-Left Badge: EST. 2024 / Built on Community */}
-            <div className="flex items-center gap-3 border border-white/15 bg-black/50 p-3 sm:w-fit backdrop-blur-md">
-              <Globe className="h-6 w-6 text-emerald-400 shrink-0" />
-              <div className="font-mono text-[10px] leading-tight text-slate-300 uppercase tracking-wider">
-                <span className="text-white font-bold">{tr("EST. 2024")}</span> · {tr("BUILT ON COMMUNITY.")}<br />
-                {tr("DRIVEN BY DEMOCRACY.")}<br />
-                {tr("FOCUSED ON ARTISANS.")}
-              </div>
-            </div>
-
-            {/* Top Center: Kicker Message & Sharp Monospace CTA */}
-            <div className="text-center flex flex-col items-center justify-center gap-2.5">
-              <p className="font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.16em] uppercase text-emerald-300">
-                {tr("FAIR-WAGE COOPERATIVE PROTOCOL · 90% DIRECT REMITTANCE")}
-              </p>
-              <div className="flex items-center gap-2">
-                <Link
-                  to="/services"
-                  className="btn-tech-outline group text-xs py-1.5 px-3"
-                >
-                  <span>{tr("BROWSE 10 SERVICES")}</span>
-                  <ArrowRight className="ml-1.5 h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                </Link>
-                <Link
-                  to="/login"
-                  className="border border-white/20 bg-stoneblack px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-slate-300 hover:text-white hover:border-white transition"
-                >
-                  {tr("PORTAL [ LOGIN ]")}
-                </Link>
-              </div>
-            </div>
-
-            {/* Top-Right Badge: Reticle / On-Demand Delivery */}
-            <div className="flex items-center justify-end">
-              <div className="flex items-center gap-3 border border-white/15 bg-black/50 p-3 w-full sm:w-fit backdrop-blur-md">
-                <Crosshair className="h-6 w-6 text-slate-400 shrink-0" />
-                <div className="font-mono text-[10px] leading-tight text-slate-300 uppercase tracking-wider text-left sm:text-right">
-                  <span className="text-white font-bold">{tr("CITYWIDE CO-OP GRID")}</span><br />
-                  {tr("32 VERIFIED ARTISANS")}<br />
-                  {tr("FAST SECURE DISPATCH")}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Main 2-Column Hero Content Grid */}
-          <div className="mt-8 grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
-            {/* -------------------------------------------------------------------
-                LEFT COLUMN: BOLD OVERSIZED TYPOGRAPHY + QUICK DISPATCH CONSOLE
-                ------------------------------------------------------------------- */}
-            <div className="lg:col-span-7 z-10 flex flex-col justify-center pointer-events-auto">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 font-mono text-[11px] tracking-[0.25em] text-emerald-400 uppercase">
-                  <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
-                  <span>{tr("[ CO-OP GIG PROTOCOL · SIH26089 ]")}</span>
-                </div>
-                {/* Bold Oversized Hero Display Typography */}
-                <h1 className="font-display text-6xl sm:text-7xl lg:text-8xl xl:text-9xl font-black uppercase tracking-tighter text-white leading-[0.88]">
-                  {tr("SEVA")}<br />
-                  <span className="text-slate-300">{tr("MATTERS.")}</span>
-                </h1>
+      {/* SECTION 1: HERO */}
+      <section className="relative w-full border-b border-slate-200 bg-gradient-to-b from-white via-emerald-50/30 to-slate-50/80 py-12 sm:py-16 lg:py-20">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
+            {/* Left Column: Clear Value Proposition + Instant Service Picker */}
+            <div className="lg:col-span-6 space-y-6">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1.5 text-xs font-semibold text-emerald-800">
+                <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                <span>{tr("Ministry of Cooperation Aligned · 90% Fair Payout")}</span>
               </div>
 
-              {/* Subtitle text */}
-              <p className="mt-5 font-mono text-xs sm:text-sm leading-relaxed text-slate-400 uppercase tracking-wide max-w-xl">
-                {tr("A COMMUNITY-OWNED SERVICE COOPERATIVE ENGINEERED FOR FAIR ARTISAN WAGES, TRANSPARENT ALGORITHMS, AND DIRECT HOUSEHOLD REMITTANCE BEYOND CORPORATE EXPLOITATION.")}
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
+                {tr("Trusted Home Services,")}{" "}
+                <span className="text-emerald-600">{tr("Owned by Workers.")}</span>
+              </h1>
+
+              <p className="text-base sm:text-lg leading-relaxed text-slate-600 max-w-xl">
+                {t("heroSub")}
               </p>
 
-              {/* NEW INTERACTIVE QUICK DISPATCH CONSOLE */}
-              <div className="mt-6 border border-white/20 bg-black/70 p-4 backdrop-blur-2xl max-w-xl">
-                <div className="flex items-center justify-between pb-2 border-b border-white/10 mb-3 font-mono text-[10px] text-emerald-400 uppercase tracking-wider">
-                  <span className="flex items-center gap-1.5">
-                    <Zap className="h-3 w-3" /> {tr("DIRECT DISPATCH CONSOLE")}
+              {/* Quick Booking Widget */}
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-card max-w-xl">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                    <Zap className="h-3.5 w-3.5 text-emerald-600" />
+                    {tr("Quick Service Booking")}
                   </span>
-                  <span className="text-slate-400">{tr("INSTANT AI ALLOCATION")}</span>
+                  <span className="text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                    {tr("Instant Matching")}
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                  <div className="sm:col-span-7">
-                    <select
-                      value={selectedServiceId}
-                      onChange={(e) => setSelectedServiceId(e.target.value)}
-                      className="w-full border border-white/15 bg-stoneblack px-3 py-2 font-mono text-xs text-white uppercase focus:border-emerald-400 focus:outline-none"
-                    >
-                      {(safeServices.length > 0 ? safeServices : PRIMARY_SERVICES).map((s) => (
-                        <option key={s.id} value={s.id} className="bg-[#0d0e12] text-white">
-                          {s.name ? tService(s.name) : tr(s.title)} ({tr("FROM")} ₹{s.base_price || s.basePrice})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="sm:col-span-5">
-                    <button
-                      type="button"
-                      onClick={() => navigate(`/book/${selectedServiceId}`)}
-                      className="btn-tech-outline w-full py-2 text-center justify-center font-bold text-xs"
-                    >
-                      <span>{tr("MATCH ARTISAN →")}</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick trade switch pills */}
-              <div className="mt-6 flex flex-wrap items-center gap-2 font-mono text-[10px] text-slate-400">
-                <span className="text-slate-400">{tr("ACTIVE TRADES:")}</span>
-                <button
-                  type="button"
-                  onClick={() => setActiveCluster("primary")}
-                  className={`border px-2.5 py-1 uppercase transition ${
-                    activeCluster === "primary"
-                      ? "border-emerald-400 bg-emerald-950/60 text-emerald-300 font-bold shadow-[0_0_12px_rgba(16,185,129,0.2)]"
-                      : "border-white/20 text-slate-400 hover:text-white"
-                  }`}
-                >
-                  {tr("CORE TRADES 01-05")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveCluster("secondary")}
-                  className={`border px-2.5 py-1 uppercase transition ${
-                    activeCluster === "secondary"
-                      ? "border-emerald-400 bg-emerald-950/60 text-emerald-300 font-bold shadow-[0_0_12px_rgba(16,185,129,0.2)]"
-                      : "border-white/20 text-slate-400 hover:text-white"
-                  }`}
-                >
-                  {tr("CARE & MOBILITY 06-10")}
-                </button>
-              </div>
-            </div>
-
-            {/* -------------------------------------------------------------------
-                RIGHT COLUMN: NUMBERED TECHNICAL SERVICE CARDS (01 TO 05)
-                ------------------------------------------------------------------- */}
-            <div className="lg:col-span-5 flex flex-col gap-3 z-10 pointer-events-auto">
-              {activeSpecs.map((spec) => {
-                const Icon = spec.icon;
-                const isHovered = activeHoverCard === spec.num;
-                return (
-                  <Link
-                    key={spec.num}
-                    to={`/book/${spec.id}`}
-                    onMouseEnter={() => setActiveHoverCard(spec.num)}
-                    onMouseLeave={() => setActiveHoverCard(null)}
-                    className={`spec-card group relative block border p-4 transition-all duration-200 ${
-                      isHovered
-                        ? "border-white bg-stoneblack-surface shadow-[0_0_20px_rgba(255,255,255,0.12)]"
-                        : "border-white/12 bg-black/50 hover:border-white/40"
-                    }`}
+                <div className="flex flex-col sm:flex-row gap-2.5">
+                  <select
+                    value={selectedServiceId}
+                    onChange={(e) => setSelectedServiceId(e.target.value)}
+                    aria-label="Choose a service"
+                    className="flex-1 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-800 focus:border-emerald-600 focus:outline-none"
                   >
-                    <div className="flex items-start gap-4">
-                      {/* Left: Number + Line Icon Box */}
-                      <div className="flex flex-col items-center gap-1.5 shrink-0">
-                        <span className="font-mono text-xs font-bold text-slate-400 group-hover:text-emerald-400 transition-colors">
-                          {spec.num}
-                        </span>
-                        <div className="flex h-9 w-9 items-center justify-center border border-white/15 bg-stoneblack/80 text-white group-hover:border-white transition-colors">
-                          <Icon className="h-4 w-4 text-slate-300 group-hover:text-white" />
-                        </div>
-                      </div>
-
-                      {/* Right: Technical Title + 2-line Description */}
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between gap-2">
-                          <h4 className="font-display text-xs font-black tracking-wider text-white uppercase group-hover:text-emerald-300 transition-colors">
-                            {tr(spec.title)}
-                          </h4>
-                          <span className="font-mono text-[9px] text-slate-400 uppercase tracking-widest group-hover:text-white">
-                            {tr("FROM")} ₹{spec.basePrice}
-                          </span>
-                        </div>
-                        <p className="mt-1 font-mono text-[10px] leading-tight text-slate-400 uppercase tracking-wide">
-                          {tr(spec.desc)}
-                        </p>
-                        <div className="mt-2 flex items-center justify-between font-mono text-[9px]">
-                          <span className="text-emerald-400 font-bold">
-                            ● {spec.workerCount} {tr("VERIFIED ACTIVE")}
-                          </span>
-                          <span className="text-slate-400 group-hover:text-white transition">
-                            {tr("BOOK NOW →")}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 2: "TRUSTED BY FORWARD-THINKING TEAMS" (BRAND LOGOS SECTION)
-          ========================================================================= */}
-      <TrustedTeams />
-
-      {/* =========================================================================
-          SECTION 3: THE COOPERATIVE PROTOCOL & ECONOMIC ARCHITECTURE
-          ========================================================================= */}
-      <section
-        id="about"
-        className="relative z-10 scroll-mt-20 border-b border-white/10 bg-black/85 py-16 sm:py-24 pointer-events-auto"
-      >
-        <div id="cooperative" className="scroll-mt-20">
-          <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
-            {/* Header Badge & Title */}
-            <div className="mb-12 text-center max-w-3xl mx-auto">
-              <span className="font-mono text-[10px] tracking-[0.25em] text-emerald-400 uppercase border border-emerald-500/30 px-3 py-1 bg-emerald-950/40 backdrop-blur-md">
-                {tr("SEVA PROTOCOL · DEMOCRATIC COOPERATIVE ARCHITECTURE")}
-              </span>
-              <h2 className="mt-4 font-display text-3xl sm:text-5xl font-black uppercase tracking-tight text-white">
-                {tr("THE COOPERATIVE MODEL")}
-              </h2>
-              <p className="mt-3 font-mono text-xs sm:text-sm text-slate-300 uppercase tracking-wide leading-relaxed">
-                {tr("Sahakar Se Samriddhi — Engineered for dignified artisan livelihood, democratic governance, and transparent algorithms beyond corporate middlemen exploitation.")}
-              </p>
-            </div>
-
-            {/* 4 Core Cooperative Governance Pillars */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-              <div className="border border-white/12 bg-stoneblack/90 p-5 backdrop-blur-md flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex h-10 w-10 items-center justify-center border border-emerald-500/40 bg-emerald-950/40 text-emerald-400">
-                      <ShieldCheck className="h-5 w-5" />
-                    </div>
-                    <span className="font-mono text-xs font-bold text-emerald-400">90%</span>
-                  </div>
-                  <h3 className="font-display text-sm font-bold uppercase text-white tracking-wide">
-                    {tr("DIRECT REMITTANCE")}
-                  </h3>
-                  <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-400 uppercase">
-                    {tr("Direct digital payment straight into verified worker bank account. Zero delays.")}
-                  </p>
+                    {(safeServices.length > 0 ? safeServices : PRIMARY_SERVICES).map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name ? tService(s.name) : tr(s.title)} — From ₹{s.base_price || s.basePrice}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/book/${selectedServiceId}`)}
+                    className="btn-primary-coop py-2.5 px-5 justify-center whitespace-nowrap"
+                  >
+                    <span>{tr("Book Now")}</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
                 </div>
-                <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-1.5 font-mono text-[10px] text-emerald-400">
-                  <CheckCircle2 className="h-3 w-3" />
-                  <span>{tr("ZERO COMMISSION DEDUCTIONS")}</span>
-                </div>
-              </div>
 
-              <div className="border border-white/12 bg-stoneblack/90 p-5 backdrop-blur-md flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex h-10 w-10 items-center justify-center border border-cyan-500/40 bg-cyan-950/40 text-cyan-400">
-                      <HeartHandshake className="h-5 w-5" />
-                    </div>
-                    <span className="font-mono text-xs font-bold text-cyan-400">10%</span>
-                  </div>
-                  <h3 className="font-display text-sm font-bold uppercase text-white tracking-wide">
-                    {tr("MUTUAL WELFARE FUND")}
-                  </h3>
-                  <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-400 uppercase">
-                    {tr("Democratically pooled for accident insurance, medical claims, and child education.")}
-                  </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-1.5 font-mono text-[10px] text-cyan-400">
-                  <CheckCircle2 className="h-3 w-3" />
-                  <span>{tr("LABOUR WELFARE COMPLIANT")}</span>
-                </div>
-              </div>
-
-              <div className="border border-white/12 bg-stoneblack/90 p-5 backdrop-blur-md flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex h-10 w-10 items-center justify-center border border-white/20 bg-white/5 text-white">
-                      <Users className="h-5 w-5" />
-                    </div>
-                    <span className="font-mono text-xs font-bold text-slate-300">1M=1V</span>
-                  </div>
-                  <h3 className="font-display text-sm font-bold uppercase text-white tracking-wide">
-                    {tr("DEMOCRATIC GOVERNANCE")}
-                  </h3>
-                  <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-400 uppercase">
-                    {tr("Artisans hold equal voting shares in society councils, shaping algorithm parameters, shift rules, and welfare allocations.")}
-                  </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-1.5 font-mono text-[10px] text-slate-300">
-                  <CheckCircle2 className="h-3 w-3" />
-                  <span>{tr("ONE MEMBER, ONE VOTE")}</span>
-                </div>
-              </div>
-
-              <div className="border border-white/12 bg-stoneblack/90 p-5 backdrop-blur-md flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex h-10 w-10 items-center justify-center border border-amber-500/40 bg-amber-950/40 text-amber-400">
-                      <Landmark className="h-5 w-5" />
-                    </div>
-                    <span className="font-mono text-xs font-bold text-amber-400">FED-IN</span>
-                  </div>
-                  <h3 className="font-display text-sm font-bold uppercase text-white tracking-wide">
-                    {tr("FEDERATION AUDITED")}
-                  </h3>
-                  <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-400 uppercase">
-                    {tr("Registered under Multi-State Cooperative Societies Act with periodic financial transparency audits and verified credentials.")}
-                  </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-1.5 font-mono text-[10px] text-amber-400">
-                  <CheckCircle2 className="h-3 w-3" />
-                  <span>{tr("STATUTORY CO-OP COMPLIANCE")}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Live 90% Fair-Wage vs Corporate Middlemen Simulator */}
-            <div className="border border-white/15 bg-stoneblack/90 p-6 sm:p-8 backdrop-blur-2xl max-w-4xl mx-auto shadow-2xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10 font-mono">
-                <div>
-                  <label className="text-xs font-bold text-slate-300 uppercase block">
-                    {tr("Simulate Service Amount (₹):")}
-                  </label>
-                  <span className="text-[10px] text-slate-500 uppercase">
-                    {tr("Select common booking value")}
+                <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-500">
+                  <span className="flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> {tr("Upfront transparent pricing")}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> {tr("Razorpay & Cash supported")}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  {[500, 1000, 2000, 5000].map((amt) => (
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <Link to="/services" className="btn-secondary-coop">
+                  {tr("Explore All 10 Services")}
+                </Link>
+                <Link
+                  to="/register"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800 transition"
+                >
+                  {tr("Join as a Cooperative Worker")} <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Column: Interactive Service Highlights */}
+            <div className="lg:col-span-6">
+              <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-glass">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
+                  <div>
+                    <h2 className="text-sm font-bold text-slate-900">{tr("Popular Services Near You")}</h2>
+                    <p className="text-xs text-slate-500">{tr("Click any service to schedule a visit")}</p>
+                  </div>
+                  <div className="inline-flex rounded-xl bg-slate-100 p-1">
                     <button
-                      key={amt}
                       type="button"
-                      onClick={() => setCalcAmount(amt)}
-                      className={`border px-3 py-1.5 text-xs font-bold uppercase transition ${
-                        calcAmount === amt
-                          ? "border-emerald-400 bg-emerald-950/60 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.3)]"
-                          : "border-white/15 text-slate-400 hover:border-white/40"
+                      onClick={() => setActiveCluster("primary")}
+                      className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+                        activeCluster === "primary"
+                          ? "bg-white text-emerald-700 shadow-xs"
+                          : "text-slate-600 hover:text-slate-900"
                       }`}
                     >
-                      ₹{amt}
+                      {tr("Home Repairs")}
                     </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 font-mono">
-                <div className="border border-emerald-500/40 bg-emerald-950/20 p-5 text-left">
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
-                    {tr("ARTISAN TAKE-HOME (90%)")}
-                  </span>
-                  <p className="font-display text-3xl font-black text-white mt-2">
-                    ₹{artisanShare}
-                  </p>
-                  <p className="text-[10px] text-emerald-300 mt-2 uppercase leading-tight">
-                    {tr("Direct digital payment straight into verified worker bank account. Zero delays.")}
-                  </p>
+                    <button
+                      type="button"
+                      onClick={() => setActiveCluster("secondary")}
+                      className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+                        activeCluster === "secondary"
+                          ? "bg-white text-emerald-700 shadow-xs"
+                          : "text-slate-600 hover:text-slate-900"
+                      }`}
+                    >
+                      {tr("Care & Daily Help")}
+                    </button>
+                  </div>
                 </div>
 
-                <div className="border border-cyan-500/40 bg-cyan-950/20 p-5 text-left">
-                  <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider block">
-                    {tr("WELFARE & HEALTH FUND (10%)")}
-                  </span>
-                  <p className="font-display text-3xl font-black text-white mt-2">
-                    ₹{welfareShare}
-                  </p>
-                  <p className="text-[10px] text-cyan-300 mt-2 uppercase leading-tight">
-                    {tr("Democratically pooled for accident insurance, medical claims, and child education.")}
-                  </p>
-                </div>
-
-                <div className="border border-rose-500/30 bg-rose-950/10 p-5 text-left">
-                  <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block">
-                    {tr("COMMERCIAL MIDDLEMEN CUT")}
-                  </span>
-                  <p className="font-display text-3xl font-black text-rose-400 mt-2">
-                    ₹0
-                  </p>
-                  <p className="text-[10px] text-slate-400 mt-2 uppercase leading-tight">
-                    35% (~₹{corporateCut}) → ₹0
-                  </p>
-                </div>
-              </div>
-
-              {/* Call-to-action CTAs */}
-              <div className="mt-6 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
-                <p className="text-slate-400 uppercase text-[11px]">
-                  {tr("JOIN 32 VERIFIED ARTISANS GOVERNED BY WORKER COOPERATIVES")}
-                </p>
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  <Link
-                    to="/register"
-                    className="btn-tech-outline py-2 px-4 text-xs font-bold uppercase w-full sm:w-auto text-center"
-                  >
-                    {tr("JOIN AS ARTISAN →")}
-                  </Link>
-                  <Link
-                    to="/services"
-                    className="border border-white/20 bg-stoneblack py-2 px-4 text-xs font-bold uppercase text-slate-300 hover:text-white hover:border-white transition w-full sm:w-auto text-center"
-                  >
-                    {tr("EXPLORE SERVICES")}
-                  </Link>
+                <div className="space-y-2.5">
+                  {activeSpecs.map((spec) => {
+                    const Icon = spec.icon;
+                    return (
+                      <Link
+                        key={spec.num}
+                        to={`/book/${spec.id}`}
+                        className="spec-card group flex items-center gap-4 p-3.5"
+                      >
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <h3 className="text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                              {tr(spec.title)}
+                            </h3>
+                            <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full shrink-0">
+                              From ₹{spec.basePrice}
+                            </span>
+                          </div>
+                          <p className="mt-0.5 text-xs text-slate-500 line-clamp-1">
+                            {tr(spec.desc)}
+                          </p>
+                        </div>
+                        <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition shrink-0" />
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -658,53 +356,214 @@ export default function Home() {
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION 4: ALGORITHMIC WORKFORCE TRANSPARENCY
-          ========================================================================= */}
-      <section id="impact" className="relative z-10 scroll-mt-20 border-b border-white/10 bg-stoneblack py-16 sm:py-20 pointer-events-auto">
+      {/* SECTION 2: COMMUNITY TRUST PARTNERS */}
+      <TrustedTeams />
+
+      {/* SECTION 3: COOPERATIVE MODEL & LIVE FAIR-WAGE CALCULATOR */}
+      <section id="about" className="relative z-10 scroll-mt-20 border-b border-slate-200 bg-slate-50 py-16 sm:py-20">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
-          <div className="mb-10 text-center max-w-3xl mx-auto">
-            <span className="font-mono text-[10px] tracking-[0.25em] text-emerald-400 uppercase border border-emerald-500/30 px-3 py-1 bg-emerald-950/30">
-              {tr("DECENTRALIZED WORK ALLOCATION")}
+          <div className="mb-12 text-center max-w-2xl mx-auto">
+            <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
+              {tr("Sahakar Se Samriddhi · Fair Gig Economy")}
             </span>
-            <h2 className="mt-4 font-display text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">
-              {tr("Transparent Matching Engine")}
+            <h2 className="mt-3 font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+              {tr("Why Choose a Worker Cooperative?")}
             </h2>
-            <p className="mt-3 font-mono text-xs text-slate-400 uppercase tracking-wide">
-              {tr("Unlike predatory gig platforms that hide dispatch rules, every booking in SevaCoop is matched using our published mathematical formula.")}
+            <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+              {tr("Commercial apps take up to 35% in hidden commissions. SevaCoop keeps money with the skilled workers who serve your home.")}
             </p>
           </div>
 
-          <div className="glass-panel p-6 sm:p-8 border border-white/15">
-            <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
-              <div className="flex items-center gap-2">
-                <Info className="h-4 w-4 text-emerald-400" />
-                <span className="font-mono text-xs font-bold uppercase tracking-widest text-white">
-                  {tr("Audited Formula Specification")}
-                </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+            {[
+              {
+                icon: ShieldCheck,
+                stat: "90%",
+                color: "bg-emerald-50 text-emerald-600",
+                title: "Direct Worker Payout",
+                desc: "90% of every service payment goes directly to the artisan's verified account with zero hidden cuts.",
+                footer: "Zero middleman commissions",
+              },
+              {
+                icon: HeartHandshake,
+                stat: "10%",
+                color: "bg-sky-50 text-sky-600",
+                title: "Worker Welfare Fund",
+                desc: "10% supports accident insurance, medical coverage, tools, and education benefits for worker families.",
+                footer: "Social safety net included",
+              },
+              {
+                icon: Users,
+                stat: "1 Member = 1 Vote",
+                color: "bg-indigo-50 text-indigo-600",
+                title: "Democratic Ownership",
+                desc: "Artisans vote on fair rates, work schedules, and welfare policies through their local cooperative society.",
+                footer: "Worker-governed rules",
+              },
+              {
+                icon: Landmark,
+                stat: "Verified",
+                color: "bg-amber-50 text-amber-600",
+                title: "Audited & Compliant",
+                desc: "Background-checked workers with government ID verification and transparent multi-state society audits.",
+                footer: "Safe & trusted households",
+              },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${item.color}`}>
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">
+                        {item.stat}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-bold text-slate-900">{tr(item.title)}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-600">{tr(item.desc)}</p>
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-xs font-medium text-emerald-700">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span>{tr(item.footer)}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Interactive Fair-Wage Simulator */}
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 max-w-4xl mx-auto shadow-card">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">{tr("See Where Your Payment Goes")}</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {tr("Select or slide a service amount to compare SevaCoop vs commercial apps")}
+                </p>
               </div>
-              <span className="font-mono text-[10px] text-slate-400">VERSION 2.4-COOP</span>
+              <div className="flex flex-wrap items-center gap-2">
+                {[500, 1000, 2000, 5000].map((amt) => (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => setCalcAmount(amt)}
+                    className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${
+                      calcAmount === amt
+                        ? "bg-emerald-600 text-white shadow-xs"
+                        : "border border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"
+                    }`}
+                  >
+                    ₹{amt}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="border border-white/10 bg-black/70 p-4 text-center">
-              <code className="block whitespace-nowrap font-mono text-xs sm:text-sm text-emerald-300 font-bold tracking-wider">
-                {t("matchScore")} = 0.30×{tr("Skill Match")} + 0.25×{tr("Proximity")} + 0.20×{tr("Rating")} + 0.15×{tr("Availability")} + 0.10×{tr("Fairness")}
+            <div className="mt-4">
+              <input
+                type="range"
+                min={300}
+                max={10000}
+                step={50}
+                value={calcAmount}
+                onChange={(e) => setCalcAmount(Number(e.target.value))}
+                aria-label="Service amount slider"
+                className="w-full h-2 accent-emerald-600 cursor-pointer border-0 bg-transparent p-0 focus:ring-0"
+              />
+              <div className="flex justify-between text-[11px] font-medium text-slate-400 mt-1">
+                <span>₹300</span>
+                <span className="text-slate-700 font-bold">Booking Amount: ₹{calcAmount}</span>
+                <span>₹10,000</span>
+              </div>
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5">
+                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wide">
+                  {tr("Worker Take-Home (90%)")}
+                </span>
+                <p className="font-display text-3xl font-extrabold text-slate-900 mt-1.5">
+                  ₹{artisanShare}
+                </p>
+                <p className="text-xs text-emerald-800 mt-2">
+                  {tr("Paid directly to the verified artisan who completed your job.")}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-sky-200 bg-sky-50/70 p-5">
+                <span className="text-xs font-bold text-sky-700 uppercase tracking-wide">
+                  {tr("Welfare & Insurance (10%)")}
+                </span>
+                <p className="font-display text-3xl font-extrabold text-slate-900 mt-1.5">
+                  ₹{welfareShare}
+                </p>
+                <p className="text-xs text-sky-800 mt-2">
+                  {tr("Covers health insurance, safety gear, and family welfare.")}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-rose-200 bg-rose-50/60 p-5">
+                <span className="text-xs font-bold text-rose-700 uppercase tracking-wide">
+                  {tr("Corporate Commission")}
+                </span>
+                <p className="font-display text-3xl font-extrabold text-rose-600 mt-1.5">
+                  ₹0
+                </p>
+                <p className="text-xs text-slate-600 mt-2">
+                  Commercial apps deduct ~35% (₹{corporateCut}) from workers.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 4: TRANSPARENT MATCHING ENGINE */}
+      <section id="impact" className="relative z-10 scroll-mt-20 border-b border-slate-200 bg-white py-16 sm:py-20">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+          <div className="mb-10 text-center max-w-2xl mx-auto">
+            <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+              {tr("Fair & Explainable AI")}
+            </span>
+            <h2 className="mt-3 font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+              {tr("Transparent Worker Matching")}
+            </h2>
+            <p className="mt-3 text-sm sm:text-base text-slate-600">
+              {tr("No secret black-box algorithms. Every job is matched openly using five clear factors so every member gets a fair chance.")}
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-6 sm:p-8">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
+                <Info className="h-4 w-4 text-emerald-600" />
+                <span>{tr("Published Matching Formula")}</span>
+              </div>
+              <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
+                100% Auditable
+              </span>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-xs overflow-x-auto">
+              <code className="whitespace-nowrap font-mono text-xs sm:text-sm text-emerald-700 font-semibold">
+                {t("matchScore")} = 0.30 × {tr("Skill")} + 0.25 × {tr("Proximity")} + 0.20 × {tr("Rating")} + 0.15 × {tr("Availability")} + 0.10 × {tr("Fairness")}
               </code>
             </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-5">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
               {WEIGHTS.map(([label, w, desc]) => (
                 <div
                   key={label}
-                  className="border border-white/10 bg-white/[0.02] p-3.5 text-left"
+                  className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-bold text-white uppercase">{tr(label)}</span>
-                    <span className="font-mono text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-1.5 py-0.5">
+                    <span className="text-sm font-bold text-slate-900">{tr(label)}</span>
+                    <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-xs font-bold text-emerald-700">
                       {w}
                     </span>
                   </div>
-                  <p className="mt-1.5 font-mono text-[10px] leading-tight text-slate-400 uppercase">{tr(desc)}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-slate-500">{tr(desc)}</p>
                 </div>
               ))}
             </div>
@@ -712,25 +571,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION 5: COOPERATIVE SERVICE CATALOGUE
-          ========================================================================= */}
-      <section id="catalogue" className="relative z-10 scroll-mt-20 border-b border-white/10 bg-grid-stoneblack py-16 sm:py-20 pointer-events-auto">
+      {/* SECTION 5: ALL 10 SERVICES DIRECTORY */}
+      <section id="catalogue" className="relative z-10 scroll-mt-20 border-b border-slate-200 bg-slate-50 py-16 sm:py-20">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <span className="font-mono text-[10px] tracking-[0.25em] text-emerald-400 uppercase">
-                {tr("CO-OP DISPATCH CATALOGUE")}
+              <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">
+                {tr("Service Directory")}
               </span>
-              <h2 className="mt-2 font-display text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">
-                {tr("Available Cooperative Services")}
+              <h2 className="mt-1 font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+                {tr("Everything Your Home Needs")}
               </h2>
             </div>
-            <Link
-              to="/services"
-              className="btn-tech-outline self-start sm:self-auto"
-            >
-              {tr("FULL DIRECTORY")} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+            <Link to="/services" className="btn-secondary-coop self-start sm:self-auto">
+              {tr("Browse Full Directory")} <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
@@ -739,27 +593,31 @@ export default function Home() {
               <Link
                 key={c.id || i}
                 to={`/book/${c.id}`}
-                className="group border border-white/10 bg-black/40 p-5 transition-all duration-200 hover:border-white hover:bg-stoneblack-surface hover:shadow-[0_0_20px_rgba(255,255,255,0.08)]"
+                className="spec-card group flex flex-col justify-between p-5"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-10 w-10 items-center justify-center border border-white/15 bg-stoneblack text-white group-hover:border-white">
-                    <CategoryIcon name={c.name || c.title} className="h-5 w-5" />
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                      <CategoryIcon name={c.name || c.title} className="h-5 w-5" />
+                    </div>
+                    <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
+                      {tr("Verified")}
+                    </span>
                   </div>
-                  <span className="font-mono text-[10px] text-emerald-400 border border-emerald-500/30 px-2 py-0.5">
-                    {tr("VERIFIED")}
-                  </span>
+
+                  <h3 className="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                    {c.name ? tService(c.name) : tr(c.title)}
+                  </h3>
+                  <p className="mt-1.5 text-xs leading-relaxed text-slate-500 line-clamp-2">
+                    {c.name ? tServiceDesc(c.name, c.description) : tr(c.desc)}
+                  </p>
                 </div>
 
-                <h3 className="font-display text-sm font-bold uppercase text-white group-hover:text-emerald-300 transition-colors">
-                  {c.name ? tService(c.name) : tr(c.title)}
-                </h3>
-                <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-400 line-clamp-2 uppercase">
-                  {c.name ? tServiceDesc(c.name, c.description) : tr(c.desc)}
-                </p>
-
-                <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between font-mono text-xs">
-                  <span className="text-white font-bold">{tr("FROM")} {fmtINR(c.base_price || c.basePrice)}</span>
-                  <span className="text-slate-400 group-hover:text-white transition-colors">{tr("BOOK →")}</span>
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-900">From {fmtINR(c.base_price || c.basePrice)}</span>
+                  <span className="font-semibold text-emerald-600 group-hover:translate-x-0.5 transition-transform">
+                    {tr("Book →")}
+                  </span>
                 </div>
               </Link>
             ))}
@@ -767,62 +625,62 @@ export default function Home() {
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION 6: 4-STEP TECHNICAL PROTOCOL (HOW IT WORKS)
-          ========================================================================= */}
-      <section id="how" className="relative z-10 scroll-mt-20 border-b border-white/10 bg-stoneblack py-16 sm:py-20 pointer-events-auto">
+      {/* SECTION 6: HOW IT WORKS (4 SIMPLE STEPS) */}
+      <section id="how" className="relative z-10 scroll-mt-20 border-b border-slate-200 bg-white py-16 sm:py-20">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
-          <div className="mb-10 text-center max-w-3xl mx-auto">
-            <span className="font-mono text-[10px] tracking-[0.25em] text-emerald-400 uppercase border border-emerald-500/30 px-3 py-1 bg-emerald-950/30">
-              {tr("OPERATIONAL PROTOCOL")}
+          <div className="mb-10 text-center max-w-2xl mx-auto">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">
+              {tr("Simple 4-Step Process")}
             </span>
-            <h2 className="mt-4 font-display text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">
-              {tr("How Dispatch Functions")}
+            <h2 className="mt-2 font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+              {tr("How SevaCoop Works")}
             </h2>
-            <p className="mt-3 font-mono text-xs text-slate-400 uppercase tracking-wide">
-              {tr("From doorstep requirement to artisan arrival — an automated, transparent, cooperative workflow.")}
+            <p className="mt-2 text-sm sm:text-base text-slate-600">
+              {tr("From booking to secure digital payment in just a few taps.")}
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {[
               {
                 icon: ClipboardCheck,
-                step: "01",
-                title: tr("FEDERATION ONBOARDING"),
-                desc: tr("Equitable job rotation across society members"),
+                step: "1",
+                title: tr("Pick a Service"),
+                desc: tr("Choose from 10 verified household categories with upfront base pricing."),
               },
               {
                 icon: CalendarCheck,
-                step: "02",
-                title: tr("DISPATCH REQUISITION"),
-                desc: tr("Select common booking value"),
+                step: "2",
+                title: tr("Choose Date & Address"),
+                desc: tr("Pick your convenient time slot or request priority emergency support."),
               },
               {
                 icon: Zap,
-                step: "03",
-                title: tr("AI WORKFORCE ALLOCATION"),
-                desc: tr("Verified competence and society trade skills"),
+                step: "3",
+                title: tr("Smart Co-op Match"),
+                desc: tr("Get matched automatically with the best nearby verified worker, or choose your own."),
               },
               {
                 icon: CreditCard,
-                step: "04",
-                title: tr("DIRECT SETTLEMENT"),
-                desc: tr("Direct digital payment straight into verified worker bank account. Zero delays."),
+                step: "4",
+                title: tr("Pay & Rate"),
+                desc: tr("Pay securely via Razorpay UPI/Cards or cash, and receive an instant 90/10 fair-pay receipt."),
               },
             ].map((s) => {
               const Icon = s.icon;
               return (
-                <div key={s.step} className="border border-white/10 bg-black/40 p-6 flex flex-col justify-between">
+                <div key={s.step} className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center justify-between mb-5">
-                      <div className="flex h-9 w-9 items-center justify-center border border-white/15 bg-stoneblack text-white">
-                        <Icon className="h-4 w-4 text-emerald-400" />
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs">
+                        <Icon className="h-5 w-5" />
                       </div>
-                      <span className="font-mono text-xs font-bold text-slate-400">#{s.step}</span>
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-700">
+                        {s.step}
+                      </span>
                     </div>
-                    <h3 className="font-display text-xs font-bold tracking-wider text-white uppercase">{s.title}</h3>
-                    <p className="mt-2 font-mono text-[11px] leading-relaxed text-slate-400 uppercase">{s.desc}</p>
+                    <h3 className="text-base font-bold text-slate-900">{s.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-600">{s.desc}</p>
                   </div>
                 </div>
               );
@@ -831,26 +689,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION 7: METRICS TICKER
-          ========================================================================= */}
-      <section className="relative z-10 border-b border-white/10 bg-black/60 py-10 pointer-events-auto">
-        <div className="mx-auto grid w-full max-w-7xl grid-cols-2 gap-4 px-4 sm:px-6 lg:grid-cols-4">
+      {/* SECTION 7: LIVE METRICS */}
+      <section className="relative z-10 bg-emerald-900 text-white py-12">
+        <div className="mx-auto grid w-full max-w-7xl grid-cols-2 gap-6 px-4 sm:px-6 lg:grid-cols-4">
           {[
-            { icon: ShieldCheck, value: safeWorkers.length || 32, label: tr("VERIFIED CO-OP ARTISANS") },
-            { icon: CalendarCheck, value: safeServices.length || 10, label: tr("LIVE SERVICE TRADES") },
-            { icon: Landmark, value: 90, suffix: "%", label: tr("DIRECT REMITTANCE TO ARTISAN") },
-            { icon: Star, value: avgRating, decimals: 1, suffix: "★", label: tr("CUSTOMER SATISFACTION INDEX") },
+            { icon: BadgeCheck, value: safeWorkers.length || 32, label: tr("Verified Cooperative Workers") },
+            { icon: CalendarCheck, value: safeServices.length || 10, label: tr("Household Service Trades") },
+            { icon: IndianRupee, value: 90, suffix: "%", label: tr("Direct Worker Payout") },
+            { icon: Star, value: avgRating, decimals: 1, suffix: "★", label: tr("Average Customer Rating") },
           ].map((s) => (
-            <div key={s.label} className="border border-white/10 bg-stoneblack/50 p-5">
-              <div className="flex items-center justify-between">
-                <s.icon className="h-5 w-5 text-emerald-400" />
-                <span className="font-mono text-[10px] text-slate-400">[ LIVE ]</span>
-              </div>
-              <div className="mt-3 font-display text-2xl sm:text-3xl font-black text-white">
+            <div key={s.label} className="rounded-2xl bg-white/10 p-5 backdrop-blur-xs border border-white/10">
+              <s.icon className="h-5 w-5 text-emerald-300" />
+              <div className="mt-3 font-display text-3xl font-extrabold text-white">
                 <CountUp value={s.value} decimals={s.decimals} suffix={s.suffix} />
               </div>
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-slate-400">{s.label}</p>
+              <p className="mt-1 text-xs font-medium text-emerald-100">{s.label}</p>
             </div>
           ))}
         </div>

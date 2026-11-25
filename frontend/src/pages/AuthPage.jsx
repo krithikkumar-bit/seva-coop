@@ -5,29 +5,22 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  Eye,
+  EyeOff,
   HardHat,
   HeartHandshake,
   IndianRupee,
-  KeyRound,
   Loader2,
-  Lock,
-  MapPin,
   Shield,
   ShieldCheck,
-  Sparkles,
-  Terminal,
   User,
-  Users,
-  Zap,
 } from "lucide-react";
 import api from "../api";
 import { useAuth } from "../AuthContext";
 import { useLang } from "../i18n";
 import Brand from "../components/Brand";
 import LangSelect from "../components/LangSelect";
-import CategoryIcon from "../components/CategoryIcon";
-import { Alert, Button, Field, Input, Textarea } from "../components/ui";
-import { cn, extractApiError } from "../lib/cn";
+import { cn, extractApiError, FALLBACK_SERVICES } from "../lib/cn";
 
 const home = (role) =>
   role === "admin" ? "/admin" : role === "worker" ? "/worker" : "/dashboard";
@@ -48,188 +41,174 @@ export default function AuthPage({ mode = "login" }) {
   const { tr } = useLang();
   const { user } = useAuth();
   const nav = useNavigate();
-  const [activeRole, setActiveRole] = useState("customer"); // customer | worker | admin
+  const [activeRole, setActiveRole] = useState("customer");
 
   if (user) return <Navigate to={home(user.role)} replace />;
 
   const benefits = [
     {
       icon: ShieldCheck,
-      title: tr("VERIFIED CO-OP ARTISANS"),
-      desc: tr("Verified competence and society trade skills"),
+      title: tr("Verified Local Professionals"),
+      desc: tr("Every worker is vetted with government ID proof and cooperative society verification."),
     },
     {
       icon: IndianRupee,
-      title: tr("90% DIRECT REMITTANCE"),
-      desc: tr("Direct digital payment straight into verified worker bank account. Zero delays."),
+      title: tr("90% Goes Directly to Workers"),
+      desc: tr("Fair, dignified wages paid without corporate middleman deductions."),
     },
     {
       icon: HeartHandshake,
-      title: tr("DEMOCRATIC GOVERNANCE"),
-      desc: tr("Democratically pooled for accident insurance, medical claims, and child education."),
+      title: tr("Insurance & Welfare Built-In"),
+      desc: tr("10% cooperative reserve provides accident cover, medical aid, and family support."),
     },
   ];
 
+  const roles = [
+    { key: "customer", label: tr("Customer"), hint: tr("Book home services"), icon: User },
+    { key: "worker", label: tr("Worker / Artisan"), hint: tr("Accept jobs & earn"), icon: HardHat },
+    { key: "admin", label: tr("Coordinator"), hint: tr("Manage cooperative"), icon: Shield },
+  ];
+
   return (
-    <div className="relative min-h-screen overflow-x-hidden text-slate-100 selection:bg-emerald-500 selection:text-black">
-      <div className="relative z-10 flex min-h-screen flex-col pointer-events-none">
-        {/* Top Navigation HUD */}
-        <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-stoneblack/90 backdrop-blur-md pointer-events-auto">
-          <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6">
-            <Link to="/" className="flex items-center gap-3">
-              <Brand techno={true} />
+    <div className="relative min-h-screen flex flex-col text-slate-900">
+      {/* Clean Top Header */}
+      <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6">
+          <Link to="/" className="flex items-center gap-3">
+            <Brand />
+          </Link>
+
+          <div className="flex items-center gap-3">
+            <LangSelect />
+            <Link to="/" className="btn-secondary-coop py-2 px-3.5 text-xs">
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span>{tr("Back to Home")}</span>
             </Link>
+          </div>
+        </div>
+      </header>
 
-            <div className="flex items-center gap-3">
-              <LangSelect />
-              <Link
-                to="/"
-                className="btn-tech-outline group text-xs py-1.5 px-3"
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-10">
+        <div className="w-full max-w-5xl grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
+          {/* Left Welcome Card */}
+          <div className="hidden lg:col-span-5 lg:flex flex-col gap-5 rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-teal-50/70 p-7 shadow-card">
+            <div>
+              <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+                {tr("SevaCoop Member Portal")}
+              </span>
+              <h2 className="mt-4 font-display text-3xl font-extrabold text-slate-900 leading-tight">
+                {tr("Welcome to")} <span className="text-emerald-600">SevaCoop</span>
+              </h2>
+              <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+                {tr("Sign in or create an account to book reliable home services or manage your cooperative work.")}
+              </p>
+            </div>
+
+            <div className="space-y-4 border-t border-emerald-200/60 pt-5">
+              {benefits.map((b) => (
+                <div key={b.title} className="flex items-start gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white border border-emerald-200 text-emerald-600 shrink-0 shadow-xs">
+                    <b.icon className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900">{b.title}</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed mt-0.5">{b.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-xl border border-emerald-200/80 bg-white/80 p-3.5 text-xs text-slate-600">
+              <strong className="text-emerald-800">Tip:</strong> Make sure you select the right portal tab (Customer, Worker, or Coordinator) matching your account.
+            </div>
+          </div>
+
+          {/* Right Form Card */}
+          <div className="lg:col-span-7 w-full rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-glass">
+            {/* Role Selection Tabs */}
+            <div className="mb-6">
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2.5">
+                {tr("I am signing in as:")}
+              </p>
+              <div className="grid grid-cols-3 gap-2.5">
+                {roles.map((tab) => {
+                  const Icon = tab.icon;
+                  const active = activeRole === tab.key;
+                  return (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      onClick={() => setActiveRole(tab.key)}
+                      className={cn(
+                        "relative flex flex-col items-center justify-center rounded-2xl border p-3 text-center transition-all",
+                        active
+                          ? "border-emerald-500 bg-emerald-50/80 text-emerald-900 shadow-xs ring-2 ring-emerald-500/20"
+                          : "border-slate-200 bg-slate-50/50 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                      )}
+                    >
+                      <Icon className={cn("h-5 w-5 mb-1.5", active ? "text-emerald-600" : "text-slate-400")} />
+                      <span className="text-xs sm:text-sm font-bold">{tab.label}</span>
+                      <span className="hidden sm:block text-[11px] text-slate-500 mt-0.5">{tab.hint}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Login vs Register Toggle */}
+            {activeRole !== "admin" && (
+              <div className="mb-6 flex rounded-xl border border-slate-200 bg-slate-100 p-1">
+                <button
+                  type="button"
+                  onClick={() => nav("/login")}
+                  className={cn(
+                    "flex-1 rounded-lg py-2 text-xs sm:text-sm font-semibold transition",
+                    mode === "login"
+                      ? "bg-white text-slate-900 shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
+                  )}
+                >
+                  {tr("Sign In")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => nav("/register")}
+                  className={cn(
+                    "flex-1 rounded-lg py-2 text-xs sm:text-sm font-semibold transition",
+                    mode === "register"
+                      ? "bg-white text-slate-900 shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
+                  )}
+                >
+                  {tr("Create Account")}
+                </button>
+              </div>
+            )}
+
+            {/* Form */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${mode}-${activeRole}`}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.16 }}
               >
-                <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
-                <span>{tr("RETURN HOME")}</span>
-              </Link>
-            </div>
-          </div>
-        </header>
-
-        {/* Center Portal Content */}
-        <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-10 pointer-events-none">
-          <div className="w-full max-w-6xl grid grid-cols-1 gap-8 lg:grid-cols-12 items-center">
-            {/* Left HUD Architecture Column */}
-            <div className="hidden lg:col-span-5 lg:flex flex-col gap-6 pointer-events-auto">
-              <div className="border border-white/15 bg-black/60 p-6 backdrop-blur-xl">
-                <div className="flex items-center gap-2 font-mono text-[10px] text-emerald-400 tracking-[0.2em] uppercase">
-                  <Terminal className="h-3.5 w-3.5" />
-                  <span>{tr("SEVA PROTOCOL · GATEWAY NODE")}</span>
-                </div>
-                <h2 className="mt-3 font-display text-3xl font-black uppercase text-white leading-tight">
-                  {tr("Access The Cooperative")} <span className="text-emerald-400">{tr("Network.")}</span>
-                </h2>
-                <p className="mt-2 font-mono text-xs text-slate-400 uppercase leading-relaxed">
-                  {tr("Decentralized dispatch terminal engineered for dignified livelihood, transparent algorithms, and direct remittances.")}
-                </p>
-
-                <div className="mt-6 space-y-4 border-t border-white/10 pt-5">
-                  {benefits.map((b) => (
-                    <div key={b.title} className="flex items-start gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center border border-white/15 bg-stoneblack text-emerald-400 shrink-0">
-                        <b.icon className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <h4 className="font-mono text-xs font-bold text-white uppercase tracking-wider">
-                          {b.title}
-                        </h4>
-                        <p className="font-mono text-[11px] text-slate-400 uppercase leading-tight mt-0.5">
-                          {b.desc}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Protocol Specs Badge */}
-              <div className="border border-white/10 bg-black/40 p-4 font-mono text-[10px] text-slate-400 uppercase tracking-widest flex items-center justify-between">
-                <span>SECURITY: SHA-256 JWT</span>
-                <span className="text-emerald-400">STATUS: OPERATIONAL</span>
-              </div>
-            </div>
-
-            {/* Right Form Card */}
-            <div className="lg:col-span-7 w-full pointer-events-auto">
-              <div className="border border-white/20 bg-stoneblack/90 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl">
-                {/* 3 Role Selection Tabs */}
-                <div className="mb-6">
-                  <p className="font-mono text-[10px] text-slate-400 uppercase tracking-widest mb-2">
-                    {tr("SELECT PORTAL NODE:")}
-                  </p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { key: "customer", label: tr("CUSTOMER"), icon: User },
-                      { key: "worker", label: tr("ARTISAN"), icon: HardHat },
-                      { key: "admin", label: tr("FEDERATION"), icon: Shield },
-                    ].map((tab) => {
-                      const Icon = tab.icon;
-                      const active = activeRole === tab.key;
-                      return (
-                        <button
-                          key={tab.key}
-                          type="button"
-                          onClick={() => setActiveRole(tab.key)}
-                          className={cn(
-                            "flex flex-col items-center justify-center gap-1.5 border p-2.5 sm:p-3 font-mono text-xs font-bold uppercase tracking-wider transition-all",
-                            active
-                              ? "border-emerald-400 bg-emerald-950/40 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-                              : "border-white/15 bg-black/40 text-slate-400 hover:border-white/40 hover:text-white"
-                          )}
-                        >
-                          <Icon className="h-4 w-4" />
-                          <span>{tab.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Login vs Register Toggle (Only Customer & Worker can register) */}
-                {activeRole !== "admin" && (
-                  <div className="mb-6 flex border border-white/15 bg-black/40 p-1 font-mono text-xs">
-                    <button
-                      type="button"
-                      onClick={() => nav("/login")}
-                      className={cn(
-                        "flex-1 py-1.5 uppercase font-bold tracking-wider transition",
-                        mode === "login"
-                          ? "bg-white text-stoneblack"
-                          : "text-slate-400 hover:text-white"
-                      )}
-                    >
-                      {tr("[ LOGIN ]")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => nav("/register")}
-                      className={cn(
-                        "flex-1 py-1.5 uppercase font-bold tracking-wider transition",
-                        mode === "register"
-                          ? "bg-white text-stoneblack"
-                          : "text-slate-400 hover:text-white"
-                      )}
-                    >
-                      {tr("[ REGISTER ]")}
-                    </button>
-                  </div>
+                {mode === "login" || activeRole === "admin" ? (
+                  <RoleLoginForm role={activeRole} onSwitchRole={setActiveRole} />
+                ) : (
+                  <RoleRegisterForm role={activeRole} />
                 )}
-
-                {/* Form Component */}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`${mode}-${activeRole}`}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {mode === "login" || activeRole === "admin" ? (
-                      <RoleLoginForm role={activeRole} onSwitchRole={setActiveRole} />
-                    ) : (
-                      <RoleRegisterForm role={activeRole} />
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
 
-/* =========================================================================
-   ROLE LOGIN FORM COMPONENT
-   ========================================================================= */
 function RoleLoginForm({ role, onSwitchRole }) {
   const { t, tr } = useLang();
   const { login } = useAuth();
@@ -237,6 +216,7 @@ function RoleLoginForm({ role, onSwitchRole }) {
   const loc = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -248,104 +228,118 @@ function RoleLoginForm({ role, onSwitchRole }) {
       const u = await login(email, password, role);
       nav(safeRedirectPath(loc.state?.from, u.role), { replace: true });
     } catch (ex) {
-      setErr(extractApiError(ex, "Authentication failed. Please verify credentials."));
+      setErr(extractApiError(ex, "Invalid email or password. Please try again."));
     } finally {
       setBusy(false);
     }
   };
 
+  const roleLabel =
+    role === "admin" ? tr("Coordinator") : role === "worker" ? tr("Worker") : tr("Customer");
+
   return (
     <form onSubmit={submit} className="space-y-4">
       {err && (
-        <div className="border border-rose-500/40 bg-rose-950/30 p-3 font-mono text-xs text-rose-300 flex flex-col gap-2">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-3.5 text-sm text-rose-700 flex flex-col gap-2">
           <span>{err}</span>
           {onSwitchRole && err.includes("ARTISAN") && role !== "worker" && (
             <button
               type="button"
               onClick={() => onSwitchRole("worker")}
-              className="btn-tech-outline self-start text-[10px] py-1 px-2.5 mt-1"
+              className="self-start rounded-lg bg-white border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition"
             >
-              [ SWITCH TO ARTISAN PORTAL ]
+              Switch to Worker / Artisan Login →
             </button>
           )}
           {onSwitchRole && err.includes("CUSTOMER") && role !== "customer" && (
             <button
               type="button"
               onClick={() => onSwitchRole("customer")}
-              className="btn-tech-outline self-start text-[10px] py-1 px-2.5 mt-1"
+              className="self-start rounded-lg bg-white border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition"
             >
-              [ SWITCH TO CUSTOMER PORTAL ]
+              Switch to Customer Login →
             </button>
           )}
           {onSwitchRole && err.includes("FEDERATION") && role !== "admin" && (
             <button
               type="button"
               onClick={() => onSwitchRole("admin")}
-              className="btn-tech-outline self-start text-[10px] py-1 px-2.5 mt-1"
+              className="self-start rounded-lg bg-white border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition"
             >
-              [ SWITCH TO FEDERATION PORTAL ]
+              Switch to Coordinator Login →
             </button>
           )}
         </div>
       )}
 
-      <div className="space-y-1">
-        <label className="block font-mono text-xs font-bold uppercase tracking-wider text-slate-300">
-          {tr("Email / Identifier")}
+      <div className="space-y-1.5">
+        <label className="block text-xs font-semibold text-slate-700">
+          {tr("Email Address")}
         </label>
         <input
           type="email"
           autoComplete="email"
-          placeholder="your.email@sevacoop.in"
+          placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full border border-white/15 bg-black/60 px-3.5 py-2.5 font-mono text-xs text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"
+          className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none"
         />
       </div>
 
-      <div className="space-y-1">
-        <label className="block font-mono text-xs font-bold uppercase tracking-wider text-slate-300">
-          {tr("Access Password")}
+      <div className="space-y-1.5">
+        <label className="block text-xs font-semibold text-slate-700">
+          {tr("Password")}
         </label>
-        <input
-          type="password"
-          autoComplete="current-password"
-          placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full border border-white/15 bg-black/60 px-3.5 py-2.5 font-mono text-xs text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"
-        />
+        <div className="relative">
+          <input
+            type={showPw ? "text" : "password"}
+            autoComplete="current-password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full rounded-xl border border-slate-300 bg-white pl-3.5 pr-10 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPw(!showPw)}
+            aria-label={showPw ? "Hide password" : "Show password"}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+          >
+            {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
 
       <button
         type="submit"
         disabled={busy}
-        className="w-full btn-tech-outline py-3 text-center justify-center font-bold"
+        className="btn-primary-coop w-full py-3 justify-center text-sm"
       >
         {busy ? (
-          <span className="flex items-center justify-center gap-2">
+          <span className="flex items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span>{tr("AUTHENTICATING NODE…")}</span>
+            <span>{tr("Signing in…")}</span>
           </span>
         ) : (
-          <span>{t("login")} ({role === "admin" ? tr("FEDERATION") : role === "worker" ? tr("ARTISAN") : tr("CUSTOMER")}) →</span>
+          <span className="flex items-center gap-2">
+            <span>{t("login")} as {roleLabel}</span>
+            <ArrowRight className="h-4 w-4" />
+          </span>
         )}
       </button>
     </form>
   );
 }
 
-/* =========================================================================
-   ROLE REGISTER FORM (CUSTOMER OR ARTISAN WORKER)
-   ========================================================================= */
 function RoleRegisterForm({ role }) {
   const { t, tr, tService, lang } = useLang();
   const { register } = useAuth();
   const nav = useNavigate();
   const [services, setServices] = useState([]);
   const [skills, setSkills] = useState([]);
+  const [showPw, setShowPw] = useState(false);
   const [form, setForm] = useState({
     full_name: "",
     phone: "",
@@ -366,8 +360,8 @@ function RoleRegisterForm({ role }) {
 
   useEffect(() => {
     api.get("/services")
-      .then((r) => setServices(r.data))
-      .catch(() => {});
+      .then((r) => setServices(Array.isArray(r.data) && r.data.length > 0 ? r.data : FALLBACK_SERVICES))
+      .catch(() => setServices(FALLBACK_SERVICES));
   }, []);
 
   const toggleSkill = (name) =>
@@ -379,7 +373,7 @@ function RoleRegisterForm({ role }) {
     e.preventDefault();
     setErr("");
     if (role === "worker" && skills.length === 0) {
-      return setErr("Please select at least one primary trade skill.");
+      return setErr("Please select at least one trade skill.");
     }
 
     setBusy(true);
@@ -414,96 +408,100 @@ function RoleRegisterForm({ role }) {
   };
 
   return (
-    <form onSubmit={submit} className="space-y-3.5">
+    <form onSubmit={submit} className="space-y-4">
       {err && (
-        <div className="border border-rose-500/40 bg-rose-950/30 p-3 font-mono text-xs text-rose-300">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
           {err}
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div className="space-y-1">
-          <label className="block font-mono text-[11px] font-bold uppercase text-slate-300">
-            {tr("Full Name")}
-          </label>
+          <label className="block text-xs font-semibold text-slate-700">{tr("Full Name")}</label>
           <input
             value={form.full_name}
             onChange={set("full_name")}
-            placeholder={t("name")}
+            placeholder="e.g. Ramesh Kumar"
             maxLength={100}
             required
-            className="w-full border border-white/15 bg-black/60 px-3 py-2 font-mono text-xs text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"
+            className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400"
           />
         </div>
         <div className="space-y-1">
-          <label className="block font-mono text-[11px] font-bold uppercase text-slate-300">
-            {tr("Contact Phone")}
-          </label>
+          <label className="block text-xs font-semibold text-slate-700">{tr("Phone Number")}</label>
           <input
             inputMode="tel"
-            placeholder={t("phone")}
+            placeholder="e.g. 9876543210"
             value={form.phone}
             onChange={set("phone")}
             maxLength={20}
             required
-            className="w-full border border-white/15 bg-black/60 px-3 py-2 font-mono text-xs text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"
+            className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div className="space-y-1">
-          <label className="block font-mono text-[11px] font-bold uppercase text-slate-300">
-            {tr("Email Address")}
-          </label>
+          <label className="block text-xs font-semibold text-slate-700">{tr("Email Address")}</label>
           <input
             type="email"
-            placeholder="you@domain.com"
+            placeholder="you@example.com"
             value={form.email}
             onChange={set("email")}
             maxLength={254}
             required
-            className="w-full border border-white/15 bg-black/60 px-3 py-2 font-mono text-xs text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"
+            className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400"
           />
         </div>
         <div className="space-y-1">
-          <label className="block font-mono text-[11px] font-bold uppercase text-slate-300">
-            {t("password")}
+          <label className="block text-xs font-semibold text-slate-700">
+            {tr("Password (min 8 chars)")}
           </label>
-          <input
-            type="password"
-            placeholder="••••••••"
-            value={form.password}
-            onChange={set("password")}
-            required
-            minLength={8}
-            maxLength={72}
-            className="w-full border border-white/15 bg-black/60 px-3 py-2 font-mono text-xs text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"
-          />
+          <div className="relative">
+            <input
+              type={showPw ? "text" : "password"}
+              placeholder="Create a strong password"
+              value={form.password}
+              onChange={set("password")}
+              required
+              minLength={8}
+              maxLength={72}
+              className="w-full rounded-xl border border-slate-300 bg-white pl-3.5 pr-10 py-2 text-sm text-slate-900 placeholder:text-slate-400"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPw(!showPw)}
+              aria-label={showPw ? "Hide password" : "Show password"}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+            >
+              {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="space-y-1">
-        <label className="block font-mono text-[11px] font-bold uppercase text-slate-300">
-          {tr("Neighborhood / Service Address")}
+        <label className="block text-xs font-semibold text-slate-700">
+          {tr("Neighborhood / Full Address")}
         </label>
         <input
           value={form.address}
           onChange={set("address")}
-          placeholder={t("address")}
+          placeholder="House no, Street, Locality, City"
           maxLength={500}
           required
-          className="w-full border border-white/15 bg-black/60 px-3 py-2 font-mono text-xs text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"
+          className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400"
         />
       </div>
 
       {role === "worker" && (
-        <div className="space-y-3 border-t border-white/10 pt-3">
-          <div className="space-y-1">
-            <label className="block font-mono text-[11px] font-bold uppercase text-slate-300">
-              {tr("Select Primary Trade Skills:")}
+        <div className="space-y-3.5 border-t border-slate-200 pt-4">
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700">
+              {tr("Select Your Skills:")}
             </label>
-            <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto thin-scrollbar">
+            <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto thin-scrollbar">
               {services.map((s) => {
                 const on = skills.includes(s.name);
                 return (
@@ -512,12 +510,13 @@ function RoleRegisterForm({ role }) {
                     key={s.id}
                     onClick={() => toggleSkill(s.name)}
                     className={cn(
-                      "font-mono text-[10px] px-2.5 py-1 uppercase border transition",
+                      "rounded-full px-3 py-1 text-xs font-semibold border transition",
                       on
-                        ? "border-emerald-400 bg-emerald-950/60 text-emerald-300 font-bold"
-                        : "border-white/15 bg-black/40 text-slate-400 hover:border-white/40"
+                        ? "border-emerald-600 bg-emerald-600 text-white"
+                        : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"
                     )}
                   >
+                    {on && <CheckCircle2 className="h-3 w-3 inline mr-1" />}
                     {tService(s.name)}
                   </button>
                 );
@@ -525,9 +524,9 @@ function RoleRegisterForm({ role }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3.5">
             <div className="space-y-1">
-              <label className="block font-mono text-[10px] font-bold uppercase text-slate-300">
+              <label className="block text-xs font-semibold text-slate-700">
                 {tr("Experience (Years)")}
               </label>
               <input
@@ -536,12 +535,12 @@ function RoleRegisterForm({ role }) {
                 step="0.5"
                 value={form.experience_years}
                 onChange={set("experience_years")}
-                className="w-full border border-white/15 bg-black/60 px-3 py-1.5 font-mono text-xs text-white"
+                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900"
               />
             </div>
             <div className="space-y-1">
-              <label className="block font-mono text-[10px] font-bold uppercase text-slate-300">
-                {tr("Hourly Base Rate (₹)")}
+              <label className="block text-xs font-semibold text-slate-700">
+                {tr("Base Visit Rate (₹)")}
               </label>
               <input
                 type="number"
@@ -549,13 +548,13 @@ function RoleRegisterForm({ role }) {
                 step="50"
                 value={form.hourly_rate}
                 onChange={set("hourly_rate")}
-                className="w-full border border-white/15 bg-black/60 px-3 py-1.5 font-mono text-xs text-white"
+                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="block font-mono text-[10px] font-bold uppercase text-slate-300">
+            <label className="block text-xs font-semibold text-slate-700">
               {tr("Government ID Proof No (Aadhaar / Voter ID)")}
             </label>
             <input
@@ -564,7 +563,7 @@ function RoleRegisterForm({ role }) {
               placeholder="e.g. COOP-ID-9921"
               maxLength={50}
               required
-              className="w-full border border-white/15 bg-black/60 px-3 py-1.5 font-mono text-xs text-white placeholder:text-slate-600"
+              className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400"
             />
           </div>
         </div>
@@ -573,15 +572,18 @@ function RoleRegisterForm({ role }) {
       <button
         type="submit"
         disabled={busy}
-        className="w-full btn-tech-outline py-2.5 text-center justify-center font-bold mt-2"
+        className="btn-primary-coop w-full py-3 justify-center mt-2"
       >
         {busy ? (
-          <span className="flex items-center justify-center gap-2">
+          <span className="flex items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span>{tr("INITIALIZING ACCOUNT…")}</span>
+            <span>{tr("Creating account…")}</span>
           </span>
         ) : (
-          <span>{t("register")} ({role === "worker" ? tr("ARTISAN") : tr("CUSTOMER")}) →</span>
+          <span className="flex items-center gap-2">
+            <span>{t("register")} as {role === "worker" ? tr("Worker") : tr("Customer")}</span>
+            <ArrowRight className="h-4 w-4" />
+          </span>
         )}
       </button>
     </form>

@@ -4,17 +4,18 @@
 
 @layer base {
   * {
-    @apply border-stoneblack-border;
+    @apply border-slate-200;
   }
   html {
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
-    color-scheme: dark;
+    color-scheme: light;
   }
   body {
-    background-color: #0d0e12;
-    color: #f1f5f9;
-    font-family: "Space Grotesk", sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
   }
@@ -25,146 +26,133 @@
   }
 
   ::selection {
-    background: rgba(255, 255, 255, 0.25);
-    color: #ffffff;
+    background: rgba(16, 185, 129, 0.2);
+    color: #064e3b;
   }
 }
 
-/* Technical Blueprint Grid on Stoneblack */
-.bg-grid-stoneblack {
-  background-color: #0d0e12;
+/* Soft Modern Surface Grid */
+.bg-soft-grid {
+  background-color: #f8fafc;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 26px 26px;
+    radial-gradient(at 15% 10%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+    radial-gradient(at 85% 20%, rgba(14, 165, 233, 0.06) 0px, transparent 45%),
+    linear-gradient(to right, rgba(15, 23, 42, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.025) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
 }
 
-.bg-grid-stoneblack-fine {
-  background-color: #0a0b0e;
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-  background-size: 18px 18px;
-}
-
-/* Subtle Vignette for CAD Viewport feel */
-.radial-vignette {
-  background: radial-gradient(circle at center, transparent 35%, rgba(10, 11, 14, 0.85) 100%);
-}
-
-/* Photographic subtle grain texture veil */
-.grain {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  opacity: 0.025;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* Stoneblack Brutalist Glassmorphism Panel */
+/* Clean Elevated Card */
 .glass-panel {
-  background: rgba(18, 20, 26, 0.85);
-  backdrop-filter: blur(20px) saturate(1.2);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #e2e8f0;
   box-shadow:
-    0 20px 48px -12px rgba(0, 0, 0, 0.7),
-    0 1px 2px 0 rgba(255, 255, 255, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 1px 3px rgba(15, 23, 42, 0.04),
+    0 12px 32px -12px rgba(15, 23, 42, 0.08);
 }
 
-.pill-nav {
-  background: rgba(15, 17, 22, 0.88);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow:
-    0 12px 32px -8px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
-}
-
-/* Technical Brutalist Spec Card */
+/* Friendly Service / Feature Card */
 .spec-card {
-  background: rgba(18, 20, 26, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 .spec-card:hover {
-  background: rgba(24, 27, 34, 0.92);
-  border-color: rgba(255, 255, 255, 0.35);
+  border-color: #10b981;
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 28px -8px rgba(5, 150, 105, 0.14);
 }
 
-/* Brutalist Mono Button */
-.btn-tech-outline {
+/* Primary Friendly Button */
+.btn-primary-coop {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.32);
-  background: rgba(15, 17, 22, 0.6);
-  color: #f8fafc;
-  font-family: "Geist Mono", monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  background: #059669;
+  color: #ffffff;
+  font-size: 0.875rem;
   font-weight: 600;
-  padding: 0.65rem 1.4rem;
+  padding: 0.625rem 1.25rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px -2px rgba(5, 150, 105, 0.28);
+}
+.btn-primary-coop:hover {
+  background: #047857;
+  box-shadow: 0 6px 16px -2px rgba(5, 150, 105, 0.36);
+}
+.btn-primary-coop:disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Secondary Outline Button */
+.btn-secondary-coop {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
   transition: all 0.2s ease;
 }
-.btn-tech-outline:hover {
-  background: #ffffff;
-  color: #0c0d10;
-  border-color: #ffffff;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+.btn-secondary-coop:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
 }
 
 /* Form Controls */
 input,
 textarea,
 select {
-  background: rgba(15, 17, 22, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #f8fafc;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  border-radius: 0.75rem;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: rgba(255, 255, 255, 0.5);
+  border-color: #059669;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 
-/* Table and List Styling */
+/* Table Styling */
 table {
-  color: #f1f5f9;
+  color: #1e293b;
 }
 
-thead tr {
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-tbody tr {
-  border-color: rgba(255, 255, 255, 0.05);
-}
-
-/* Custom Thin Scrollbar */
-::-webkit-scrollbar {
+/* Thin Scrollbar */
+::-webkit-scrollbar,
+.thin-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-::-webkit-scrollbar-track {
-  background: #0d0e12;
+::-webkit-scrollbar-track,
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
 }
-::-webkit-scrollbar-thumb {
-  background: #2a2d37;
+::-webkit-scrollbar-thumb,
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
   border-radius: 9999px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #474b59;
+::-webkit-scrollbar-thumb:hover,
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .sr-only {

@@ -115,13 +115,10 @@ export default function App() {
             Skip to content
           </a>
 
-          {/* Persistent Nexbot 3D Robot Background Mounted Once Across App */}
+          {/* Soft Ambient Background */}
           <SceneErrorBoundary>
             <Background3DWorld />
           </SceneErrorBoundary>
-
-          {/* Subtle Photographic Grain Veil */}
-          <div className="grain pointer-events-none" aria-hidden="true" />
 
           {/* Application Content */}
           <div id="main" className="relative min-h-screen">

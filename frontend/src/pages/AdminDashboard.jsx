@@ -11,46 +11,21 @@ import {
 import {
   CheckCircle2,
   ClipboardList,
-  Compass,
-  FileCheck2,
   Hourglass,
   IndianRupee,
   LayoutDashboard,
-  MapPin,
-  Plus,
-  RotateCcw,
-  Shield,
-  ShieldAlert,
   ShieldCheck,
-  Sparkles,
   TrendingUp,
   UserCheck,
   Users,
   Wrench,
-  XCircle,
-  Zap,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import api from "../api";
 import { useLang } from "../i18n";
 import DashboardShell from "../components/DashboardShell";
 import CategoryIcon from "../components/CategoryIcon";
 import StatusBadge from "../components/StatusBadge";
-import {
-  Avatar,
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  EmptyState,
-  Field,
-  Input,
-  Skeleton,
-  useToast,
-} from "../components/ui";
+import { useToast } from "../components/ui";
 import { StatCard } from "./CustomerOverview";
 import { fmtINR, extractApiError } from "../lib/cn";
 import { useSceneData } from "../scene/SceneStore";
@@ -66,7 +41,7 @@ export default function AdminDashboard() {
   const [services, setServices] = useState([]);
   const [bookingFilter, setBookingFilter] = useState("all");
   const [svc, setSvc] = useState({ name: "", name_hi: "", icon: "🛠️", base_price: 300 });
-  const { setSceneData, hoveredObject, resetCamera } = useSceneData();
+  const { setSceneData } = useSceneData();
 
   const load = () => {
     api.get("/admin/stats").then((r) => setStats(r.data)).catch(() => {});
@@ -85,7 +60,7 @@ export default function AdminDashboard() {
   const verify = async (p, status) => {
     try {
       await api.post(`/admin/workers/${p.profile_id}/verify`, { status });
-      toast(status === "verified" ? `${p.name} verified & granted active clearance` : `${p.name} rejected`);
+      toast(status === "verified" ? `${p.name} verified!` : `${p.name} rejected`);
       load();
     } catch (ex) {
       toast(extractApiError(ex, "Action failed"), "error");
@@ -96,7 +71,7 @@ export default function AdminDashboard() {
     e.preventDefault();
     try {
       await api.post("/services", svc);
-      toast("Service added to cooperative catalogue");
+      toast("Service added to catalogue!");
       setSvc({ name: "", name_hi: "", icon: "🛠️", base_price: 300 });
       load();
     } catch (ex) {
@@ -123,169 +98,144 @@ export default function AdminDashboard() {
   ];
 
   const titleOf = {
-    overview: "Federation Command Deck",
-    workers: "Artisan Verification Matrix",
-    bookings: "Cooperative Dispatch Ledger",
-    services: "Trade Catalogue Control",
+    overview: "Cooperative Overview",
+    workers: "Workers Directory",
+    bookings: "All Bookings",
+    services: "Manage Services",
   }[tab];
 
   return (
     <DashboardShell navItems={nav} active={tab} onNavigate={setTab} title={titleOf}>
-      {/* 3D Federation Telemetry Status Bar */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 border border-amber-500/30 bg-amber-950/30 px-3.5 py-1.5 font-mono text-[11px] text-amber-300 backdrop-blur-md">
-          <Compass className="h-4 w-4 text-amber-400 animate-spin" />
-          <span>
-            FEDERATION 3D OPERATIONS HUB · <span className="text-slate-400">SIH26089 GOVERNANCE ACTIVE</span>
-          </span>
-          <button
-            type="button"
-            onClick={resetCamera}
-            className="ml-3 inline-flex items-center gap-1 border border-white/20 bg-stoneblack px-2 py-0.5 text-[10px] uppercase font-bold text-slate-300 hover:text-white transition"
-          >
-            <RotateCcw className="h-3 w-3" /> RESET
-          </button>
-        </div>
-
-        <div className="flex items-center gap-2 font-mono text-[10px] text-slate-400 uppercase">
-          <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span>MINISTRY OF COOPERATION NODE · LIVE</span>
-        </div>
-      </div>
-
       {/* TAB 1: OVERVIEW */}
       {tab === "overview" && (
         <div className="space-y-6">
-          {/* 5 Technical KPI Panels */}
           {stats ? (
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
               <StatCard
                 icon={ShieldCheck}
-                label="Artisans Verified"
+                label="Verified Artisans"
                 value={stats.workers_verified}
                 tone="emerald"
-                subtitle="Active on platform"
+                subtitle="Active members"
               />
               <StatCard
                 icon={Hourglass}
-                label="Pending Audit"
+                label="Pending Verification"
                 value={stats.workers_pending}
                 tone="amber"
-                subtitle="Credential queue"
+                subtitle="Awaiting review"
               />
               <StatCard
                 icon={ClipboardList}
-                label="Active Dispatches"
+                label="Active Bookings"
                 value={stats.bookings_active}
                 tone="teal"
-                subtitle="Live pipeline"
+                subtitle="In progress"
               />
               <StatCard
                 icon={CheckCircle2}
-                label="Completed Orders"
+                label="Completed Jobs"
                 value={stats.bookings_completed}
                 tone="emerald"
-                subtitle="Directly settled"
+                subtitle="Settled jobs"
               />
               <StatCard
                 icon={IndianRupee}
-                label="Coop Gross Volume"
+                label="Total Volume"
                 value={fmtINR(stats.revenue)}
                 tone="gold"
-                subtitle="100% auditable"
+                subtitle="90% to workers"
               />
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-32 border border-white/10 bg-black/30 animate-pulse" />
+                <div key={i} className="h-32 rounded-2xl border border-slate-200 bg-slate-100 animate-pulse" />
               ))}
             </div>
           )}
 
-          {/* AI Workload Forecasting & Verification Queue */}
           <div className="grid gap-6 lg:grid-cols-2">
-            {/* Recharts Demand Forecasting */}
-            <div className="border border-white/15 bg-black/60 p-6 backdrop-blur-2xl">
-              <div className="pb-3 border-b border-white/10 mb-4">
-                <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase text-white">
-                  <TrendingUp className="h-4 w-4 text-emerald-400" />
-                  <span>AI 7-Day Demand Forecasting</span>
+            {/* AI Demand Forecasting */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+              <div className="pb-3 border-b border-slate-100 mb-4">
+                <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
+                  <TrendingUp className="h-4 w-4 text-emerald-600" />
+                  <span>AI 7-Day Demand Forecast</span>
                 </div>
-                <p className="font-mono text-[10px] text-slate-400 uppercase mt-0.5">
-                  Predictive gig labor allocation & capacity deficit
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Predicted weekly bookings by service category
                 </p>
               </div>
 
               {forecast === null ? (
-                <div className="h-60 border border-white/10 bg-black/30 animate-pulse" />
+                <div className="h-56 rounded-xl border border-slate-100 bg-slate-50 animate-pulse" />
               ) : (
-                <>
-                  <div className="h-56 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={forecast}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#222" />
-                        <XAxis
-                          dataKey="service"
-                          tick={{ fill: "#64748b", fontSize: 9 }}
-                          interval={0}
-                          angle={-20}
-                          textAnchor="end"
-                          height={45}
-                        />
-                        <YAxis tick={{ fill: "#64748b", fontSize: 10 }} />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: "#0d0e12",
-                            borderColor: "rgba(16,185,129,0.3)",
-                            color: "#f8fafc",
-                            fontFamily: "monospace",
-                            fontSize: "11px",
-                          }}
-                        />
-                        <Bar dataKey="weekly_total" fill="#10b981" radius={[2, 2, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </>
+                <div className="h-56 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={forecast}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis
+                        dataKey="service"
+                        tick={{ fill: "#64748b", fontSize: 10 }}
+                        interval={0}
+                        angle={-20}
+                        textAnchor="end"
+                        height={45}
+                      />
+                      <YAxis tick={{ fill: "#64748b", fontSize: 10 }} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#ffffff",
+                          borderColor: "#e2e8f0",
+                          borderRadius: "12px",
+                          color: "#0f172a",
+                          fontSize: "12px",
+                          boxShadow: "0 10px 25px -5px rgba(15, 23, 42, 0.1)",
+                        }}
+                      />
+                      <Bar dataKey="weekly_total" fill="#059669" radius={[6, 6, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               )}
             </div>
 
-            {/* Pending Verification Clearance Queue */}
-            <div className="border border-white/15 bg-black/60 p-6 backdrop-blur-2xl">
-              <div className="pb-3 border-b border-white/10 mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase text-white">
-                  <UserCheck className="h-4 w-4 text-amber-400" />
-                  <span>Pending Artisan Clearance</span>
+            {/* Pending Worker Verification Queue */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+              <div className="pb-3 border-b border-slate-100 mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
+                  <UserCheck className="h-4 w-4 text-amber-600" />
+                  <span>Pending Worker Approvals</span>
                 </div>
-                <span className="font-mono text-[10px] text-amber-400 border border-amber-500/30 px-2 py-0.5 bg-amber-950/40">
-                  {pending.length} QUEUED
+                <span className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-xs font-bold text-amber-700">
+                  {pending.length} pending
                 </span>
               </div>
 
-              <div className="space-y-3 font-mono text-xs max-h-72 overflow-y-auto thin-scrollbar">
+              <div className="space-y-3 max-h-72 overflow-y-auto thin-scrollbar">
                 {pending.length === 0 ? (
-                  <div className="p-8 text-center text-slate-400">
-                    <CheckCircle2 className="h-8 w-8 text-emerald-400 mx-auto mb-2 opacity-50" />
-                    <p className="text-xs uppercase font-bold text-white">Queue is clear</p>
-                    <p className="text-[10px] uppercase mt-1">All registered artisans are audited and verified.</p>
+                  <div className="p-8 text-center text-slate-500">
+                    <CheckCircle2 className="h-8 w-8 text-emerald-500 mx-auto mb-2 opacity-70" />
+                    <p className="text-sm font-bold text-slate-800">All caught up!</p>
+                    <p className="text-xs mt-1">No pending worker verification requests.</p>
                   </div>
                 ) : (
                   pending.map((w) => (
                     <div
                       key={w.profile_id}
-                      className="border border-white/15 bg-black/40 p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                     >
                       <div className="min-w-0">
-                        <p className="font-bold text-white uppercase text-xs">{w.name}</p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">
-                          {w.phone} · {w.experience_years} YRS EXP · ID: {w.id_proof_no || "VERIFIED-ID"}
+                        <p className="font-bold text-slate-900 text-sm">{w.name}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          {w.phone} · {w.experience_years} yrs exp · ID: {w.id_proof_no || "Pending"}
                         </p>
                         <div className="flex flex-wrap gap-1 mt-1.5">
                           {(w.skills || []).map((sk) => (
                             <span
                               key={sk}
-                              className="border border-white/10 bg-white/5 px-2 py-0.5 text-[9px] text-slate-300 uppercase"
+                              className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-700"
                             >
                               {sk}
                             </span>
@@ -297,16 +247,16 @@ export default function AdminDashboard() {
                         <button
                           type="button"
                           onClick={() => verify(w, "verified")}
-                          className="btn-tech-outline text-[10px] py-1 px-2.5"
+                          className="btn-primary-coop py-1.5 px-3 text-xs"
                         >
-                          APPROVE
+                          Approve
                         </button>
                         <button
                           type="button"
                           onClick={() => verify(w, "rejected")}
-                          className="border border-white/20 bg-stoneblack text-slate-400 hover:text-white px-2 py-1 text-[10px] uppercase"
+                          className="btn-secondary-coop py-1.5 px-3 text-xs"
                         >
-                          REJECT
+                          Reject
                         </button>
                       </div>
                     </div>
@@ -318,36 +268,38 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* TAB 2: ARTISANS DIRECTORY */}
+      {/* TAB 2: WORKERS DIRECTORY */}
       {tab === "workers" && (
-        <div className="border border-white/15 bg-black/60 p-6 backdrop-blur-2xl">
-          <div className="pb-3 border-b border-white/10 mb-4 flex items-center justify-between font-mono">
-            <h3 className="text-xs font-bold uppercase text-white">
-              Federation Registered Artisans ({(workers || []).length})
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+          <div className="pb-3 border-b border-slate-100 mb-4 flex items-center justify-between">
+            <h3 className="text-sm font-bold text-slate-900">
+              Registered Cooperative Workers ({(workers || []).length})
             </h3>
-            <span className="text-[10px] text-emerald-400">90% DIRECT REMITTANCE ACTIVE</span>
+            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+              90% Direct Payout Active
+            </span>
           </div>
 
-          <div className="overflow-x-auto font-mono text-xs">
+          <div className="overflow-x-auto text-xs sm:text-sm">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-white/10 text-[10px] text-slate-400 uppercase tracking-wider">
-                  <th className="py-2.5">Artisan</th>
-                  <th>Contact</th>
+                <tr className="border-b border-slate-200 text-xs font-semibold text-slate-500">
+                  <th className="py-3">Name</th>
+                  <th>Phone</th>
                   <th>Skills</th>
-                  <th>Rate</th>
+                  <th>Visit Rate</th>
                   <th>Rating</th>
-                  <th className="text-right">Clearance</th>
+                  <th className="text-right">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-slate-100">
                 {(workers || []).map((w) => (
-                  <tr key={w.profile_id} className="hover:bg-white/5">
-                    <td className="py-3 font-bold text-white uppercase">{w.name}</td>
-                    <td className="text-slate-400">{w.phone}</td>
-                    <td className="text-slate-300">{(w.skills || []).join(", ")}</td>
-                    <td className="text-emerald-400">₹{w.hourly_rate}</td>
-                    <td className="text-amber-400">{w.avg_rating || "4.9"}★</td>
+                  <tr key={w.profile_id} className="hover:bg-slate-50/80">
+                    <td className="py-3 font-semibold text-slate-900">{w.name}</td>
+                    <td className="text-slate-600">{w.phone}</td>
+                    <td className="text-slate-600">{(w.skills || []).join(", ")}</td>
+                    <td className="font-semibold text-emerald-700">₹{w.hourly_rate}</td>
+                    <td className="font-semibold text-amber-600">{w.avg_rating || "4.9"}★</td>
                     <td className="text-right">
                       <StatusBadge status={w.verification_status} />
                     </td>
@@ -359,23 +311,23 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* TAB 3: DISPATCH LEDGER */}
+      {/* TAB 3: BOOKINGS LEDGER */}
       {tab === "bookings" && (
-        <div className="border border-white/15 bg-black/60 p-6 backdrop-blur-2xl">
-          <div className="pb-3 border-b border-white/10 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 font-mono">
-            <h3 className="text-xs font-bold uppercase text-white">
-              Platform Booking Ledger ({(bookings || []).length})
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+          <div className="pb-3 border-b border-slate-100 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h3 className="text-sm font-bold text-slate-900">
+              All Platform Bookings ({(bookings || []).length})
             </h3>
-            <div className="flex gap-1.5 text-[10px]">
+            <div className="flex flex-wrap gap-1.5 text-xs">
               {["all", "active", "completed", "cancelled"].map((f) => (
                 <button
                   key={f}
                   type="button"
                   onClick={() => setBookingFilter(f)}
-                  className={`border px-2.5 py-1 uppercase ${
+                  className={`rounded-full px-3 py-1 font-semibold capitalize transition ${
                     bookingFilter === f
-                      ? "border-emerald-400 bg-emerald-950/60 text-emerald-300 font-bold"
-                      : "border-white/15 text-slate-400"
+                      ? "bg-emerald-600 text-white"
+                      : "border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100"
                   }`}
                 >
                   {f}
@@ -384,33 +336,33 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="overflow-x-auto font-mono text-xs">
+          <div className="overflow-x-auto text-xs sm:text-sm">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-white/10 text-[10px] text-slate-400 uppercase">
-                  <th className="py-2.5">Code</th>
+                <tr className="border-b border-slate-200 text-xs font-semibold text-slate-500">
+                  <th className="py-3">Code</th>
                   <th>Service</th>
                   <th>Customer</th>
-                  <th>Destination</th>
+                  <th>Address</th>
                   <th>Amount</th>
                   <th className="text-right">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-slate-100">
                 {filteredBookings.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="py-8 text-center text-slate-500 uppercase">
-                      No matching bookings in ledger
+                    <td colSpan="6" className="py-10 text-center text-slate-500">
+                      No bookings found in this category
                     </td>
                   </tr>
                 ) : (
                   filteredBookings.map((b) => (
-                    <tr key={b.id} className="hover:bg-white/5">
-                      <td className="py-3 font-bold text-emerald-400">#{b.code}</td>
-                      <td className="text-white uppercase">{b.service_name || b.service?.name}</td>
-                      <td className="text-slate-300">{b.customer_name || `Customer #${b.customer_id}`}</td>
-                      <td className="text-slate-400 truncate max-w-[200px]">{b.address}</td>
-                      <td className="text-white font-bold">{fmtINR(b.final_cost || b.estimated_cost)}</td>
+                    <tr key={b.id} className="hover:bg-slate-50/80">
+                      <td className="py-3 font-mono font-bold text-emerald-700">#{b.code}</td>
+                      <td className="font-semibold text-slate-900">{b.service_name || b.service?.name}</td>
+                      <td className="text-slate-600">{b.customer_name || `Customer #${b.customer_id}`}</td>
+                      <td className="text-slate-500 truncate max-w-[200px]">{b.address}</td>
+                      <td className="font-bold text-slate-900">{fmtINR(b.final_cost || b.estimated_cost)}</td>
                       <td className="text-right">
                         <StatusBadge status={b.status} />
                       </td>
@@ -423,76 +375,76 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* TAB 4: SERVICE CATALOGUE MANAGER */}
+      {/* TAB 4: SERVICES MANAGER */}
       {tab === "services" && (
-        <div className="grid gap-6 lg:grid-cols-12 font-mono">
-          <div className="lg:col-span-7 border border-white/15 bg-black/60 p-6 backdrop-blur-2xl">
-            <h3 className="text-xs font-bold uppercase text-white mb-3">
-              Active Trade Clusters ({services.length})
+        <div className="grid gap-6 lg:grid-cols-12 items-start">
+          <div className="lg:col-span-7 rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+            <h3 className="text-sm font-bold text-slate-900 mb-4">
+              Active Services ({services.length})
             </h3>
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               {services.map((s) => (
                 <div
                   key={s.id}
-                  className="border border-white/10 bg-black/40 p-3 flex items-center justify-between text-xs"
+                  className="rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 flex items-center justify-between gap-3"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center border border-white/15 text-white">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600">
                       <CategoryIcon name={s.name} className="h-4 w-4" />
                     </div>
-                    <div>
-                      <p className="font-bold text-white uppercase">{s.name}</p>
-                      <p className="text-[10px] text-slate-400 uppercase">{s.description}</p>
+                    <div className="min-w-0">
+                      <p className="font-bold text-slate-900 text-sm">{s.name}</p>
+                      <p className="text-xs text-slate-500 truncate">{s.description}</p>
                     </div>
                   </div>
-                  <span className="font-bold text-emerald-400">FROM ₹{s.base_price}</span>
+                  <span className="font-bold text-emerald-700 text-xs shrink-0">From ₹{s.base_price}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="lg:col-span-5 border border-white/15 bg-black/60 p-6 backdrop-blur-2xl text-xs">
-            <h3 className="text-xs font-bold uppercase text-white mb-3">
-              Add Cooperative Service
+          <div className="lg:col-span-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+            <h3 className="text-sm font-bold text-slate-900 mb-4">
+              Add New Cooperative Service
             </h3>
-            <form onSubmit={addService} className="space-y-3">
+            <form onSubmit={addService} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-[10px] text-slate-300 uppercase">Service Name</label>
+                <label className="text-xs font-semibold text-slate-700">Service Name</label>
                 <input
                   value={svc.name}
                   onChange={(e) => setSvc({ ...svc, name: e.target.value })}
                   placeholder="e.g. Solar Panel Technician"
                   maxLength={100}
                   required
-                  className="w-full border border-white/15 bg-black/80 px-3 py-2 text-white"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900"
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] text-slate-300 uppercase">Hindi Title</label>
+                <label className="text-xs font-semibold text-slate-700">Hindi Name</label>
                 <input
                   value={svc.name_hi}
                   onChange={(e) => setSvc({ ...svc, name_hi: e.target.value })}
                   placeholder="e.g. सोलर पैनल"
                   maxLength={100}
-                  className="w-full border border-white/15 bg-black/80 px-3 py-2 text-white"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900"
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] text-slate-300 uppercase">Baseline Rate (₹)</label>
+                <label className="text-xs font-semibold text-slate-700">Base Visit Rate (₹)</label>
                 <input
                   type="number"
                   min={0}
                   max={100000}
                   value={svc.base_price}
                   onChange={(e) => setSvc({ ...svc, base_price: Number(e.target.value) })}
-                  className="w-full border border-white/15 bg-black/80 px-3 py-2 text-white"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900"
                 />
               </div>
               <button
                 type="submit"
-                className="btn-tech-outline w-full py-2.5 text-center justify-center font-bold mt-2"
+                className="btn-primary-coop w-full py-2.5 justify-center mt-2"
               >
-                [ REGISTER NEW SERVICE ]
+                Add Service to Directory
               </button>
             </form>
           </div>

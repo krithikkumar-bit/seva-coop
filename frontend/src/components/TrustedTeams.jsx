@@ -2,108 +2,76 @@ import React from "react";
 import { Shield, Building2, Cpu, GraduationCap, Users2, Landmark } from "lucide-react";
 import { useLang } from "../i18n";
 
-/**
- * "TRUSTED BY FORWARD-THINKING TEAMS"
- * 
- * At the bottom of the hero as requested by the user:
- * "And then at the bottom where the brand logos are, just put in 
- * trusted by forward-thinking teams for now and then we'll edit it later."
- * 
- * To edit or add logos/teams later, simply modify the `TEAMS` array below:
- */
 export const TEAMS = [
   {
     id: "campus-guild",
-    name: "CAMPUS RESIDENCES GUILD",
-    code: "CRG-24",
+    name: "Campus Residences",
     icon: GraduationCap,
-    desc: "Collegiate Housing",
+    desc: "Hostel & Housing Guild",
   },
   {
     id: "metro-civic",
-    name: "METRO CIVIC TECH LABS",
-    code: "MCTL",
+    name: "Metro Civic Labs",
     icon: Cpu,
-    desc: "Smart Governance",
+    desc: "Smart Civic Tech",
   },
   {
     id: "national-skills",
-    name: "NATIONAL SKILLS ALLIANCE",
-    code: "NSA-IN",
+    name: "National Skills",
     icon: Landmark,
     desc: "Trade Certification",
   },
   {
     id: "housing-union",
-    name: "COMMUNITY HOUSING UNION",
-    code: "CHU-IX",
+    name: "Resident Societies",
     icon: Building2,
-    desc: "Resident Societies",
+    desc: "RWA Network",
   },
   {
     id: "ethical-work",
-    name: "ETHICAL WORK PROTOCOL",
-    code: "EWP",
+    name: "Ethical Gig Union",
     icon: Shield,
-    desc: "Fair Gig Labor",
+    desc: "Fair Wage Charter",
   },
   {
     id: "student-network",
-    name: "STUDENT GUILD NETWORK",
-    code: "SGN",
+    name: "Youth Co-op Forum",
     icon: Users2,
-    desc: "Youth Co-op Union",
+    desc: "Community Support",
   },
 ];
 
 export default function TrustedTeams({ className = "" }) {
   const { tr } = useLang();
   return (
-    <div id="teams" className={`relative w-full border-t border-b border-white/10 bg-stoneblack-surface/50 py-10 px-4 sm:px-6 pointer-events-auto ${className}`}>
-      {/* Background Micro Grid */}
-      <div className="pointer-events-none absolute inset-0 bg-grid-stoneblack-fine opacity-40" />
-
-      <div className="relative mx-auto max-w-7xl">
-        {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
-          <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 bg-emerald-400" />
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.25em] text-slate-300">
-              {tr("TRUSTED BY FORWARD-THINKING TEAMS")}
-            </p>
-          </div>
-          <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
-            {tr("[ EDITABLE PARTNER NODES · SECURE ENTERPRISE INTEGRATION ]")}
+    <section id="teams" className={`relative w-full border-y border-slate-200 bg-white py-10 px-4 sm:px-6 ${className}`}>
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            {tr("Trusted by community societies & cooperative partners")}
           </p>
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            {tr("Live network across verified local guilds")}
+          </span>
         </div>
 
-        {/* Brand / Partner Logos Grid */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {TEAMS.map((team) => {
             const Icon = team.icon;
             return (
               <div
                 key={team.id}
-                className="group relative flex flex-col justify-between border border-white/10 bg-black/40 p-4 transition-all duration-200 hover:border-white/40 hover:bg-white/[0.04]"
+                className="flex flex-col justify-between rounded-xl border border-slate-200 bg-slate-50/70 p-4 transition hover:border-emerald-300 hover:bg-emerald-50/40"
               >
-                {/* Crosshair Corner Indicators */}
-                <div className="absolute top-1.5 left-1.5 h-1 w-1 border-t border-l border-white/40 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="absolute top-1.5 right-1.5 h-1 w-1 border-t border-r border-white/40 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="absolute bottom-1.5 left-1.5 h-1 w-1 border-b border-l border-white/40 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="absolute bottom-1.5 right-1.5 h-1 w-1 border-b border-r border-white/40 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                <div className="flex items-center justify-between mb-3">
-                  <Icon className="h-4 w-4 text-slate-400 group-hover:text-emerald-400 transition-colors" />
-                  <span className="font-mono text-[9px] font-bold text-slate-400 group-hover:text-white transition-colors">
-                    {team.code}
-                  </span>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 text-emerald-600 mb-3 shadow-xs">
+                  <Icon className="h-4 w-4" />
                 </div>
-
                 <div>
-                  <h4 className="font-display text-xs font-bold uppercase tracking-wider text-slate-200 group-hover:text-white transition-colors">
+                  <h4 className="text-xs font-bold text-slate-900">
                     {team.name}
                   </h4>
-                  <p className="font-mono text-[9px] uppercase tracking-wider text-slate-400 mt-1">
+                  <p className="text-[11px] text-slate-500 mt-0.5">
                     {team.desc}
                   </p>
                 </div>
@@ -111,23 +79,7 @@ export default function TrustedTeams({ className = "" }) {
             );
           })}
         </div>
-
-        {/* Live Cooperative Protocol Status Ticker */}
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-white/5 pt-4 font-mono text-[10px] tracking-wider text-slate-400 uppercase">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-            </span>
-            <span>{tr("SYSTEM OPERATIONAL · 142 VERIFIED COOPERATIVE ARTISANS ACTIVE")}</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span>{tr("DISPATCH LATENCY: 2.4 MINS")}</span>
-            <span className="hidden sm:inline">LAT/LONG: 28°38'N 77°13'E</span>
-            <span>SIH26089 PROTOCOL</span>
-          </div>
-        </div>
       </div>
-    </div>
+    </section>
   );
 }

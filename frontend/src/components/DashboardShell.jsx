@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { LogOut, Menu, Shield, Terminal, X, Zap } from "lucide-react";
+import { Home, LogOut, Menu, ShieldCheck, X } from "lucide-react";
 import Brand from "./Brand";
 import LangSelect from "./LangSelect";
-import SceneToggle from "./SceneToggle";
-import { Avatar, Badge, Button } from "./ui";
+import { Avatar } from "./ui";
 import { useAuth } from "../AuthContext";
 import { useLang } from "../i18n";
-import { cn, BRAND } from "../lib/cn";
+import { cn } from "../lib/cn";
 
 export default function DashboardShell({
   navItems,
@@ -24,50 +23,45 @@ export default function DashboardShell({
 
   const roleTag =
     user?.role === "admin"
-      ? tr("FEDERATION ADMIN")
+      ? tr("Co-op Coordinator")
       : user?.role === "worker"
-      ? tr("ARTISAN TERMINAL")
-      : tr("CUSTOMER NODE");
+      ? tr("Service Partner")
+      : tr("Customer Account");
 
   const roleColor =
     user?.role === "admin"
-      ? "border-amber-500/40 bg-amber-950/40 text-amber-300"
+      ? "border-amber-200 bg-amber-50 text-amber-800"
       : user?.role === "worker"
-      ? "border-cyan-500/40 bg-cyan-950/40 text-cyan-300"
-      : "border-emerald-500/40 bg-emerald-950/40 text-emerald-300";
+      ? "border-sky-200 bg-sky-50 text-sky-800"
+      : "border-emerald-200 bg-emerald-50 text-emerald-800";
 
   const sidebar = (
-    <div className="flex h-full flex-col text-slate-200">
-      <div className="px-5 pb-4 pt-6 border-b border-white/10">
+    <div className="flex h-full flex-col text-slate-700">
+      <div className="px-5 pb-4 pt-5 border-b border-slate-100">
         <Link to="/" className="block">
-          <Brand techno={true} />
+          <Brand />
         </Link>
-        <div className="mt-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-slate-400">
-          <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span>{tr("PORTAL ACTIVE")}</span>
-          <span className="text-white/20">|</span>
-          <span className="text-emerald-400">SIH26089</span>
+        <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          <span>{roleTag}</span>
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1.5 px-3 py-4 font-mono text-xs">
+      <nav className="flex-1 space-y-1 px-3 py-4 text-sm">
         {navItems.map((item) => {
           const isCurrent = active === item.key;
           const cls = cn(
-            "flex w-full items-center gap-3 rounded-xl px-3.5 py-3 font-mono text-xs font-semibold uppercase tracking-wider transition-all duration-200",
+            "flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-150",
             isCurrent
-              ? "border border-emerald-400/60 bg-emerald-950/30 text-white shadow-[0_0_15px_rgba(16,185,129,0.15)]"
-              : "border border-transparent text-slate-400 hover:border-white/15 hover:bg-white/5 hover:text-white"
+              ? "bg-emerald-50 text-emerald-800 font-semibold shadow-xs border border-emerald-200/80"
+              : "text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 border border-transparent"
           );
           const inner = (
             <>
-              <span className={isCurrent ? "text-emerald-400" : "text-slate-400"}>
+              <span className={isCurrent ? "text-emerald-600" : "text-slate-400"}>
                 {item.icon}
               </span>
               <span className="truncate">{item.label}</span>
-              {isCurrent && (
-                <span className="ml-auto flex h-1 w-1 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
-              )}
             </>
           );
           return item.to ? (
@@ -93,26 +87,37 @@ export default function DashboardShell({
             </button>
           );
         })}
+
+        <div className="pt-4 mt-4 border-t border-slate-100">
+          <Link
+            to="/"
+            onClick={() => setOpen(false)}
+            className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition"
+          >
+            <Home className="h-4 w-4 text-slate-400" />
+            <span>{tr("Public Home")}</span>
+          </Link>
+        </div>
       </nav>
 
       {/* User Status Card */}
-      <div className="border-t border-white/10 p-4 bg-black/40">
+      <div className="border-t border-slate-100 p-4 bg-slate-50/80 rounded-b-2xl">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Avatar name={user?.full_name} className="h-9 w-9 border border-white/20" />
-            <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-[#0d0e12]" />
+            <Avatar name={user?.full_name} className="h-9 w-9" />
+            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate font-mono text-xs font-bold text-white uppercase tracking-wide">
+            <p className="truncate text-sm font-semibold text-slate-900">
               {user?.full_name}
             </p>
-            <p className="truncate font-mono text-[10px] text-slate-400">
+            <p className="truncate text-xs text-slate-500">
               {user?.phone || user?.email}
             </p>
           </div>
           <button
             type="button"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-400 hover:border-rose-400 hover:bg-rose-950/40 hover:text-rose-300 transition"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 transition"
             title={t("logout")}
             aria-label={t("logout")}
             onClick={() => {
@@ -120,7 +125,7 @@ export default function DashboardShell({
               nav("/");
             }}
           >
-            <LogOut className="h-3.5 w-3.5" />
+            <LogOut className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -128,10 +133,10 @@ export default function DashboardShell({
   );
 
   return (
-    <div className="relative flex min-h-screen text-slate-100 selection:bg-emerald-500 selection:text-black">
-      {/* Sidebar for Desktop */}
+    <div className="relative flex min-h-screen text-slate-900">
+      {/* Desktop Sidebar */}
       <aside className="relative z-30 hidden w-64 shrink-0 lg:block">
-        <div className="sticky top-4 m-4 h-[calc(100vh-2rem)] rounded-2xl border border-white/15 bg-stoneblack/85 shadow-2xl backdrop-blur-2xl">
+        <div className="sticky top-4 m-4 h-[calc(100vh-2rem)] rounded-2xl border border-slate-200 bg-white shadow-card">
           {sidebar}
         </div>
       </aside>
@@ -140,13 +145,13 @@ export default function DashboardShell({
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 w-72 border-r border-white/15 bg-stoneblack shadow-2xl">
+          <div className="absolute inset-y-0 left-0 w-72 border-r border-slate-200 bg-white shadow-2xl">
             <button
               type="button"
-              className="absolute right-3 top-4 rounded-lg border border-white/15 p-1.5 text-slate-400 hover:text-white"
+              className="absolute right-3 top-4 rounded-lg border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
               onClick={() => setOpen(false)}
               aria-label="Close"
             >
@@ -157,50 +162,48 @@ export default function DashboardShell({
         </div>
       )}
 
-      {/* Main Dynamic Viewport */}
+      {/* Main Content */}
       <div className="relative z-20 flex min-w-0 flex-1 flex-col">
-        {/* Sticky Top HUD Bar */}
-        <header className="sticky top-4 z-30 mx-4 mt-4 flex h-14 items-center gap-3 rounded-2xl border border-white/15 bg-stoneblack/85 px-4 sm:px-6 backdrop-blur-2xl shadow-xl">
+        {/* Top Navigation Header */}
+        <header className="sticky top-4 z-30 mx-4 mt-4 flex h-14 items-center gap-3 rounded-2xl border border-slate-200 bg-white/95 px-4 sm:px-6 backdrop-blur-md shadow-xs">
           <button
             type="button"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 text-slate-300 hover:text-white lg:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 lg:hidden"
             onClick={() => setOpen(true)}
             aria-label="Open navigation"
           >
             <Menu className="h-4 w-4" />
           </button>
 
-          <div className="flex items-center gap-2 min-w-0">
-            <Terminal className="h-4 w-4 text-emerald-400 shrink-0" />
-            <h1 className="truncate font-display text-sm sm:text-base font-black uppercase tracking-wider text-white">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <h1 className="truncate font-display text-base sm:text-lg font-bold text-slate-900">
               {title}
             </h1>
           </div>
 
           <div className="ml-auto flex items-center gap-2.5">
             {headerExtra}
-            <SceneToggle />
             <LangSelect />
             <span
               className={cn(
-                "hidden font-mono text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 border rounded-lg sm:inline-flex items-center gap-1.5",
+                "hidden text-xs font-semibold px-3 py-1 border rounded-full sm:inline-flex items-center gap-1.5",
                 roleColor
               )}
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-current animate-ping" />
+              <ShieldCheck className="h-3.5 w-3.5" />
               {roleTag}
             </span>
           </div>
         </header>
 
-        {/* Content Container */}
-        <main className="flex-1 p-4 pb-20 sm:p-6 lg:pb-8">
+        {/* Page Container */}
+        <main className="flex-1 p-4 pb-16 sm:p-6 lg:pb-10">
           <div className="mx-auto max-w-6xl">{children}</div>
         </main>
 
-        {/* Technical Footer Banner */}
-        <footer className="mt-auto border-t border-white/5 py-4 px-4 text-center font-mono text-[10px] text-slate-400 uppercase tracking-widest sm:px-6">
-          SEVACOOP PLATFORM COOPERATIVE · NCCT CERTIFIED PROTOCOL · 90% DIRECT REMITTANCE
+        {/* Clean Footer */}
+        <footer className="mt-auto border-t border-slate-200/80 bg-white/60 py-4 px-4 text-center text-xs text-slate-500 sm:px-6">
+          SevaCoop Cooperative Platform · Verified Artisans · 90% Direct Worker Payout
         </footer>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   BadgeCheck,
   CheckCircle2,
@@ -11,13 +11,12 @@ import api from "../api";
 import { useLang } from "../i18n";
 import { useSceneData } from "../scene/SceneStore";
 import { Frame } from "../components/CustomerShell";
-import { FALLBACK_SERVICES, fmtINR, getServiceImage } from "../lib/cn";
+import { FALLBACK_SERVICES, fmtINR, getServiceImage, SERVICE_GROUPS } from "../lib/cn";
 
 export function ServiceCard({ s, workerCount }) {
   const { tr, tService, tServiceDesc } = useLang();
   return (
     <div className="flex items-start justify-between gap-4 rounded-2xl border border-neutral-200 bg-white p-4 sm:p-5 transition hover:border-neutral-300 hover:shadow-card">
-      {/* Left Info Column (Urban Company exact layout) */}
       <div className="min-w-0 flex-1">
         <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">
           Verified Co-op
@@ -41,7 +40,6 @@ export function ServiceCard({ s, workerCount }) {
         </p>
       </div>
 
-      {/* Right Photo Thumbnail + Overlapping Add/Book Button (UC Signature Pattern) */}
       <div className="relative shrink-0 w-28 sm:w-32 pb-3">
         <div className="h-24 sm:h-28 w-full overflow-hidden rounded-xl bg-neutral-100 border border-neutral-200/60">
           <img
@@ -61,31 +59,23 @@ export function ServiceCard({ s, workerCount }) {
   );
 }
 
-const CATEGORY_ZONES = [
-  { key: "all", label: "All Services", img: "/images/electrician.jpg" },
-  { key: "electrician", label: "Electrician", img: "/images/electrician.jpg" },
-  { key: "plumber", label: "Plumber", img: "/images/plumber.jpg" },
-  { key: "carpenter", label: "Carpenter", img: "/images/carpenter.jpg" },
-  { key: "cleaning", label: "Cleaning", img: "/images/cleaning.jpg" },
-  { key: "ac_technician", label: "AC Technician", img: "/images/ac_technician.jpg" },
-  { key: "painter", label: "Painter", img: "/images/painter.jpg" },
-  { key: "driver", label: "Driver", img: "/images/driver.jpg" },
-  { key: "caregiver", label: "Caregiver", img: "/images/caregiver.jpg" },
-  { key: "domestic_helper", label: "Domestic Helper", img: "/images/domestic_helper.jpg" },
-  { key: "gardener", label: "Gardener", img: "/images/gardener.jpg" },
-];
-
 export default function Services() {
   const { t, tr, tService } = useLang();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialGroup = searchParams.get("group") || "all";
   const [services, setServices] = useState(null);
   const [workers, setWorkers] = useState([]);
   const [q, setQ] = useState("");
-  const [selectedZone, setSelectedZone] = useState("all");
+  const [selectedGroup, setSelectedGroup] = useState(initialGroup);
   const { setSceneData } = useSceneData();
 
   useEffect(() => {
+    setSelectedGroup(searchParams.get("group") || "all");
+  }, [searchParams]);
+
+  useEffect(() => {
     api.get("/services")
-      .then((r) => setServices(Array.isArray(r.data) && r.data.length > 0 ? r.data : FALLBACK_SERVICES))
+      .then((r) => setServices(Array.isArray(r.data) && r.data.length >= 22 ? r.data : FALLBACK_SERVICES))
       .catch(() => setServices(FALLBACK_SERVICES));
     api.get("/workers")
       .then((r) => setWorkers(Array.isArray(r.data) ? r.data : []))
@@ -99,19 +89,26 @@ export default function Services() {
     });
   }, [services, workers, setSceneData]);
 
-  const matchesZone = (s, zone) => {
-    if (zone === "all") return true;
-    const name = (s.name + " " + (s.description || "")).toLowerCase();
-    return name.includes(zone.replace(/_/g, " ").toLowerCase());
+  const selectGroup = (key) => {
+    setSelectedGroup(key);
+    if (key === "all") {
+      setSearchParams({});
+    } else {
+      setSearchParams({ group: key });
+    }
   };
 
   const filtered = useMemo(() => {
+    const activeGroup = SERVICE_GROUPS.find((g) => g.key === selectedGroup);
     return (Array.isArray(services) ? services : [])
-      .filter((s) => matchesZone(s, selectedZone))
+      .filter((s) => {
+        if (!activeGroup) return true;
+        return activeGroup.names.some((n) => n.toLowerCase() === s.name.toLowerCase());
+      })
       .filter((s) =>
         (s.name + (s.name_hi || "") + (s.description || "")).toLowerCase().includes(q.toLowerCase())
       );
-  }, [services, selectedZone, q]);
+  }, [services, selectedGroup, q]);
 
   const count = (s) => {
     if (s.worker_count != null) return s.worker_count;
@@ -120,15 +117,20 @@ export default function Services() {
     ).length;
   };
 
+  const leftTiles = [
+    { key: "all", label: "All 22 Services", img: "/images/salon_women.jpg" },
+    ...SERVICE_GROUPS.map((g) => ({ key: g.key, label: g.shortLabel, img: g.img })),
+  ];
+
   return (
     <Frame title={t("browseServices")}>
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="font-display text-2xl sm:text-3xl font-bold text-neutral-900">
-            {tr("Home Services Directory")}
+            {tr("All Urban Company Services")}
           </h2>
           <p className="text-sm text-neutral-500 mt-0.5">
-            {tr("Select a service category to book a verified cooperative professional.")}
+            {tr("22 doorstep service categories · 90% direct payout to verified co-op artisans.")}
           </p>
         </div>
 
@@ -136,7 +138,7 @@ export default function Services() {
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
           <input
             className="w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-4 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
-            placeholder={tr("Search electrician, plumber, AC...")}
+            placeholder={tr("Search salon, spa, pest control, AC, RO...")}
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -144,19 +146,19 @@ export default function Services() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
-        {/* Left Sticky Category Photo Tiles (UC exact pattern) */}
+        {/* Left Sticky Category Verticals */}
         <aside className="lg:col-span-3 lg:sticky lg:top-24 rounded-2xl border border-neutral-200 bg-white p-4">
           <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3">
-            {tr("Select a service")}
+            {tr("Select a category")}
           </p>
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-2 gap-2.5">
-            {CATEGORY_ZONES.map((zone) => {
-              const active = selectedZone === zone.key;
+          <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-2 gap-2.5">
+            {leftTiles.map((tile) => {
+              const active = selectedGroup === tile.key;
               return (
                 <button
-                  key={zone.key}
+                  key={tile.key}
                   type="button"
-                  onClick={() => setSelectedZone(zone.key)}
+                  onClick={() => selectGroup(tile.key)}
                   className={
                     "flex flex-col items-center justify-center rounded-xl p-2 text-center transition border " +
                     (active
@@ -165,12 +167,12 @@ export default function Services() {
                   }
                 >
                   <img
-                    src={zone.img}
-                    alt={zone.label}
+                    src={tile.img}
+                    alt={tile.label}
                     className="h-10 w-12 rounded-md object-cover mb-1.5"
                   />
                   <span className="text-[11px] font-semibold text-neutral-800 leading-tight">
-                    {zone.key === "all" ? tr("All") : tService(zone.label)}
+                    {tr(tile.label)}
                   </span>
                 </button>
               );
@@ -180,6 +182,15 @@ export default function Services() {
 
         {/* Center Service Rows */}
         <div className="lg:col-span-6 space-y-4">
+          <div className="flex items-center justify-between text-xs text-neutral-500 px-1">
+            <span>
+              {selectedGroup === "all"
+                ? "All Categories"
+                : SERVICE_GROUPS.find((g) => g.key === selectedGroup)?.label}
+            </span>
+            <span>Showing {filtered.length} services</span>
+          </div>
+
           {services === null ? (
             <div className="space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -194,11 +205,11 @@ export default function Services() {
                 type="button"
                 onClick={() => {
                   setQ("");
-                  setSelectedZone("all");
+                  selectGroup("all");
                 }}
                 className="mt-2 text-xs font-semibold text-neutral-900 underline"
               >
-                Reset filters
+                Show all 22 services
               </button>
             </div>
           ) : (

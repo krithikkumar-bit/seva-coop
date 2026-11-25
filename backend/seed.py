@@ -21,17 +21,34 @@ SERVICES = [
     ("Caregiver", "देखभाल", "🤝", "Elderly & patient care", 550),
     ("Domestic Helper", "घरेलू सहायक", "🏠", "Cooking & household help", 280),
     ("AC Technician", "एसी तकनीशियन", "❄️", "AC service, gas refill, repair", 600),
+    ("Salon for Women", "सैलून (महिला)", "💇‍♀️", "Haircut, facials, waxing, manicure & pedicure at home", 599),
+    ("Salon for Men & Kids", "सैलून (पुरुष एवं बच्चे)", "💈", "Haircut, beard grooming, head massage & kid styling", 299),
+    ("Spa for Women", "स्पा (महिला)", "🧖‍♀️", "Swedish, deep tissue & ayurvedic stress-relief massage", 999),
+    ("Spa for Men", "स्पा (पुरुष)", "💆‍♂️", "Pain relief, sports & deep-tissue full body massage", 999),
+    ("Pest Control", "पेस्ट कंट्रोल", "🛡️", "Cockroach, ant, bed bug, termite & mosquito control", 799),
+    ("Washing Machine Repair", "वॉशिंग मशीन रिपेयर", "🧺", "Top-load, front-load & semi-automatic repair", 349),
+    ("Refrigerator Repair", "फ्रिज रिपेयर", "🧊", "Single, double-door & side-by-side fridge repair", 349),
+    ("Water Purifier (RO) Service", "आरओ वॉटर प्यूरीफायर", "💧", "RO filter replacement, membrane service & installation", 399),
+    ("Microwave & Chimney Repair", "माइक्रोवेव और चिमनी", "🔥", "Kitchen chimney deep cleaning & microwave oven repair", 399),
+    ("TV & Laptop Repair", "टीवी और लैपटॉप रिपेयर", "📺", "LED/Smart TV mounting, diagnostics & laptop service", 399),
+    ("Sofa & Carpet Cleaning", "सोफा और कालीन सफाई", "🛋️", "Foam shampooing, dry vacuuming & stain removal", 499),
+    ("Bathroom & Kitchen Cleaning", "बाथरूम और किचन सफाई", "🚿", "Tile descaling, degreasing & hospital-grade sanitizing", 449),
 ]
 
 
 def run_seed():
     db = SessionLocal()
     try:
-        if not db.query(models.Service).first():
-            for name, name_hi, icon, desc, price in SERVICES:
+        existing_names = {s.name.lower() for s in db.query(models.Service).all()}
+        added = 0
+        for name, name_hi, icon, desc, price in SERVICES:
+            if name.lower() not in existing_names:
                 db.add(models.Service(name=name, name_hi=name_hi, icon=icon, description=desc, base_price=price))
+                existing_names.add(name.lower())
+                added += 1
+        if added:
             db.commit()
-            print("Service catalogue created.")
+            print(f"Service catalogue synced ({added} services added).")
 
         email = os.getenv("ADMIN_EMAIL", "").strip().lower()
         password = os.getenv("ADMIN_PASSWORD", "")

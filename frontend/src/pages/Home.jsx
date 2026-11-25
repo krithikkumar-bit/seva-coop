@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import {
-  ArrowRight,
   CalendarCheck,
   CreditCard,
   Info,
@@ -17,7 +16,19 @@ import { useLang } from "../i18n";
 import { useSceneData } from "../scene/SceneStore";
 import PublicLayout from "../components/PublicLayout";
 import TrustedTeams from "../components/TrustedTeams";
-import { FALLBACK_SERVICES, fmtINR, getServiceImage } from "../lib/cn";
+import { FALLBACK_SERVICES, fmtINR, getServiceImage, SERVICE_GROUPS } from "../lib/cn";
+
+const HERO_TILES = [
+  { label: "Salon for Women", to: "/book/11", img: "/images/salon_women.jpg" },
+  { label: "Salon for Men & Kids", to: "/book/12", img: "/images/salon_men.svg" },
+  { label: "Spa & Massage", to: "/services?group=salon_spa", img: "/images/spa_women.svg" },
+  { label: "AC & Appliances", to: "/services?group=appliances", img: "/images/ac_technician.jpg" },
+  { label: "Cleaning & Pest", to: "/services?group=cleaning_pest", img: "/images/cleaning.jpg" },
+  { label: "Electrician", to: "/book/1", img: "/images/electrician.jpg" },
+  { label: "Plumber", to: "/book/2", img: "/images/plumber.jpg" },
+  { label: "Carpenter", to: "/book/3", img: "/images/carpenter.jpg" },
+  { label: "Home Painting", to: "/book/4", img: "/images/painter.jpg" },
+];
 
 const WEIGHTS = [
   ["Skill Match", "30%", "Verified trade certification and experience"],
@@ -37,7 +48,7 @@ export default function Home() {
 
   useEffect(() => {
     api.get("/services")
-      .then((r) => setServices(Array.isArray(r.data) && r.data.length > 0 ? r.data : FALLBACK_SERVICES))
+      .then((r) => setServices(Array.isArray(r.data) && r.data.length >= 22 ? r.data : FALLBACK_SERVICES))
       .catch(() => setServices(FALLBACK_SERVICES));
     api.get("/workers")
       .then((r) => setWorkers(Array.isArray(r.data) ? r.data : []))
@@ -69,61 +80,62 @@ export default function Home() {
   const welfareShare = Math.round(calcAmount * 0.1);
   const corporateCut = Math.round(calcAmount * 0.35);
 
-  const repairServices = safeServices.filter((s) =>
-    ["Electrician", "Plumber", "Carpenter", "Painter", "AC Technician"].includes(s.name)
-  );
-  const careServices = safeServices.filter((s) =>
-    ["Cleaning", "Caregiver", "Domestic Helper", "Gardener", "Driver"].includes(s.name)
-  );
+  const findSvc = (name) =>
+    safeServices.find((s) => s.name.toLowerCase() === name.toLowerCase()) ||
+    FALLBACK_SERVICES.find((s) => s.name.toLowerCase() === name.toLowerCase());
+
+  const mostBooked = [
+    findSvc("Salon for Women"),
+    findSvc("AC Technician"),
+    findSvc("Washing Machine Repair"),
+    findSvc("Pest Control"),
+    findSvc("Cleaning"),
+  ].filter(Boolean);
 
   return (
     <PublicLayout>
-      {/* =====================================================================
-          1. EXACT URBAN COMPANY STYLE SPLIT HERO
-          ===================================================================== */}
+      {/* 1. EXACT URBAN COMPANY STYLE SPLIT HERO */}
       <section className="w-full bg-white py-10 sm:py-14">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start">
-            {/* Left Column: Headline + "What are you looking for?" 3x3 Photo Grid Box + 2 Stats */}
+            {/* Left Column: Headline + "What are you looking for?" 3x3 UC Tiles */}
             <div className="lg:col-span-5 space-y-6">
               <h1 className="font-display text-3xl sm:text-4xl lg:text-[40px] font-bold tracking-tight text-neutral-900 leading-[1.18]">
                 {tr("Home services at your doorstep")}
               </h1>
 
-              {/* UC Signature Bordered Category Selector Card */}
               <div className="rounded-xl border border-neutral-200 bg-white p-5 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-base font-semibold text-neutral-700">
                     {tr("What are you looking for?")}
                   </h2>
                   <Link to="/services" className="text-xs font-semibold text-neutral-900 hover:underline">
-                    {tr("See all")}
+                    {tr("See all 22")}
                   </Link>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
-                  {safeServices.slice(0, 9).map((s) => (
+                  {HERO_TILES.map((tile) => (
                     <Link
-                      key={s.id}
-                      to={`/book/${s.id}`}
+                      key={tile.label}
+                      to={tile.to}
                       className="group flex flex-col items-center justify-start rounded-lg bg-[#F5F5F5] p-2.5 text-center transition hover:bg-[#EBEBEB]"
                     >
                       <div className="h-14 w-16 overflow-hidden rounded-md mb-2 bg-white">
                         <img
-                          src={getServiceImage(s.name)}
-                          alt={s.name}
+                          src={tile.img}
+                          alt={tile.label}
                           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                       </div>
                       <span className="text-[11px] font-medium text-neutral-800 leading-tight line-clamp-2">
-                        {tService(s.name)}
+                        {tile.label}
                       </span>
                     </Link>
                   ))}
                 </div>
               </div>
 
-              {/* UC Signature Bottom Metrics Bar */}
               <div className="flex items-center gap-10 pt-2">
                 <div className="flex items-center gap-3">
                   <Star className="h-7 w-7 text-neutral-800 stroke-[1.5]" />
@@ -145,62 +157,62 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column: Urban Company 4-Photo Stitched Collage */}
+            {/* Right Column: Urban Company 4-Photo Stitched Collage (Salon, Appliances, Cleaning, Pest/Repairs) */}
             <div className="lg:col-span-7">
               <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
                 <Link
-                  to="/book/10"
+                  to="/services?group=salon_spa"
+                  className="group relative overflow-hidden rounded-2xl aspect-[4/3] bg-neutral-100"
+                >
+                  <img
+                    src="/images/salon_women.jpg"
+                    alt="Salon & Spa at Home"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent p-4">
+                    <p className="text-xs sm:text-sm font-bold text-white">Salon & Spa at Home</p>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/services?group=appliances"
                   className="group relative overflow-hidden rounded-2xl aspect-[4/3] bg-neutral-100"
                 >
                   <img
                     src="/images/ac_technician.jpg"
-                    alt="AC Technician"
+                    alt="AC & Appliance Repair"
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent p-4">
-                    <p className="text-xs sm:text-sm font-bold text-white">AC & Appliance Service</p>
+                    <p className="text-xs sm:text-sm font-bold text-white">AC & Appliance Repair</p>
                   </div>
                 </Link>
 
                 <Link
-                  to="/book/5"
+                  to="/services?group=cleaning_pest"
                   className="group relative overflow-hidden rounded-2xl aspect-[4/3] bg-neutral-100"
                 >
                   <img
                     src="/images/cleaning.jpg"
-                    alt="Home Cleaning"
+                    alt="Cleaning & Pest Control"
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent p-4">
-                    <p className="text-xs sm:text-sm font-bold text-white">Deep Home Cleaning</p>
+                    <p className="text-xs sm:text-sm font-bold text-white">Cleaning & Pest Control</p>
                   </div>
                 </Link>
 
                 <Link
-                  to="/book/2"
+                  to="/services?group=repairs"
                   className="group relative overflow-hidden rounded-2xl aspect-[4/3] bg-neutral-100"
                 >
                   <img
                     src="/images/plumber.jpg"
-                    alt="Plumber"
+                    alt="Electricians, Plumbers & Carpenters"
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent p-4">
-                    <p className="text-xs sm:text-sm font-bold text-white">Plumbing & Repairs</p>
-                  </div>
-                </Link>
-
-                <Link
-                  to="/book/3"
-                  className="group relative overflow-hidden rounded-2xl aspect-[4/3] bg-neutral-100"
-                >
-                  <img
-                    src="/images/carpenter.jpg"
-                    alt="Carpenter"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent p-4">
-                    <p className="text-xs sm:text-sm font-bold text-white">Carpentry & Assembly</p>
+                    <p className="text-xs sm:text-sm font-bold text-white">Electricians, Plumbers & More</p>
                   </div>
                 </Link>
               </div>
@@ -209,39 +221,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* =====================================================================
-          2. "New and noteworthy" (UC CLEAN PHOTO CAROUSEL)
-          ===================================================================== */}
+      {/* 2. "Most booked services" */}
       <section className="w-full bg-white py-10 border-t border-neutral-100">
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
-          <h2 className="font-display text-2xl sm:text-3xl font-bold text-neutral-900 mb-6">
-            {tr("New and noteworthy")}
-          </h2>
-
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {safeServices.slice(0, 5).map((s) => (
-              <Link key={s.id} to={`/book/${s.id}`} className="group block">
-                <div className="overflow-hidden rounded-xl aspect-[4/3] bg-neutral-100">
-                  <img
-                    src={getServiceImage(s.name)}
-                    alt={s.name}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-                <p className="mt-2.5 text-sm font-semibold text-neutral-900 group-hover:text-black">
-                  {tService(s.name)}
-                </p>
-                <p className="text-xs text-neutral-500">Starts at {fmtINR(s.base_price)}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* =====================================================================
-          3. "Most booked services" (UC EXACT CARD ANATOMY)
-          ===================================================================== */}
-      <section className="w-full bg-white py-10 sm:py-12">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <div className="mb-6 flex items-center justify-between gap-4">
             <h2 className="font-display text-2xl sm:text-3xl font-bold text-neutral-900">
@@ -253,37 +234,33 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {[safeServices[0], safeServices[4], safeServices[9], safeServices[1], safeServices[2]]
-              .filter(Boolean)
-              .map((s) => (
-                <Link key={s.id} to={`/book/${s.id}`} className="group block">
-                  <div className="overflow-hidden rounded-xl aspect-[4/3] bg-neutral-100">
-                    <img
-                      src={getServiceImage(s.name)}
-                      alt={s.name}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <h3 className="mt-2.5 text-sm font-semibold text-neutral-900 leading-snug">
-                    {tService(s.name)}
-                  </h3>
-                  <div className="mt-1 flex items-center gap-1 text-xs text-neutral-500">
-                    <Star className="h-3 w-3 fill-neutral-900 text-neutral-900" />
-                    <span className="font-medium text-neutral-800">4.85</span>
-                    <span>(1.2K)</span>
-                  </div>
-                  <p className="mt-1 text-sm font-semibold text-neutral-900">
-                    {fmtINR(s.base_price)}
-                  </p>
-                </Link>
-              ))}
+            {mostBooked.map((s) => (
+              <Link key={s.id} to={`/book/${s.id}`} className="group block">
+                <div className="overflow-hidden rounded-xl aspect-[4/3] bg-neutral-100">
+                  <img
+                    src={getServiceImage(s.name)}
+                    alt={s.name}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <h3 className="mt-2.5 text-sm font-semibold text-neutral-900 leading-snug">
+                  {tService(s.name)}
+                </h3>
+                <div className="mt-1 flex items-center gap-1 text-xs text-neutral-500">
+                  <Star className="h-3 w-3 fill-neutral-900 text-neutral-900" />
+                  <span className="font-medium text-neutral-800">4.85</span>
+                  <span>(1.2K)</span>
+                </div>
+                <p className="mt-1 text-sm font-semibold text-neutral-900">
+                  {fmtINR(s.base_price)}
+                </p>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* =====================================================================
-          4. URBAN COMPANY STYLE FULL-WIDTH PROMO BANNER
-          ===================================================================== */}
+      {/* 3. FULL-WIDTH PROMO BANNER */}
       <section className="w-full bg-white py-6">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <div className="overflow-hidden rounded-2xl bg-[#F5F5F7] border border-neutral-200/80 grid grid-cols-1 lg:grid-cols-12 items-center">
@@ -292,24 +269,24 @@ export default function Home() {
                 <ShieldCheck className="h-3.5 w-3.5" /> SevaCoop Fair-Pay Standard
               </span>
               <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-neutral-900 leading-tight">
-                90% of every payment goes straight to your artisan
+                All Urban Company services — with 90% direct worker payout
               </h2>
               <p className="text-sm text-neutral-600 leading-relaxed">
-                Verified Labour Cooperative Society professionals — trained, background checked, and fairly paid with insurance cover included.
+                From Salon, Spa & Pest Control to AC, Fridge, RO, Plumber & Electrician — every service is fulfilled by verified Labour Cooperative Society artisans.
               </p>
               <div className="pt-1 flex flex-wrap gap-3">
                 <Link to="/services" className="btn-primary-coop py-2.5 px-5 text-sm">
-                  Book a Service
+                  Explore All 22 Services
                 </Link>
                 <a href="#about" className="btn-secondary-coop py-2.5 px-5 text-sm">
-                  See 90/10 Calculator
+                  90/10 Calculator
                 </a>
               </div>
             </div>
             <div className="lg:col-span-6 h-56 sm:h-72 lg:h-80">
               <img
-                src="/images/electrician.jpg"
-                alt="Verified Cooperative Artisan"
+                src="/images/pest_control.jpg"
+                alt="Verified Cooperative Specialist"
                 className="h-full w-full object-cover"
               />
             </div>
@@ -317,70 +294,50 @@ export default function Home() {
         </div>
       </section>
 
-      {/* =====================================================================
-          5. CATEGORY SHOWCASES (Home repair + Cleaning & Care)
-          ===================================================================== */}
+      {/* 4. ALL URBAN COMPANY CATEGORY ROWS */}
       <section className="w-full bg-white py-10 sm:py-12">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 space-y-12">
-          <div>
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-display text-2xl font-bold text-neutral-900">
-                {tr("Home repair & installation")}
-              </h2>
-              <Link to="/services" className="btn-secondary-coop py-1.5 px-3.5 text-xs">
-                See all
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-              {repairServices.map((s) => (
-                <Link key={s.id} to={`/book/${s.id}`} className="group block">
-                  <div className="overflow-hidden rounded-xl aspect-[4/3] bg-neutral-100">
-                    <img
-                      src={getServiceImage(s.name)}
-                      alt={s.name}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <p className="mt-2.5 text-sm font-semibold text-neutral-900">{tService(s.name)}</p>
-                  <p className="text-xs text-neutral-500">From {fmtINR(s.base_price)}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-display text-2xl font-bold text-neutral-900">
-                {tr("Cleaning, care & daily help")}
-              </h2>
-              <Link to="/services" className="btn-secondary-coop py-1.5 px-3.5 text-xs">
-                See all
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-              {careServices.map((s) => (
-                <Link key={s.id} to={`/book/${s.id}`} className="group block">
-                  <div className="overflow-hidden rounded-xl aspect-[4/3] bg-neutral-100">
-                    <img
-                      src={getServiceImage(s.name)}
-                      alt={s.name}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <p className="mt-2.5 text-sm font-semibold text-neutral-900">{tService(s.name)}</p>
-                  <p className="text-xs text-neutral-500">From {fmtINR(s.base_price)}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
+          {SERVICE_GROUPS.map((group) => {
+            const items = group.names.map(findSvc).filter(Boolean);
+            return (
+              <div key={group.key}>
+                <div className="mb-5 flex items-center justify-between">
+                  <h2 className="font-display text-2xl font-bold text-neutral-900">
+                    {tr(group.label)}
+                  </h2>
+                  <Link
+                    to={`/services?group=${group.key}`}
+                    className="btn-secondary-coop py-1.5 px-3.5 text-xs"
+                  >
+                    See all
+                  </Link>
+                </div>
+                <div className={`grid grid-cols-2 gap-4 sm:grid-cols-3 ${items.length >= 5 ? "lg:grid-cols-6" : "lg:grid-cols-4"}`}>
+                  {items.map((s) => (
+                    <Link key={s.id} to={`/book/${s.id}`} className="group block">
+                      <div className="overflow-hidden rounded-xl aspect-[4/3] bg-neutral-100 border border-neutral-200/60">
+                        <img
+                          src={getServiceImage(s.name)}
+                          alt={s.name}
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      </div>
+                      <p className="mt-2.5 text-sm font-semibold text-neutral-900 leading-snug">
+                        {tService(s.name)}
+                      </p>
+                      <p className="text-xs text-neutral-500">From {fmtINR(s.base_price)}</p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
       <TrustedTeams />
 
-      {/* =====================================================================
-          6. INTERACTIVE 90/10 FAIR-PAY CALCULATOR & MATCHING FORMULA
-          ===================================================================== */}
+      {/* 5. INTERACTIVE 90/10 FAIR-PAY CALCULATOR & MATCHING FORMULA */}
       <section id="about" className="w-full bg-white py-14">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 space-y-12">
           <div className="rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8 max-w-4xl mx-auto shadow-card">
@@ -470,7 +427,7 @@ export default function Home() {
 
           <div id="how" className="scroll-mt-20 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: Sparkles, step: "1", title: "Pick a Service", desc: "Choose from 10 verified categories with upfront base pricing." },
+              { icon: Sparkles, step: "1", title: "Pick a Service", desc: "Choose from 22 verified categories with upfront base pricing." },
               { icon: CalendarCheck, step: "2", title: "Choose Slot & Address", desc: "Pick your convenient time slot or urgent visit." },
               { icon: Zap, step: "3", title: "Smart Co-op Match", desc: "Matched by skill, proximity, rating & fair job rotation." },
               { icon: CreditCard, step: "4", title: "Pay via Razorpay / Cash", desc: "Pay securely and view your instant 90/10 fair-pay invoice." },

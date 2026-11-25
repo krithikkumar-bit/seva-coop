@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="800" y2="600" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F1F5F9"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <linearGradient id="mirror" x1="250" y1="70" x2="550" y2="430" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <circle cx="650" cy="120" r="140" fill="#CBD5E1" opacity="0.35"/>
+  <rect x="230" y="70" width="340" height="390" rx="170" fill="url(#mirror)" stroke="#1E293B" stroke-width="14"/>
+  <path d="M295 160 L355 100 M315 200 L405 110" stroke="#94A3B8" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+  <rect x="140" y="455" width="520" height="24" rx="12" fill="#334155"/>
+  <rect x="330" y="340" width="140" height="115" rx="20" fill="#0F172A"/>
+  <circle cx="400" cy="255" r="54" fill="#E2A87E"/>
+  <path d="M348 242 C348 196 452 196 452 242 C440 218 360 218 348 242Z" fill="#0F172A"/>
+  <rect x="372" y="305" width="56" height="38" rx="12" fill="#E2A87E"/>
+  <path d="M330 355 C330 335 470 335 470 355 L482 455 L318 455 Z" fill="#1E293B"/>
+  <g transform="translate(520 355)">
+    <rect x="0" y="25" width="28" height="75" rx="10" fill="#0F172A"/>
+    <rect x="4" y="0" width="20" height="28" rx="4" fill="#94A3B8"/>
+    <rect x="44" y="15" width="14" height="85" rx="6" fill="#475569"/>
+  </g>
+  <g transform="translate(185 375)">
+    <circle cx="18" cy="65" r="14" stroke="#0F172A" stroke-width="6" fill="none"/>
+    <circle cx="52" cy="65" r="14" stroke="#0F172A" stroke-width="6" fill="none"/>
+    <path d="M26 54 L62 12 M44 54 L8 12" stroke="#0F172A" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>

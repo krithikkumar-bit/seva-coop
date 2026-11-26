@@ -175,11 +175,11 @@ export default function CustomerOverview() {
                 <span>{tr("Your Service Spending")}</span>
               </div>
               <p className="text-xs text-neutral-500 mt-0.5">
-                Payments across your booked services
+                {tr("Payments across your booked services")}
               </p>
             </div>
             <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-bold text-neutral-900 self-start sm:self-auto">
-              {fmtINR(spent)} Total
+              {fmtINR(spent)} {tr("Total")}
             </span>
           </div>
 
@@ -203,7 +203,7 @@ export default function CustomerOverview() {
                     color: "#0f0f0f",
                     fontSize: "12px",
                   }}
-                  formatter={(v) => [fmtINR(v), "Amount"]}
+                  formatter={(v) => [fmtINR(v), tr("Amount")]}
                 />
                 <Area type="monotone" dataKey="spend" stroke="#0f0f0f" strokeWidth={2} fillOpacity={1} fill="url(#spendGrad)" />
               </AreaChart>
@@ -224,11 +224,11 @@ export default function CustomerOverview() {
             {nextBooking ? (
               <div className="mt-4 space-y-3">
                 <p className="text-base font-bold text-neutral-900">
-                  {nextBooking.service_name || nextBooking.service?.name}
+                  {tService(nextBooking.service_name || nextBooking.service?.name)}
                 </p>
                 <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-3.5 space-y-2 text-xs text-neutral-600">
                   <div className="flex items-center justify-between">
-                    <span className="text-neutral-500">Scheduled</span>
+                    <span className="text-neutral-500">{tr("Scheduled")}</span>
                     <span className="font-semibold text-neutral-900">
                       {new Date(nextBooking.scheduled_at).toLocaleString([], {
                         month: "short",
@@ -239,11 +239,11 @@ export default function CustomerOverview() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-neutral-500">Booking ID</span>
+                    <span className="text-neutral-500">{tr("Booking ID")}</span>
                     <span className="font-mono font-bold text-neutral-900">#{nextBooking.code}</span>
                   </div>
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-neutral-500">Address</span>
+                    <span className="text-neutral-500">{tr("Address")}</span>
                     <span className="text-neutral-800 truncate max-w-[180px]">{nextBooking.address}</span>
                   </div>
                 </div>
@@ -252,7 +252,7 @@ export default function CustomerOverview() {
               <div className="mt-8 text-center py-4">
                 <CheckCircle2 className="h-9 w-9 text-neutral-400 mx-auto mb-2" />
                 <p className="text-sm font-semibold text-neutral-800">{tr("No upcoming bookings")}</p>
-                <p className="text-xs text-neutral-500 mt-1">Need a verified professional at home?</p>
+                <p className="text-xs text-neutral-500 mt-1">{tr("Need a verified professional at home?")}</p>
               </div>
             )}
           </div>
@@ -270,7 +270,7 @@ export default function CustomerOverview() {
             {tr("Quick Book Services")}
           </h3>
           <Link to="/services" className="text-xs font-semibold text-neutral-900 hover:underline">
-            View All 22 →
+            {tr("View All 22 →")}
           </Link>
         </div>
 
@@ -288,7 +288,7 @@ export default function CustomerOverview() {
                   </span>
                 </div>
                 <h4 className="text-sm font-bold text-neutral-900">{tService(s.name)}</h4>
-                <p className="text-xs text-neutral-500 mt-1">From {fmtINR(s.base_price)}</p>
+                <p className="text-xs text-neutral-500 mt-1">{tr("From")} {fmtINR(s.base_price)}</p>
               </Link>
             );
           })}

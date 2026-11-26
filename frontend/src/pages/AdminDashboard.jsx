@@ -31,7 +31,7 @@ import { fmtINR, extractApiError, FALLBACK_SERVICES } from "../lib/cn";
 import { useSceneData } from "../scene/SceneStore";
 
 export default function AdminDashboard() {
-  const { t } = useLang();
+  const { t, tr, tService, tServiceDesc } = useLang();
   const { toast } = useToast();
   const [tab, setTab] = useState("overview");
   const [stats, setStats] = useState(null);
@@ -98,10 +98,10 @@ export default function AdminDashboard() {
   ];
 
   const titleOf = {
-    overview: "Cooperative Overview",
-    workers: "Workers Directory",
-    bookings: "All Bookings",
-    services: "Manage Services",
+    overview: tr("Cooperative Overview"),
+    workers: tr("Workers Directory"),
+    bookings: tr("All Bookings"),
+    services: tr("Manage Services"),
   }[tab];
 
   return (
@@ -110,11 +110,11 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           {stats ? (
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-              <StatCard icon={ShieldCheck} label="Verified Artisans" value={stats.workers_verified} tone="emerald" subtitle="Active members" />
-              <StatCard icon={Hourglass} label="Pending Verification" value={stats.workers_pending} tone="amber" subtitle="Awaiting review" />
-              <StatCard icon={ClipboardList} label="Active Bookings" value={stats.bookings_active} tone="teal" subtitle="In progress" />
-              <StatCard icon={CheckCircle2} label="Completed Jobs" value={stats.bookings_completed} tone="emerald" subtitle="Settled jobs" />
-              <StatCard icon={IndianRupee} label="Total Volume" value={fmtINR(stats.revenue)} tone="gold" subtitle="90% to workers" />
+              <StatCard icon={ShieldCheck} label={tr("Verified Artisans")} value={stats.workers_verified} tone="emerald" subtitle={tr("Active members")} />
+              <StatCard icon={Hourglass} label={tr("Pending Verification")} value={stats.workers_pending} tone="amber" subtitle={tr("Awaiting review")} />
+              <StatCard icon={ClipboardList} label={tr("Active Bookings")} value={stats.bookings_active} tone="teal" subtitle={tr("In progress")} />
+              <StatCard icon={CheckCircle2} label={tr("Completed Jobs")} value={stats.bookings_completed} tone="emerald" subtitle={tr("Settled jobs")} />
+              <StatCard icon={IndianRupee} label={tr("Total Volume")} value={fmtINR(stats.revenue)} tone="gold" subtitle={tr("90% to workers")} />
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
@@ -129,10 +129,10 @@ export default function AdminDashboard() {
               <div className="pb-3 border-b border-neutral-100 mb-4">
                 <div className="flex items-center gap-2 text-sm font-bold text-neutral-900">
                   <TrendingUp className="h-4 w-4 text-neutral-700" />
-                  <span>AI 7-Day Demand Forecast</span>
+                  <span>{tr("AI 7-Day Demand Forecast")}</span>
                 </div>
                 <p className="text-xs text-neutral-500 mt-0.5">
-                  Predicted weekly bookings by service category
+                  {tr("Predicted weekly bookings by service category")}
                 </p>
               </div>
 
@@ -165,10 +165,10 @@ export default function AdminDashboard() {
               <div className="pb-3 border-b border-neutral-100 mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm font-bold text-neutral-900">
                   <UserCheck className="h-4 w-4 text-amber-600" />
-                  <span>Pending Worker Approvals</span>
+                  <span>{tr("Pending Worker Approvals")}</span>
                 </div>
                 <span className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-xs font-bold text-amber-700">
-                  {pending.length} pending
+                  {pending.length} {tr("pending")}
                 </span>
               </div>
 
@@ -176,8 +176,8 @@ export default function AdminDashboard() {
                 {pending.length === 0 ? (
                   <div className="p-8 text-center text-neutral-500">
                     <CheckCircle2 className="h-8 w-8 text-neutral-400 mx-auto mb-2" />
-                    <p className="text-sm font-bold text-neutral-800">All caught up!</p>
-                    <p className="text-xs mt-1">No pending verification requests.</p>
+                    <p className="text-sm font-bold text-neutral-800">{tr("All caught up!")}</p>
+                    <p className="text-xs mt-1">{tr("No pending verification requests.")}</p>
                   </div>
                 ) : (
                   pending.map((w) => (
@@ -188,12 +188,12 @@ export default function AdminDashboard() {
                       <div className="min-w-0">
                         <p className="font-bold text-neutral-900 text-sm">{w.name}</p>
                         <p className="text-xs text-neutral-500 mt-0.5">
-                          {w.phone} · {w.experience_years} yrs exp · ID: {w.id_proof_no || "Pending"}
+                          {w.phone} · {w.experience_years} {tr("yrs exp")} · ID: {w.id_proof_no || tr("Pending")}
                         </p>
                         <div className="flex flex-wrap gap-1 mt-1.5">
                           {(w.skills || []).map((sk) => (
                             <span key={sk} className="rounded-full border border-neutral-200 bg-white px-2 py-0.5 text-[10px] font-medium text-neutral-700">
-                              {sk}
+                              {tService(sk)}
                             </span>
                           ))}
                         </div>
@@ -201,10 +201,10 @@ export default function AdminDashboard() {
 
                       <div className="flex items-center gap-2 shrink-0">
                         <button type="button" onClick={() => verify(w, "verified")} className="btn-primary-coop py-1.5 px-3 text-xs">
-                          Approve
+                          {tr("Approve")}
                         </button>
                         <button type="button" onClick={() => verify(w, "rejected")} className="btn-secondary-coop py-1.5 px-3 text-xs">
-                          Reject
+                          {tr("Reject")}
                         </button>
                       </div>
                     </div>
@@ -220,10 +220,10 @@ export default function AdminDashboard() {
         <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs">
           <div className="pb-3 border-b border-neutral-100 mb-4 flex items-center justify-between">
             <h3 className="text-sm font-bold text-neutral-900">
-              Registered Cooperative Workers ({(workers || []).length})
+              {tr("Registered Cooperative Workers")} ({(workers || []).length})
             </h3>
             <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
-              90% Direct Payout Active
+              {tr("90% Direct Payout Active")}
             </span>
           </div>
 
@@ -231,12 +231,12 @@ export default function AdminDashboard() {
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-neutral-200 text-xs font-semibold text-neutral-500">
-                  <th className="py-3">Name</th>
-                  <th>Phone</th>
-                  <th>Skills</th>
-                  <th>Visit Rate</th>
-                  <th>Rating</th>
-                  <th className="text-right">Status</th>
+                  <th className="py-3">{tr("Name")}</th>
+                  <th>{tr("Phone")}</th>
+                  <th>{tr("Skills")}</th>
+                  <th>{tr("Visit Rate")}</th>
+                  <th>{tr("Rating")}</th>
+                  <th className="text-right">{tr("Status")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100">
@@ -244,7 +244,7 @@ export default function AdminDashboard() {
                   <tr key={w.profile_id} className="hover:bg-neutral-50">
                     <td className="py-3 font-semibold text-neutral-900">{w.name}</td>
                     <td className="text-neutral-600">{w.phone}</td>
-                    <td className="text-neutral-600">{(w.skills || []).join(", ")}</td>
+                    <td className="text-neutral-600">{(w.skills || []).map(tService).join(", ")}</td>
                     <td className="font-semibold text-neutral-900">₹{w.hourly_rate}</td>
                     <td className="font-semibold text-amber-600">{w.avg_rating || "4.9"}★</td>
                     <td className="text-right"><StatusBadge status={w.verification_status} /></td>
@@ -260,7 +260,7 @@ export default function AdminDashboard() {
         <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs">
           <div className="pb-3 border-b border-neutral-100 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <h3 className="text-sm font-bold text-neutral-900">
-              All Platform Bookings ({(bookings || []).length})
+              {tr("All Platform Bookings")} ({(bookings || []).length})
             </h3>
             <div className="flex flex-wrap gap-1.5 text-xs">
               {["all", "active", "completed", "cancelled"].map((f) => (
@@ -274,7 +274,7 @@ export default function AdminDashboard() {
                       : "border border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-100"
                   }`}
                 >
-                  {f}
+                  {tr(f)}
                 </button>
               ))}
             </div>
@@ -284,27 +284,27 @@ export default function AdminDashboard() {
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-neutral-200 text-xs font-semibold text-neutral-500">
-                  <th className="py-3">Code</th>
-                  <th>Service</th>
-                  <th>Customer</th>
-                  <th>Address</th>
-                  <th>Amount</th>
-                  <th className="text-right">Status</th>
+                  <th className="py-3">{tr("Code")}</th>
+                  <th>{tr("Service")}</th>
+                  <th>{tr("Customer")}</th>
+                  <th>{tr("Address")}</th>
+                  <th>{tr("Amount")}</th>
+                  <th className="text-right">{tr("Status")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100">
                 {filteredBookings.length === 0 ? (
                   <tr>
                     <td colSpan="6" className="py-10 text-center text-neutral-500">
-                      No bookings found in this category
+                      {tr("No bookings found in this category")}
                     </td>
                   </tr>
                 ) : (
                   filteredBookings.map((b) => (
                     <tr key={b.id} className="hover:bg-neutral-50">
                       <td className="py-3 font-mono font-bold text-neutral-900">#{b.code}</td>
-                      <td className="font-semibold text-neutral-900">{b.service_name || b.service?.name}</td>
-                      <td className="text-neutral-600">{b.customer_name || `Customer #${b.customer_id}`}</td>
+                      <td className="font-semibold text-neutral-900">{tService(b.service_name || b.service?.name)}</td>
+                      <td className="text-neutral-600">{b.customer_name || `${tr("Customer")} #${b.customer_id}`}</td>
                       <td className="text-neutral-500 truncate max-w-[200px]">{b.address}</td>
                       <td className="font-bold text-neutral-900">{fmtINR(b.final_cost || b.estimated_cost)}</td>
                       <td className="text-right"><StatusBadge status={b.status} /></td>
@@ -321,7 +321,7 @@ export default function AdminDashboard() {
         <div className="grid gap-6 lg:grid-cols-12 items-start">
           <div className="lg:col-span-7 rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs">
             <h3 className="text-sm font-bold text-neutral-900 mb-4">
-              Active Services ({services.length})
+              {tr("Active Services")} ({services.length})
             </h3>
             <div className="space-y-2.5">
               {services.map((s) => (
@@ -334,11 +334,11 @@ export default function AdminDashboard() {
                       <CategoryIcon name={s.name} className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
-                      <p className="font-bold text-neutral-900 text-sm">{s.name}</p>
-                      <p className="text-xs text-neutral-500 truncate">{s.description}</p>
+                      <p className="font-bold text-neutral-900 text-sm">{tService(s.name)}</p>
+                      <p className="text-xs text-neutral-500 truncate">{tServiceDesc(s.name, s.description)}</p>
                     </div>
                   </div>
-                  <span className="font-bold text-neutral-900 text-xs shrink-0">From ₹{s.base_price}</span>
+                  <span className="font-bold text-neutral-900 text-xs shrink-0">{tr("From")} ₹{s.base_price}</span>
                 </div>
               ))}
             </div>
@@ -346,11 +346,11 @@ export default function AdminDashboard() {
 
           <div className="lg:col-span-5 rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs">
             <h3 className="text-sm font-bold text-neutral-900 mb-4">
-              Add New Cooperative Service
+              {tr("Add New Cooperative Service")}
             </h3>
             <form onSubmit={addService} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-neutral-700">Service Name</label>
+                <label className="text-xs font-semibold text-neutral-700">{tr("Service Name")}</label>
                 <input
                   value={svc.name}
                   onChange={(e) => setSvc({ ...svc, name: e.target.value })}
@@ -361,7 +361,7 @@ export default function AdminDashboard() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-neutral-700">Hindi Name</label>
+                <label className="text-xs font-semibold text-neutral-700">{tr("Hindi Name")}</label>
                 <input
                   value={svc.name_hi}
                   onChange={(e) => setSvc({ ...svc, name_hi: e.target.value })}
@@ -371,7 +371,7 @@ export default function AdminDashboard() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-neutral-700">Base Visit Rate (₹)</label>
+                <label className="text-xs font-semibold text-neutral-700">{tr("Base Visit Rate (₹)")}</label>
                 <input
                   type="number"
                   min={0}
@@ -382,7 +382,7 @@ export default function AdminDashboard() {
                 />
               </div>
               <button type="submit" className="btn-primary-coop w-full py-2.5 justify-center mt-2">
-                Add Service to Directory
+                {tr("Add Service to Directory")}
               </button>
             </form>
           </div>

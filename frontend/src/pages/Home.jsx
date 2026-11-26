@@ -129,7 +129,7 @@ export default function Home() {
                         />
                       </div>
                       <span className="text-[11px] font-medium text-neutral-800 leading-tight line-clamp-2">
-                        {tile.label}
+                        {tr(tile.label)}
                       </span>
                     </Link>
                   ))}
@@ -149,7 +149,7 @@ export default function Home() {
                   <Users className="h-7 w-7 text-neutral-800 stroke-[1.5]" />
                   <div>
                     <p className="text-lg font-bold text-neutral-900 leading-none">
-                      {safeWorkers.length || 32}+ Verified
+                      {safeWorkers.length || 32}+ {tr("Verified")}
                     </p>
                     <p className="text-xs text-neutral-500 mt-1">{tr("Co-op Artisans · 90% Pay")}</p>
                   </div>
@@ -170,7 +170,7 @@ export default function Home() {
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent p-4">
-                    <p className="text-xs sm:text-sm font-bold text-white">Salon & Spa at Home</p>
+                    <p className="text-xs sm:text-sm font-bold text-white">{tr("Salon & Spa at Home")}</p>
                   </div>
                 </Link>
 
@@ -184,7 +184,7 @@ export default function Home() {
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent p-4">
-                    <p className="text-xs sm:text-sm font-bold text-white">AC & Appliance Repair</p>
+                    <p className="text-xs sm:text-sm font-bold text-white">{tr("AC & Appliance Repair")}</p>
                   </div>
                 </Link>
 
@@ -198,7 +198,7 @@ export default function Home() {
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent p-4">
-                    <p className="text-xs sm:text-sm font-bold text-white">Cleaning & Pest Control</p>
+                    <p className="text-xs sm:text-sm font-bold text-white">{tr("Cleaning & Pest Control")}</p>
                   </div>
                 </Link>
 
@@ -212,7 +212,7 @@ export default function Home() {
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent p-4">
-                    <p className="text-xs sm:text-sm font-bold text-white">Electricians, Plumbers & More</p>
+                    <p className="text-xs sm:text-sm font-bold text-white">{tr("Electricians, Plumbers & More")}</p>
                   </div>
                 </Link>
               </div>
@@ -266,20 +266,20 @@ export default function Home() {
           <div className="overflow-hidden rounded-2xl bg-[#F5F5F7] border border-neutral-200/80 grid grid-cols-1 lg:grid-cols-12 items-center">
             <div className="lg:col-span-6 p-7 sm:p-10 space-y-4">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-neutral-200 px-3 py-1 text-xs font-semibold text-emerald-700">
-                <ShieldCheck className="h-3.5 w-3.5" /> SevaCoop Fair-Pay Standard
+                <ShieldCheck className="h-3.5 w-3.5" /> {tr("SevaCoop Fair-Pay Standard")}
               </span>
               <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-neutral-900 leading-tight">
-                All SevaCoop services — with 90% direct worker payout
+                {tr("All SevaCoop services — with 90% direct worker payout")}
               </h2>
               <p className="text-sm text-neutral-600 leading-relaxed">
-                From Salon, Spa & Pest Control to AC, Fridge, RO, Plumber & Electrician — every service is fulfilled by verified Labour Cooperative Society artisans.
+                {tr("From Salon, Spa & Pest Control to AC, Fridge, RO, Plumber & Electrician — every service is fulfilled by verified Labour Cooperative Society artisans.")}
               </p>
               <div className="pt-1 flex flex-wrap gap-3">
                 <Link to="/services" className="btn-primary-coop py-2.5 px-5 text-sm">
-                  Explore All 22 Services
+                  {tr("Explore All 22 Services")}
                 </Link>
                 <a href="#about" className="btn-secondary-coop py-2.5 px-5 text-sm">
-                  90/10 Calculator
+                  {tr("90/10 Calculator")}
                 </a>
               </div>
             </div>
@@ -309,7 +309,7 @@ export default function Home() {
                     to={`/services?group=${group.key}`}
                     className="btn-secondary-coop py-1.5 px-3.5 text-xs"
                   >
-                    See all
+                    {tr("See all")}
                   </Link>
                 </div>
                 <div className={`grid grid-cols-2 gap-4 sm:grid-cols-3 ${items.length >= 5 ? "lg:grid-cols-6" : "lg:grid-cols-4"}`}>
@@ -325,7 +325,7 @@ export default function Home() {
                       <p className="mt-2.5 text-sm font-semibold text-neutral-900 leading-snug">
                         {tService(s.name)}
                       </p>
-                      <p className="text-xs text-neutral-500">From {fmtINR(s.base_price)}</p>
+                      <p className="text-xs text-neutral-500">{tr("From")} {fmtINR(s.base_price)}</p>
                     </Link>
                   ))}
                 </div>
@@ -377,7 +377,7 @@ export default function Home() {
               />
               <div className="flex justify-between text-xs text-neutral-500 mt-1">
                 <span>₹300</span>
-                <span className="font-bold text-neutral-900">Booking Amount: ₹{calcAmount}</span>
+                <span className="font-bold text-neutral-900">{tr("Booking Amount:")} ₹{calcAmount}</span>
                 <span>₹10,000</span>
               </div>
             </div>
@@ -396,7 +396,7 @@ export default function Home() {
               <div className="rounded-xl border border-rose-200 bg-rose-50/60 p-4">
                 <span className="text-xs font-bold text-rose-700">{tr("Corporate Commission")}</span>
                 <p className="font-display text-2xl font-extrabold text-rose-600 mt-1">₹0</p>
-                <p className="text-xs text-neutral-600 mt-1.5">Commercial apps deduct ~35% (₹{corporateCut}).</p>
+                <p className="text-xs text-neutral-600 mt-1.5">{tr("Commercial apps deduct ~35%")} (₹{corporateCut}).</p>
               </div>
             </div>
           </div>
@@ -408,7 +408,7 @@ export default function Home() {
                 <span>{tr("Transparent Matching Formula")}</span>
               </div>
               <code className="font-mono text-xs text-emerald-700 bg-white border border-emerald-200 px-2.5 py-1 rounded-md">
-                {t("matchScore")} = 0.30×Skill + 0.25×Proximity + 0.20×Rating + 0.15×Availability + 0.10×Fairness
+                {t("matchScore")} = 0.30×{tr("Skill Match")} + 0.25×{tr("Proximity")} + 0.20×{tr("Rating")} + 0.15×{tr("Availability")} + 0.10×{tr("Fair Rotation")}
               </code>
             </div>
 
@@ -439,7 +439,7 @@ export default function Home() {
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-neutral-900 text-white">
                       <Icon className="h-4 w-4" />
                     </div>
-                    <span className="text-xs font-bold text-neutral-400">STEP {s.step}</span>
+                    <span className="text-xs font-bold text-neutral-400">{tr("STEP")} {s.step}</span>
                   </div>
                   <h3 className="text-sm font-bold text-neutral-900">{tr(s.title)}</h3>
                   <p className="mt-1.5 text-xs text-neutral-600 leading-relaxed">{tr(s.desc)}</p>

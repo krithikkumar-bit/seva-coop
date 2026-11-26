@@ -38,13 +38,14 @@ const JOB_TIMELINE_STEPS = [
 ];
 
 function JobTimeline({ status }) {
+  const { tr } = useLang();
   const isCancelled = status === "CANCELLED" || status === "REJECTED";
   const stepIdx = { PENDING: 0, ACCEPTED: 1, IN_PROGRESS: 2, COMPLETED: 3 }[status] ?? -1;
 
   if (isCancelled) {
     return (
       <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">
-        Job was {status.toLowerCase()}.
+        {tr("Job was")} {tr(status.toLowerCase())}.
       </div>
     );
   }
@@ -80,7 +81,7 @@ function JobTimeline({ status }) {
                   isCurrent ? "text-neutral-900" : isDone ? "text-neutral-900" : "text-neutral-400"
                 }`}
               >
-                {step.label}
+                {tr(step.label)}
               </span>
             </div>
           );
@@ -91,6 +92,7 @@ function JobTimeline({ status }) {
 }
 
 function JobRow({ b, onAct, onComplete }) {
+  const { tr, tService } = useLang();
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs transition hover:border-neutral-300">
       <div className="flex flex-col gap-4 md:flex-row md:items-center">
@@ -101,25 +103,25 @@ function JobRow({ b, onAct, onComplete }) {
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-display text-sm font-bold text-neutral-900">
-                {b.service_name}
+                {tService(b.service_name)}
               </span>
               <span className="rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 font-mono text-[11px] font-semibold text-neutral-600">
                 #{b.code}
               </span>
               {b.is_emergency && (
                 <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700">
-                  Urgent (+25%)
+                  {tr("Urgent")} (+25%)
                 </span>
               )}
             </div>
 
             <p className="mt-1 text-xs text-neutral-600">
-              <strong className="text-neutral-800">Address:</strong> {b.address}
+              <strong className="text-neutral-800">{tr("Address:")}</strong> {b.address}
             </p>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Customer: <span className="font-medium text-neutral-800">{b.customer_name || `Customer #${b.customer_id}`}</span>
+              {tr("Customer:")} <span className="font-medium text-neutral-800">{b.customer_name || `${tr("Customer")} #${b.customer_id}`}</span>
               {b.customer_phone && (
-                <> · Phone: <span className="font-medium text-neutral-800">{b.customer_phone}</span></>
+                <> · {tr("Phone:")} <span className="font-medium text-neutral-800">{b.customer_phone}</span></>
               )}
             </p>
           </div>
@@ -127,7 +129,7 @@ function JobRow({ b, onAct, onComplete }) {
 
         <div className="flex flex-col md:items-end gap-2 shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-neutral-500">Your Payout (90%):</span>
+            <span className="text-xs text-neutral-500">{tr("Your Payout (90%):")}</span>
             <span className="text-sm font-extrabold text-emerald-700">
               {fmtINR((b.estimated_cost || 0) * 0.9)}
             </span>
@@ -138,21 +140,21 @@ function JobRow({ b, onAct, onComplete }) {
             {b.status === "PENDING" && (
               <>
                 <button type="button" onClick={() => onAct(b, "accept")} className="btn-primary-coop py-1.5 px-3.5 text-xs">
-                  Accept Job
+                  {tr("Accept Job")}
                 </button>
                 <button type="button" onClick={() => onAct(b, "reject")} className="btn-secondary-coop py-1.5 px-3 text-xs">
-                  Decline
+                  {tr("Decline")}
                 </button>
               </>
             )}
             {b.status === "ACCEPTED" && (
               <button type="button" onClick={() => onAct(b, "start")} className="btn-primary-coop py-1.5 px-3.5 text-xs">
-                Start Work →
+                {tr("Start Work →")}
               </button>
             )}
             {b.status === "IN_PROGRESS" && (
               <button type="button" onClick={() => onComplete(b)} className="btn-primary-coop py-1.5 px-3.5 text-xs">
-                Complete & Enter Bill →
+                {tr("Complete & Enter Bill →")}
               </button>
             )}
           </div>
@@ -165,7 +167,7 @@ function JobRow({ b, onAct, onComplete }) {
 }
 
 export default function WorkerDashboard() {
-  const { t } = useLang();
+  const { t, tr, tService } = useLang();
   const { toast } = useToast();
   const [tab, setTab] = useState("overview");
   const [profile, setProfile] = useState(null);
@@ -260,10 +262,10 @@ export default function WorkerDashboard() {
   ];
 
   const titleOf = {
-    overview: "Partner Dashboard",
-    jobs: "My Jobs",
-    profile: "My Profile & Skills",
-    earnings: "Earnings & Payouts",
+    overview: tr("Partner Dashboard"),
+    jobs: tr("My Jobs"),
+    profile: tr("My Profile & Skills"),
+    earnings: tr("Earnings & Payouts"),
   }[tab];
 
   return (
@@ -276,7 +278,7 @@ export default function WorkerDashboard() {
     >
       {profile?.verification_status === "pending" && (
         <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs font-medium text-amber-800">
-          Your partner account is currently awaiting verification by the Coordinator.
+          {tr("Your partner account is currently awaiting verification by the Coordinator.")}
         </div>
       )}
 
@@ -295,14 +297,14 @@ export default function WorkerDashboard() {
                       <StatusBadge status={profile.verification_status} />
                     </div>
                     <p className="mt-1 text-xs text-neutral-500">
-                      ₹{profile.hourly_rate}/visit · {profile.experience_years} yrs exp · {profile.skills?.join(", ")}
+                      ₹{profile.hourly_rate}/{tr("visit")} · {profile.experience_years} {tr("yrs exp")} · {(profile.skills || []).map(tService).join(", ")}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex flex-col sm:items-end gap-1.5">
                   <span className="text-xs font-semibold text-neutral-500">
-                    Availability Status
+                    {tr("Availability Status")}
                   </span>
                   <div className="inline-flex rounded-lg bg-neutral-100 p-1 border border-neutral-200">
                     {["available", "busy", "offline"].map((a) => (
@@ -326,7 +328,7 @@ export default function WorkerDashboard() {
                             : "text-neutral-600 hover:text-neutral-900"
                         )}
                       >
-                        {a}
+                        {tr(a)}
                       </button>
                     ))}
                   </div>
@@ -336,20 +338,20 @@ export default function WorkerDashboard() {
           )}
 
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard icon={Star} label="Average Rating" value={profile ? Number(profile.avg_rating).toFixed(1) : "—"} tone="amber" subtitle="Customer reviews" />
-            <StatCard icon={CheckCircle2} label="Jobs Completed" value={profile?.jobs_done ?? "—"} tone="emerald" subtitle="Total finished" />
-            <StatCard icon={IndianRupee} label="Net Earnings (90%)" value={earnings ? fmtINR(earnings.total_earned) : "—"} tone="teal" subtitle="Direct worker share" />
-            <StatCard icon={Briefcase} label="Pending Requests" value={requests.length} tone="gold" subtitle="Needs action" />
+            <StatCard icon={Star} label={tr("Average Rating")} value={profile ? Number(profile.avg_rating).toFixed(1) : "—"} tone="amber" subtitle={tr("Customer reviews")} />
+            <StatCard icon={CheckCircle2} label={tr("Jobs Completed")} value={profile?.jobs_done ?? "—"} tone="emerald" subtitle={tr("Total finished")} />
+            <StatCard icon={IndianRupee} label={tr("Net Earnings (90%)")} value={earnings ? fmtINR(earnings.total_earned) : "—"} tone="teal" subtitle={tr("Direct worker share")} />
+            <StatCard icon={Briefcase} label={tr("Pending Requests")} value={requests.length} tone="gold" subtitle={tr("Needs action")} />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="text-sm font-bold text-neutral-900 flex items-center gap-2">
                 <ClipboardList className="h-4 w-4 text-neutral-700" />
-                <span>Incoming & Active Jobs</span>
+                <span>{tr("Incoming & Active Jobs")}</span>
               </div>
               <span className="text-xs text-neutral-500">
-                {requests.length} pending · {activeJobs.length} in progress
+                {requests.length} {tr("pending")} · {activeJobs.length} {tr("in progress")}
               </span>
             </div>
 
@@ -358,8 +360,8 @@ export default function WorkerDashboard() {
             ) : requests.length === 0 && activeJobs.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-10 text-center">
                 <Briefcase className="h-8 w-8 text-neutral-400 mx-auto mb-2" />
-                <p className="text-sm font-bold text-neutral-800">No active job requests</p>
-                <p className="text-xs text-neutral-500 mt-1">Keep your status set to "Available" to receive new bookings.</p>
+                <p className="text-sm font-bold text-neutral-800">{tr("No active job requests")}</p>
+                <p className="text-xs text-neutral-500 mt-1">{tr('Keep your status set to "Available" to receive new bookings.')}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -385,7 +387,7 @@ export default function WorkerDashboard() {
           {list.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-10 text-center">
               <ClipboardList className="h-8 w-8 text-neutral-400 mx-auto mb-2" />
-              <p className="text-sm font-bold text-neutral-800">No jobs yet</p>
+              <p className="text-sm font-bold text-neutral-800">{tr("No jobs yet")}</p>
             </div>
           ) : (
             list.map((b) => (
@@ -407,28 +409,28 @@ export default function WorkerDashboard() {
         <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs max-w-2xl">
           <h3 className="font-display text-lg font-bold text-neutral-900 mb-1 flex items-center gap-2">
             <UserCog className="h-5 w-5 text-neutral-700" />
-            Profile & Service Skills
+            {tr("Profile & Service Skills")}
           </h3>
           <p className="text-xs text-neutral-500 mb-6">
-            Update your base visit fee, service locality, bio, and active skills.
+            {tr("Update your base visit fee, service locality, bio, and active skills.")}
           </p>
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-neutral-700">Availability</label>
+                <label className="text-xs font-semibold text-neutral-700">{t("availability")}</label>
                 <select
                   value={profile.availability}
                   onChange={(e) => upd("availability", e.target.value)}
                   className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900"
                 >
-                  <option value="available">Available</option>
-                  <option value="busy">Busy</option>
-                  <option value="offline">Offline</option>
+                  <option value="available">{t("available")}</option>
+                  <option value="busy">{tr("busy")}</option>
+                  <option value="offline">{tr("offline")}</option>
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-neutral-700">Base Rate (₹/Visit)</label>
+                <label className="text-xs font-semibold text-neutral-700">{tr("Base Rate (₹/Visit)")}</label>
                 <input
                   type="number"
                   value={profile.hourly_rate}
@@ -439,7 +441,7 @@ export default function WorkerDashboard() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-neutral-700">Service Area / Base Address</label>
+              <label className="text-xs font-semibold text-neutral-700">{tr("Service Area / Base Address")}</label>
               <input
                 value={profile.address || ""}
                 maxLength={500}
@@ -449,7 +451,7 @@ export default function WorkerDashboard() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-neutral-700">Short Bio</label>
+              <label className="text-xs font-semibold text-neutral-700">{tr("Short Bio")}</label>
               <textarea
                 rows={3}
                 value={profile.bio || ""}
@@ -460,7 +462,7 @@ export default function WorkerDashboard() {
             </div>
 
             <div className="space-y-2 border-t border-neutral-100 pt-4">
-              <label className="text-xs font-semibold text-neutral-700">Your Trade Skills</label>
+              <label className="text-xs font-semibold text-neutral-700">{tr("Your Trade Skills")}</label>
               <div className="flex flex-wrap gap-1.5">
                 {services.map((s) => {
                   const on = profile.skills?.includes(s.name);
@@ -476,7 +478,7 @@ export default function WorkerDashboard() {
                           : "border-neutral-200 bg-neutral-50 text-neutral-700 hover:border-neutral-300"
                       )}
                     >
-                      {s.name}
+                      {tService(s.name)}
                     </button>
                   );
                 })}
@@ -484,7 +486,7 @@ export default function WorkerDashboard() {
             </div>
 
             <button type="button" onClick={saveProfile} disabled={saving} className="btn-primary-coop w-full justify-center py-2.5 mt-2">
-              {saving ? "Saving..." : "Save Profile Changes"}
+              {saving ? tr("Saving...") : tr("Save Profile Changes")}
             </button>
           </div>
         </div>
@@ -493,16 +495,16 @@ export default function WorkerDashboard() {
       {tab === "earnings" && earnings && (
         <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-3">
-            <StatCard icon={Wallet} label="Net Earned (90%)" value={fmtINR(earnings.total_earned)} tone="emerald" subtitle="Your direct payout" />
-            <StatCard icon={IndianRupee} label="Gross Job Value" value={fmtINR(earnings.gross)} tone="teal" subtitle="Total customer billings" />
-            <StatCard icon={CheckCircle2} label="Paid Jobs" value={earnings.paid_jobs} tone="gold" subtitle="Settled invoices" />
+            <StatCard icon={Wallet} label={tr("Net Earned (90%)")} value={fmtINR(earnings.total_earned)} tone="emerald" subtitle={tr("Your direct payout")} />
+            <StatCard icon={IndianRupee} label={tr("Gross Job Value")} value={fmtINR(earnings.gross)} tone="teal" subtitle={tr("Total customer billings")} />
+            <StatCard icon={CheckCircle2} label={tr("Paid Jobs")} value={earnings.paid_jobs} tone="gold" subtitle={tr("Settled invoices")} />
           </div>
 
           <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs">
             <div className="pb-3 border-b border-neutral-100 mb-4">
               <h3 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-neutral-700" />
-                <span>Recent Payouts (90% Share)</span>
+                <span>{tr("Recent Payouts (90% Share)")}</span>
               </h3>
             </div>
             <div className="h-56 w-full">
@@ -519,7 +521,7 @@ export default function WorkerDashboard() {
                       color: "#0f0f0f",
                       fontSize: "12px",
                     }}
-                    formatter={(val) => [fmtINR(val), "Your Payout (90%)"]}
+                    formatter={(val) => [fmtINR(val), tr("Your Payout (90%):")]}
                   />
                   <Bar dataKey="payout" fill="#0f0f0f" radius={[6, 6, 0, 0]} />
                 </BarChart>
@@ -531,13 +533,13 @@ export default function WorkerDashboard() {
 
       {complete && (
         <Modal
-          title="Complete Job & Generate Bill"
-          description={`${complete.service_name} #${complete.code}`}
+          title={tr("Complete Job & Generate Bill")}
+          description={`${tService(complete.service_name)} #${complete.code}`}
           onClose={() => setComplete(null)}
         >
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-neutral-700">Final Service Amount (₹)</label>
+              <label className="text-xs font-semibold text-neutral-700">{tr("Final Service Amount (₹)")}</label>
               <input
                 type="number"
                 min={1}
@@ -556,7 +558,7 @@ export default function WorkerDashboard() {
                 setComplete(null);
               }}
             >
-              Finish Job & Request Payment →
+              {tr("Finish Job & Request Payment →")}
             </button>
           </div>
         </Modal>

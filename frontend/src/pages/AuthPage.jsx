@@ -239,7 +239,7 @@ function RoleLoginForm({ role, onSwitchRole }) {
               onClick={() => onSwitchRole("worker")}
               className="self-start rounded-lg bg-white border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition"
             >
-              Switch to Service Partner Login →
+              {tr("Switch to Service Partner Login →")}
             </button>
           )}
           {onSwitchRole && err.includes("CUSTOMER") && role !== "customer" && (
@@ -248,7 +248,7 @@ function RoleLoginForm({ role, onSwitchRole }) {
               onClick={() => onSwitchRole("customer")}
               className="self-start rounded-lg bg-white border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition"
             >
-              Switch to Customer Login →
+              {tr("Switch to Customer Login →")}
             </button>
           )}
           {onSwitchRole && err.includes("FEDERATION") && role !== "admin" && (
@@ -257,7 +257,7 @@ function RoleLoginForm({ role, onSwitchRole }) {
               onClick={() => onSwitchRole("admin")}
               className="self-start rounded-lg bg-white border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition"
             >
-              Switch to Coordinator Login →
+              {tr("Switch to Coordinator Login →")}
             </button>
           )}
         </div>
@@ -286,7 +286,7 @@ function RoleLoginForm({ role, onSwitchRole }) {
           <input
             type={showPw ? "text" : "password"}
             autoComplete="current-password"
-            placeholder="Enter your password"
+            placeholder={tr("Enter your password")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -315,7 +315,7 @@ function RoleLoginForm({ role, onSwitchRole }) {
           </span>
         ) : (
           <span className="flex items-center gap-2">
-            <span>{t("login")} as {roleLabel}</span>
+            <span>{tr("Login as")} {roleLabel}</span>
             <ArrowRight className="h-4 w-4" />
           </span>
         )}
@@ -364,7 +364,7 @@ function RoleRegisterForm({ role }) {
     e.preventDefault();
     setErr("");
     if (role === "worker" && skills.length === 0) {
-      return setErr("Please select at least one trade skill.");
+      return setErr(tr("Please select at least one trade skill."));
     }
 
     setBusy(true);
@@ -452,7 +452,7 @@ function RoleRegisterForm({ role }) {
           <div className="relative">
             <input
               type={showPw ? "text" : "password"}
-              placeholder="Create a strong password"
+              placeholder={tr("Create a strong password")}
               value={form.password}
               onChange={set("password")}
               required
@@ -479,7 +479,7 @@ function RoleRegisterForm({ role }) {
         <input
           value={form.address}
           onChange={set("address")}
-          placeholder="House no, Street, Locality, City"
+          placeholder={tr("House no, Street, Locality, City")}
           maxLength={500}
           required
           className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
@@ -572,7 +572,7 @@ function RoleRegisterForm({ role }) {
           </span>
         ) : (
           <span className="flex items-center gap-2">
-            <span>{t("register")} as {role === "worker" ? tr("Service Partner") : tr("Customer")}</span>
+            <span>{tr("Register as")} {role === "worker" ? tr("Service Partner") : tr("Customer")}</span>
             <ArrowRight className="h-4 w-4" />
           </span>
         )}

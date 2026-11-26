@@ -38,8 +38,8 @@ export default function TrustedTeams({ className = "" }) {
                   <Icon className="h-4 w-4" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-neutral-900">{team.name}</h4>
-                  <p className="text-[11px] text-neutral-500 mt-0.5">{team.desc}</p>
+                  <h4 className="text-xs font-bold text-neutral-900">{tr(team.name)}</h4>
+                  <p className="text-[11px] text-neutral-500 mt-0.5">{tr(team.desc)}</p>
                 </div>
               </div>
             );

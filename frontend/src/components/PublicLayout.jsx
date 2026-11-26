@@ -9,7 +9,7 @@ import { FALLBACK_SERVICES, fmtINR, getServiceImage } from "../lib/cn";
 const CITIES = ["Delhi NCR", "Bengaluru", "Mumbai", "Pune", "Hyderabad", "Chennai", "Kolkata"];
 
 export function PublicHeader() {
-  const { tr, tService } = useLang();
+  const { tr, tService, tServiceDesc } = useLang();
   const nav = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [city, setCity] = useState("Delhi NCR");
@@ -35,7 +35,7 @@ export function PublicHeader() {
             <select
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              aria-label="Select City"
+              aria-label={tr("Select City")}
               className="border-none bg-transparent p-0 text-xs font-semibold text-neutral-800 outline-none focus:ring-0 cursor-pointer"
             >
               {CITIES.map((c) => (
@@ -63,7 +63,7 @@ export function PublicHeader() {
           {searchOpen && searchQ.trim().length > 0 && (
             <div className="absolute left-0 right-0 top-full mt-1.5 rounded-xl border border-neutral-200 bg-white p-2 shadow-glass z-50">
               {searchMatches.length === 0 ? (
-                <p className="px-3 py-2 text-xs text-neutral-500">No services found for "{searchQ}"</p>
+                <p className="px-3 py-2 text-xs text-neutral-500">{tr("No services found for")} "{searchQ}"</p>
               ) : (
                 searchMatches.slice(0, 5).map((s) => (
                   <button
@@ -79,7 +79,7 @@ export function PublicHeader() {
                     />
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-neutral-900 truncate">{tService(s.name)}</p>
-                      <p className="text-[11px] text-neutral-500 truncate">{s.description}</p>
+                      <p className="text-[11px] text-neutral-500 truncate">{tServiceDesc(s.name, s.description)}</p>
                     </div>
                     <span className="shrink-0 font-bold text-neutral-900">{fmtINR(s.base_price)}</span>
                   </button>
@@ -154,9 +154,9 @@ export function LandingFooter() {
             {tr("Cooperative-owned doorstep home services platform. 90% of every payment goes directly to verified artisans, and 10% supports worker welfare & insurance.")}
           </p>
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-medium text-neutral-700">
-            <span className="rounded-md border border-neutral-200 bg-white px-2.5 py-1">NCCT Aligned</span>
-            <span className="rounded-md border border-neutral-200 bg-white px-2.5 py-1">Ministry of Cooperation</span>
-            <span className="rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700 px-2.5 py-1">90% Direct Worker Payout</span>
+            <span className="rounded-md border border-neutral-200 bg-white px-2.5 py-1">{tr("NCCT Aligned")}</span>
+            <span className="rounded-md border border-neutral-200 bg-white px-2.5 py-1">{tr("Ministry of Cooperation")}</span>
+            <span className="rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700 px-2.5 py-1">{tr("90% Direct Worker Payout")}</span>
           </div>
         </div>
 

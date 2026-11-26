@@ -40,6 +40,7 @@ const TIMELINE_STEPS = [
 ];
 
 function BookingTimeline({ status }) {
+  const { tr } = useLang();
   const isCancelled = status === "CANCELLED" || status === "REJECTED";
   const stepIdx = {
     PENDING: 0,
@@ -51,7 +52,7 @@ function BookingTimeline({ status }) {
   if (isCancelled) {
     return (
       <div className="mt-4 flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-medium text-rose-700">
-        Booking was {status.toLowerCase()}. You can create a new service booking anytime.
+        {tr("Booking was")} {tr(status.toLowerCase())}. {tr("You can create a new service booking anytime.")}
       </div>
     );
   }
@@ -87,10 +88,10 @@ function BookingTimeline({ status }) {
                   isCurrent ? "text-neutral-900" : isDone ? "text-neutral-900" : "text-neutral-400"
                 }`}
               >
-                {step.label}
+                {tr(step.label)}
               </span>
               <span className="hidden sm:inline text-[10px] text-neutral-400">
-                {step.sub}
+                {tr(step.sub)}
               </span>
             </div>
           );
@@ -329,10 +330,10 @@ export default function MyBookings() {
       ) : list.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-12 text-center">
           <ClipboardList className="h-9 w-9 text-neutral-400 mx-auto mb-3" />
-          <p className="text-base font-bold text-neutral-900">No bookings in this view</p>
-          <p className="text-xs text-neutral-500 mt-1">Book a verified cooperative professional whenever you need help.</p>
+          <p className="text-base font-bold text-neutral-900">{tr("No bookings in this view")}</p>
+          <p className="text-xs text-neutral-500 mt-1">{tr("Book a verified cooperative professional whenever you need help.")}</p>
           <Link to="/services" className="btn-primary-coop mt-4 text-xs">
-            <CalendarPlus className="h-4 w-4" /> Browse Services
+            <CalendarPlus className="h-4 w-4" /> {t("browseServices")}
           </Link>
         </div>
       ) : (
@@ -357,7 +358,7 @@ export default function MyBookings() {
                       </span>
                       {b.is_emergency && (
                         <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-[11px] font-semibold text-amber-700">
-                          <Siren className="h-3 w-3" /> Urgent
+                          <Siren className="h-3 w-3" /> {tr("Urgent")}
                         </span>
                       )}
                     </div>
@@ -377,10 +378,10 @@ export default function MyBookings() {
                       <User className="h-3.5 w-3.5 text-neutral-400" />
                       {b.worker_name ? (
                         <span>
-                          Professional: <strong className="text-neutral-900">{b.worker_name}</strong> ({b.worker_phone})
+                          {tr("Professional:")} <strong className="text-neutral-900">{b.worker_name}</strong> ({b.worker_phone})
                         </span>
                       ) : (
-                        <span className="text-amber-700 font-medium">Matching with nearby verified artisan…</span>
+                        <span className="text-amber-700 font-medium">{tr("Matching with nearby verified artisan…")}</span>
                       )}
                     </p>
                   </div>
@@ -393,7 +394,7 @@ export default function MyBookings() {
                   </p>
                   {b.paid && (
                     <span className="flex items-center gap-1 text-xs font-semibold text-emerald-700">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Paid
+                      <CheckCircle2 className="h-3.5 w-3.5" /> {tr("Paid")}
                     </span>
                   )}
                 </div>
@@ -433,7 +434,7 @@ export default function MyBookings() {
                       }}
                       className="w-full rounded-lg border border-amber-300 bg-amber-50 py-2 px-3 text-xs font-semibold text-amber-800 hover:bg-amber-100 transition flex items-center justify-center gap-1"
                     >
-                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" /> Rate Service
+                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" /> {tr("Rate Service")}
                     </button>
                   )}
                 </div>
@@ -448,14 +449,14 @@ export default function MyBookings() {
       {/* Modal 1: Matched Workers */}
       {modal?.type === "matches" && (
         <Modal
-          title="Matched Cooperative Artisans"
-          description="Ranked by verified skill, distance from you, and customer ratings."
+          title={tr("Matched Cooperative Artisans")}
+          description={tr("Ranked by verified skill, distance from you, and customer ratings.")}
           onClose={() => setModal(null)}
         >
           <div className="space-y-3">
             {modal.data.length === 0 && (
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-800">
-                No active artisans available right now for this service.
+                {tr("No active artisans available right now for this service.")}
               </div>
             )}
             {modal.data.map((w) => (
@@ -467,18 +468,18 @@ export default function MyBookings() {
                   <p className="font-bold text-neutral-900 flex items-center gap-2">
                     {w.name}
                     <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-                      {Math.round(w.score * 100)}% Match
+                      {Math.round(w.score * 100)}% {tr("Match")}
                     </span>
                   </p>
                   <p className="mt-1 text-xs text-neutral-500">
-                    ★ {w.avg_rating} · {w.distance_km ?? "?"} km away · {fmtINR(w.hourly_rate)} · {w.jobs_done} jobs
+                    ★ {w.avg_rating} · {w.distance_km ?? "?"} {tr("km away")} · {fmtINR(w.hourly_rate)} · {w.jobs_done} {tr("jobs")}
                   </p>
                 </div>
                 <button
                   onClick={() => assign(modal.booking, w.user_id)}
                   className="btn-primary-coop py-1.5 px-3 text-xs"
                 >
-                  Assign
+                  {tr("Assign")}
                 </button>
               </div>
             ))}
@@ -489,22 +490,22 @@ export default function MyBookings() {
       {/* Modal 2: Razorpay Payment */}
       {modal?.type === "pay" && !mockSimulator && (
         <Modal
-          title={`Pay ${fmtINR(modal.booking.final_cost || modal.booking.estimated_cost)}`}
-          description="90% goes straight to your artisan and 10% funds cooperative worker welfare."
+          title={`${tr("Pay")} ${fmtINR(modal.booking.final_cost || modal.booking.estimated_cost)}`}
+          description={tr("90% goes straight to your artisan and 10% funds cooperative worker welfare.")}
           onClose={() => setModal(null)}
         >
           <div className="space-y-4 text-sm">
             <div className="flex items-center justify-between rounded-xl border border-neutral-200 bg-neutral-50 p-3 text-xs">
               <div className="flex items-center gap-2 font-semibold text-neutral-900">
                 <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                <span>Secured by Razorpay</span>
+                <span>{tr("Secured by Razorpay")}</span>
               </div>
               <span className="text-neutral-600 font-medium">UPI · Cards · Netbanking</span>
             </div>
 
             <div>
               <label className="mb-2 block text-xs font-semibold text-neutral-700">
-                Choose Payment Method
+                {tr("Choose Payment Method")}
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <button
@@ -517,9 +518,9 @@ export default function MyBookings() {
                       : "border-neutral-200 bg-white text-neutral-900 hover:border-neutral-300"
                   )}
                 >
-                  <p className="text-xs font-bold">⚡ Pay Online (Razorpay)</p>
+                  <p className="text-xs font-bold">⚡ {tr("Pay Online (Razorpay)")}</p>
                   <p className={cn("mt-1 text-[11px]", payMethod === "razorpay" ? "text-neutral-300" : "text-neutral-500")}>
-                    GPay, PhonePe, UPI QR, Cards
+                    {tr("GPay, PhonePe, UPI QR, Cards")}
                   </p>
                 </button>
                 <button
@@ -532,9 +533,9 @@ export default function MyBookings() {
                       : "border-neutral-200 bg-white text-neutral-900 hover:border-neutral-300"
                   )}
                 >
-                  <p className="text-xs font-bold">💵 Cash on Site</p>
+                  <p className="text-xs font-bold">💵 {tr("Cash on Site")}</p>
                   <p className={cn("mt-1 text-[11px]", payMethod === "cash" ? "text-neutral-300" : "text-neutral-500")}>
-                    Pay directly to the worker
+                    {tr("Pay directly to the worker")}
                   </p>
                 </button>
               </div>
@@ -542,15 +543,15 @@ export default function MyBookings() {
 
             <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-3.5 space-y-1.5 text-xs">
               <div className="flex justify-between text-neutral-600">
-                <span>Total Service Bill</span>
+                <span>{tr("Total Service Bill")}</span>
                 <span className="font-bold text-neutral-900">{fmtINR(modal.booking.final_cost || modal.booking.estimated_cost)}</span>
               </div>
               <div className="flex justify-between text-emerald-700">
-                <span>Direct Artisan Payout (90%)</span>
+                <span>{tr("Direct Artisan Payout (90%)")}</span>
                 <span className="font-semibold">{fmtINR((modal.booking.final_cost || modal.booking.estimated_cost) * 0.9)}</span>
               </div>
               <div className="flex justify-between text-neutral-500 border-t border-neutral-200 pt-1.5">
-                <span>Worker Welfare & Insurance (10%)</span>
+                <span>{tr("Worker Welfare & Insurance (10%)")}</span>
                 <span>{fmtINR((modal.booking.final_cost || modal.booking.estimated_cost) * 0.1)}</span>
               </div>
             </div>
@@ -563,10 +564,10 @@ export default function MyBookings() {
               {payBusy ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Processing...</span>
+                  <span>{tr("Processing...")}</span>
                 </>
               ) : (
-                <span>{payMethod === "cash" ? "Confirm Cash Payment" : "Proceed to Razorpay Checkout →"}</span>
+                <span>{payMethod === "cash" ? tr("Confirm Cash Payment") : tr("Proceed to Razorpay Checkout →")}</span>
               )}
             </button>
           </div>
@@ -576,22 +577,22 @@ export default function MyBookings() {
       {/* Modal 2b: Razorpay Sandbox Test Simulator */}
       {mockSimulator && (
         <Modal
-          title="Razorpay Test Checkout"
-          description="Interactive sandbox mode for college/demo testing. Add real Razorpay keys in .env to switch to live popup."
+          title={tr("Razorpay Test Checkout")}
+          description={tr("Interactive sandbox mode for college/demo testing. Add real Razorpay keys in .env to switch to live popup.")}
           onClose={() => setMockSimulator(null)}
         >
           <div className="space-y-4 text-sm">
             <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
               <p className="font-bold text-neutral-900 flex items-center gap-2 text-xs">
                 <Sparkles className="h-4 w-4 text-neutral-700" />
-                Order #{mockSimulator.order_id}
+                {tr("Order")} #{mockSimulator.order_id}
               </p>
               <p className="mt-1 text-xs text-neutral-600">
-                Amount: <strong className="text-neutral-900">{fmtINR(mockSimulator.amount)}</strong> · {mockSimulator.service_name}
+                {t("amount")}: <strong className="text-neutral-900">{fmtINR(mockSimulator.amount)}</strong> · {tService(mockSimulator.service_name)}
               </p>
             </div>
 
-            <p className="text-xs font-semibold text-neutral-700">Choose a payment option to complete:</p>
+            <p className="text-xs font-semibold text-neutral-700">{tr("Choose a payment option to complete:")}</p>
 
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -600,7 +601,7 @@ export default function MyBookings() {
                 disabled={payBusy}
                 className="btn-primary-coop py-3 text-xs justify-center"
               >
-                📱 Pay via UPI (GPay)
+                📱 {tr("Pay via UPI (GPay)")}
               </button>
               <button
                 type="button"
@@ -608,7 +609,7 @@ export default function MyBookings() {
                 disabled={payBusy}
                 className="btn-secondary-coop py-3 text-xs justify-center"
               >
-                💳 Pay via Card
+                💳 {tr("Pay via Card")}
               </button>
             </div>
           </div>
@@ -617,36 +618,36 @@ export default function MyBookings() {
 
       {/* Modal 3: Receipt */}
       {modal?.type === "invoice" && (
-        <Modal title={`Payment Receipt #${modal.data.invoice_no}`} onClose={() => setModal(null)}>
+        <Modal title={`${tr("Payment Receipt")} #${modal.data.invoice_no}`} onClose={() => setModal(null)}>
           <div className="space-y-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-xs text-neutral-700">
             <div className="flex justify-between items-center">
-              <span>Amount Paid ({modal.data.method.toUpperCase()})</span>
+              <span>{tr("Amount Paid")} ({modal.data.method.toUpperCase()})</span>
               <strong className="text-neutral-900 text-base">{fmtINR(modal.data.amount)}</strong>
             </div>
             {modal.data.transaction_id && (
               <div className="flex justify-between border-t border-neutral-200 pt-2">
-                <span className="text-neutral-500">Transaction ID</span>
+                <span className="text-neutral-500">{tr("Transaction ID")}</span>
                 <span className="font-mono font-semibold text-neutral-900">{modal.data.transaction_id}</span>
               </div>
             )}
             <div className="flex justify-between border-t border-neutral-200 pt-2 text-emerald-700">
-              <span>Artisan Direct Payout (90%)</span>
+              <span>{tr("Artisan Direct Payout (90%)")}</span>
               <strong>{fmtINR(modal.data.worker_payout)}</strong>
             </div>
             <div className="flex justify-between text-neutral-600">
-              <span>Co-op Welfare Fund (10%)</span>
+              <span>{tr("Co-op Welfare Fund (10%)")}</span>
               <strong>{fmtINR(modal.data.coop_fee)}</strong>
             </div>
           </div>
           <button onClick={() => setModal(null)} className="btn-primary-coop mt-4 w-full justify-center py-2.5 text-xs">
-            Done
+            {tr("Done")}
           </button>
         </Modal>
       )}
 
       {/* Modal 4: Rate Worker */}
       {modal?.type === "rate" && (
-        <Modal title="Rate Your Experience" description="Your feedback helps reward great professionals." onClose={() => setModal(null)}>
+        <Modal title={tr("Rate Your Experience")} description={tr("Your feedback helps reward great professionals.")} onClose={() => setModal(null)}>
           <div className="flex justify-center py-2">
             <Stars value={stars} onChange={setStars} className="h-8 w-8 text-amber-400" />
           </div>
@@ -654,12 +655,12 @@ export default function MyBookings() {
             className="mt-4 w-full rounded-lg border border-neutral-300 bg-white p-3 text-sm text-neutral-900 placeholder:text-neutral-400"
             rows={3}
             maxLength={2000}
-            placeholder="Share a quick review about punctuality, quality, and professionalism..."
+            placeholder={tr("Share a quick review about punctuality, quality, and professionalism...")}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
           />
           <button onClick={rate} className="btn-primary-coop mt-4 w-full justify-center py-2.5 text-sm">
-            Submit Review
+            {tr("Submit Review")}
           </button>
         </Modal>
       )}

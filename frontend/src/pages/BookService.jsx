@@ -32,7 +32,7 @@ const TIME_SLOTS = [
 export default function BookService() {
   const { serviceId } = useParams();
   const nav = useNavigate();
-  const { t, tr, tService } = useLang();
+  const { t, tr, tService, lang } = useLang();
   const [service, setService] = useState(undefined);
   const [workers, setWorkers] = useState([]);
   const [err, setErr] = useState("");
@@ -81,7 +81,7 @@ export default function BookService() {
         if (service) loadWorkers(service.name, p.coords.latitude, p.coords.longitude);
       },
       () =>
-        setErr("Location permission was denied. Please enter your address below."),
+        setErr(tr("Location permission was denied. Please enter your address below.")),
     );
 
   const submit = async (e) => {
@@ -118,9 +118,9 @@ export default function BookService() {
     return (
       <CustomerShell title={t("bookService")}>
         <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-700">
-          Service not found.{" "}
+          {tr("Service not found.")}{" "}
           <Link className="underline font-bold" to="/services">
-            Back to services directory →
+            {tr("Back to services directory →")}
           </Link>
         </div>
       </CustomerShell>
@@ -153,9 +153,9 @@ export default function BookService() {
               <h2 className="font-display text-2xl font-extrabold text-neutral-900">
                 {tService(service.name)}
               </h2>
-              {service.name_hi && <p className="text-xs text-neutral-400">{service.name_hi}</p>}
+              {lang === "en" && service.name_hi && <p className="text-xs text-neutral-400">{service.name_hi}</p>}
               <p className="mt-1 text-xs text-neutral-500">
-                Base visit fare: <strong className="text-neutral-900">{fmtINR(service.base_price)}</strong> · 90% goes directly to the artisan
+                {tr("Base visit fare:")} <strong className="text-neutral-900">{fmtINR(service.base_price)}</strong> · {tr("90% goes directly to the artisan")}
               </p>
             </div>
           </div>
@@ -170,7 +170,7 @@ export default function BookService() {
             {/* Step 1: Date & Quick Slot Picker */}
             <div className="space-y-3">
               <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">
-                1. Select Date & Time Slot
+                {tr("1. Select Date & Time Slot")}
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input
@@ -212,7 +212,7 @@ export default function BookService() {
             {/* Step 2: Address */}
             <div className="space-y-3">
               <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">
-                2. Service Address
+                {tr("2. Service Address")}
               </label>
               <textarea
                 rows={2}
@@ -221,22 +221,22 @@ export default function BookService() {
                 minLength={5}
                 maxLength={500}
                 required
-                placeholder="House / Flat No., Building, Street, Landmark, City"
+                placeholder={tr("House / Flat No., Building, Street, Landmark, City")}
                 className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400"
               />
               <div className="flex flex-wrap items-center gap-3 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-xs text-neutral-600">
                 <MapPin className="h-4 w-4 text-neutral-700 shrink-0" />
                 <span className="flex-1 truncate">
                   {form.lat == null
-                    ? "Optional: Detect GPS coordinates for nearest match"
-                    : `Location pinned: ${Number(form.lat).toFixed(4)}, ${Number(form.lng).toFixed(4)}`}
+                    ? tr("Optional: Detect GPS coordinates for nearest match")
+                    : `${tr("Location pinned:")} ${Number(form.lat).toFixed(4)}, ${Number(form.lng).toFixed(4)}`}
                 </span>
                 <button
                   type="button"
                   onClick={gps}
                   className="shrink-0 rounded-lg border border-neutral-300 bg-white px-3 py-1 text-xs font-semibold text-neutral-900 hover:bg-neutral-100 transition"
                 >
-                  Use GPS
+                  {tr("Use GPS")}
                 </button>
               </div>
             </div>
@@ -244,14 +244,14 @@ export default function BookService() {
             {/* Step 3: Notes & Emergency */}
             <div className="space-y-3">
               <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">
-                3. Instructions (Optional)
+                {tr("3. Instructions (Optional)")}
               </label>
               <textarea
                 rows={2}
                 value={form.notes}
                 maxLength={1000}
                 onChange={set("notes")}
-                placeholder="Describe what needs to be checked or repaired..."
+                placeholder={tr("Describe what needs to be checked or repaired...")}
                 className="w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400"
               />
 
@@ -274,7 +274,7 @@ export default function BookService() {
                     <Siren className="h-4 w-4 text-amber-600" /> {tr("Priority Urgent Visit (+25%)")}
                   </span>
                   <p className="text-xs text-neutral-500 mt-0.5">
-                    Prioritizes fastest available artisan dispatch.
+                    {tr("Prioritizes fastest available artisan dispatch.")}
                   </p>
                 </div>
               </label>
@@ -291,7 +291,7 @@ export default function BookService() {
                 {tr("Choose Professional")}
               </p>
               <span className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-semibold text-neutral-700">
-                {workers.length} available
+                {workers.length} {tr("available")}
               </span>
             </div>
 
@@ -309,7 +309,7 @@ export default function BookService() {
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-bold">{tr("Auto-Assign Best Match")}</p>
                 <p className={cn("mt-0.5 text-[11px]", form.worker_id === "" ? "text-neutral-300" : "text-neutral-500")}>
-                  Recommended: Picks highest-rated nearby artisan automatically.
+                  {tr("Recommended: Picks highest-rated nearby artisan automatically.")}
                 </p>
               </div>
             </button>
@@ -354,15 +354,15 @@ export default function BookService() {
           </div>
 
           <div className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-card">
-            <h3 className="text-sm font-bold text-neutral-900 mb-3">Payment Summary</h3>
+            <h3 className="text-sm font-bold text-neutral-900 mb-3">{tr("Payment Summary")}</h3>
             <div className="mb-4 space-y-2 border-b border-neutral-100 pb-4 text-sm">
               <div className="flex items-center justify-between text-neutral-600">
-                <span>Base Visit Fare</span>
+                <span>{tr("Base Visit Fare")}</span>
                 <span className="font-semibold text-neutral-900">{fmtINR(service.base_price)}</span>
               </div>
               {form.is_emergency && (
                 <div className="flex items-center justify-between text-amber-700">
-                  <span>Urgent Dispatch (+25%)</span>
+                  <span>{tr("Urgent Dispatch (+25%)")}</span>
                   <span className="font-semibold">+{fmtINR(service.base_price * 0.25)}</span>
                 </div>
               )}
@@ -374,7 +374,7 @@ export default function BookService() {
 
             <div className="mb-4 flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
               <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
-              <span>90% goes straight to the verified worker</span>
+              <span>{tr("90% goes straight to the verified worker")}</span>
             </div>
 
             <button
@@ -384,7 +384,7 @@ export default function BookService() {
             >
               {busy ? (
                 <span className="inline-flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Confirming...
+                  <Loader2 className="h-4 w-4 animate-spin" /> {tr("Confirming...")}
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-2">

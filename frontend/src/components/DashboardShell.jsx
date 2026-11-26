@@ -194,7 +194,7 @@ export default function DashboardShell({
         </main>
 
         <footer className="mt-auto border-t border-neutral-200 bg-white py-4 px-4 text-center text-xs text-neutral-500 sm:px-6">
-          SevaCoop Cooperative Platform · Verified Doorstep Services · 90% Direct Worker Payout
+          {tr("SevaCoop Cooperative Platform · Verified Doorstep Services · 90% Direct Worker Payout")}
         </footer>
       </div>
     </div>
